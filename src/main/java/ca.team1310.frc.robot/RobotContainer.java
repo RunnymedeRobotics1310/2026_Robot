@@ -4,12 +4,9 @@
 
 package ca.team1310.frc.robot;
 
+import ca.team1310.frc.robot.operator.OperatorInput;
+import ca.team1310.frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-
-// import ca.team1310.frc.robot.commands.operator.OperatorInput;
-// import ca.team1310.frc.robot.commands.swervedrive.TeleopDriveCommand;
-// import ca.team1310.frc.robot.subsystems.swerve.SwerveSubsystem;
-// import ca.team1310.frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,20 +16,14 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
 
-  //    private final SwerveSubsystem swerveDriveSubsystem = new SwerveSubsystem(
-  //        Constants.Swerve.SUBSYSTEM_CONFIG
-  //    );
-  //    private final LimelightVisionSubsystem visionSubsystem =
-  //        new LimelightVisionSubsystem(
-  //            Constants.VisionConstants.VISION_CONFIG,
-  //            swerveDriveSubsystem
-  //        );
-  //    private final OperatorInput operatorInput = new OperatorInput(
-  //        OiConstants.DRIVER_CONTROLLER_PORT,
-  //        OiConstants.CONTROLLER_DEADBAND,
-  //        swerveDriveSubsystem,
-  //        visionSubsystem
-  //    );
+  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+
+  private final OperatorInput operatorInput =
+      new OperatorInput(
+          Constants.OiConstants.DRIVER_CONTROLLER_PORT,
+          Constants.OiConstants.CONTROLLER_DEADBAND,
+          exampleSubsystem);
+
   //
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -44,14 +35,9 @@ public class RobotContainer {
     //                operatorInput
     //            )
     //        );
-    //
+
     // Configure the trigger bindings
-    //        operatorInput.configureButtonBindings(
-    //            swerveDriveSubsystem,
-    //            visionSubsystem
-    //        );
-    //
-    //        operatorInput.initAutoSelectors();
+    operatorInput.configureButtonBindings(exampleSubsystem);
   }
 
   public Command getAutonomousCommand() {
