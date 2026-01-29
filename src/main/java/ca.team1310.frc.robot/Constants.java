@@ -4,14 +4,8 @@
 
 package ca.team1310.frc.robot;
 
-import static ca.team1310.frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
-import static ca.team1310.frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
-import static edu.wpi.first.math.util.Units.inchesToMeters;
-
 import ca.team1310.frc.robot.telemetry.VisionTelemetryLevel;
 import ca.team1310.swerve.core.config.*;
-import ca.team1310.swerve.gyro.config.GyroConfig;
-import ca.team1310.swerve.utils.Coordinates;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -90,11 +84,12 @@ public final class Constants {
 
   public static final class FieldConstants {
 
-    public static final double FIELD_EXTENT_METRES_Y = 8.052;
-    public static final double FIELD_EXTENT_METRES_X = 17.55;
+    public static final double FIELD_EXTENT_METRES_Y = 8.07;
+    public static final double FIELD_EXTENT_METRES_X = 16.54;
 
     // This is physical tag locations on field, from 2025FieldDrawings.pdf but the heading is
     // swapped 180 degrees to indicate heading to face the tag, vs the orientation the tag is facing
+    //TODO: fixme: update these to 2026 tags
     public enum TAGS {
       RED_LEFT_SOURCE(1, new Pose2d(16.697198, 0.655320, Rotation2d.fromDegrees(-54))),
       RED_RIGHT_SOURCE(2, new Pose2d(16.697198, 7.396480, Rotation2d.fromDegrees(54))),
@@ -146,162 +141,6 @@ public final class Constants {
   }
 
   public static final class Swerve {
-
-    /** Front to back from the middle of the wheels */
-    public static final double WHEEL_BASE_METRES = inchesToMeters(16.75);
-
-    /** Side to side from the middle of the wheels */
-    public static final double TRACK_WIDTH_METRES = inchesToMeters(16.75);
-
-    public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.0485;
-
-    public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
-
-    //        public static final SwerveTranslationConfig TRANSLATION_CONFIG =
-    //            new SwerveTranslationConfig(
-    //                /* tolerance (m) */ 0.02,
-    //                /* min speed (m/s) */ 1.0,
-    //                /* max speed (m/s) */ 4.8,
-    //                /* max module speed (m/s) */ 5.36,
-    //                /* max acceleration (m/s/s) */ 42.0,
-    //                /* velocity PID p */ 1.2,
-    //                /* velocity PID i */ 0,
-    //                /* velocity PID d */ 0
-    //            );
-    //
-    //        public static final SwerveRotationConfig ROTATION_CONFIG =
-    //            new SwerveRotationConfig(
-    //                /* max rot vel (rad/s) */ Rotation2d.fromRotations(
-    //                    1.5
-    //                ).getRadians(),
-    //                /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(
-    //                    0.75
-    //                ).getRadians(),
-    //                /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(
-    //                    2
-    //                ).getRadians(),
-    //                /* heading PID p */ 0.033, // Rads/Deg
-    //                /* heading PID i */ 0,
-    //                /* heading PID d */ 0
-    //            );
-
-    private static final MotorConfig ANGLE_MOTOR_CONFIG =
-        new MotorConfig(
-            /* motor hardware type */ MotorType.NEO_SPARK_MAX,
-            /* inverted? */ true,
-            /* current limit (A) */ 20,
-            /* nominal voltage (V) */ 12,
-            /* ramp rate 0 to full power (s)*/ 0.25,
-            /* angle motor gear ratio */ 150.0 / 7 /* SDS MK4i 150/7:1 */,
-            /* angle motor PID p */ 0.009,
-            /* angle motor PID i */ 0,
-            /* angle motor PID d */ 0,
-            /* angle motor PID ff */ 0,
-            /* angle motor PID izone */ 0);
-
-    private static final MotorConfig DRIVE_MOTOR_CONFIG =
-        new MotorConfig(
-            /* motor hardware type */ MotorType.NEO_SPARK_FLEX,
-            /* inverted? */ false,
-            /* current limit (A) */ 40,
-            /* nominal voltage (V) */ 12,
-            /* ramp rate 0 to full power (s)*/ 0.25, // TODO: FIXME: TRY LOWERING THIS A LOT
-            /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
-            /* drive motor PID p */ 0.075,
-            /* drive motor PID i */ 0,
-            /* drive motor PID d */ 0,
-            /* drive motor PID ff */ 1 / 0, // TRANSLATION_CONFIG.maxModuleSpeedMPS(),
-            /* drive motor PID izone */ 0);
-
-    private static final EncoderConfig ANGLE_ENCODER_CONFIG = new EncoderConfig(false, 0.005, 5);
-
-    public static final ModuleConfig FRONT_LEFT =
-        new ModuleConfig(
-            "frontleft",
-            new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
-            SDS_MK4I_WHEEL_RADIUS_M,
-            10,
-            DRIVE_MOTOR_CONFIG,
-            11,
-            ANGLE_MOTOR_CONFIG,
-            12,
-            Rotation2d.fromRotations(0.281982).getDegrees(),
-            ANGLE_ENCODER_CONFIG);
-
-    public static final ModuleConfig FRONT_RIGHT =
-        new ModuleConfig(
-            "frontright",
-            new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
-            SDS_MK4I_WHEEL_RADIUS_M,
-            20,
-            DRIVE_MOTOR_CONFIG,
-            21,
-            ANGLE_MOTOR_CONFIG,
-            22,
-            Rotation2d.fromRotations(0.411377).getDegrees(),
-            ANGLE_ENCODER_CONFIG);
-
-    public static final ModuleConfig BACK_RIGHT =
-        new ModuleConfig(
-            "backright",
-            new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
-            SDS_MK4I_WHEEL_RADIUS_M,
-            30,
-            DRIVE_MOTOR_CONFIG,
-            31,
-            ANGLE_MOTOR_CONFIG,
-            32,
-            Rotation2d.fromRotations(0.353271).getDegrees(),
-            ANGLE_ENCODER_CONFIG);
-
-    public static final ModuleConfig BACK_LEFT =
-        new ModuleConfig(
-            "backleft",
-            new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
-            SDS_MK4I_WHEEL_RADIUS_M,
-            40,
-            DRIVE_MOTOR_CONFIG,
-            41,
-            ANGLE_MOTOR_CONFIG,
-            42,
-            Rotation2d.fromRotations(0.506836).getDegrees(),
-            ANGLE_ENCODER_CONFIG);
-
-    public static final CoreSwerveConfig CORE_SWERVE_CONFIG =
-        new CoreSwerveConfig(
-            WHEEL_BASE_METRES,
-            TRACK_WIDTH_METRES,
-            SDS_MK4I_WHEEL_RADIUS_M,
-            Robot.kDefaultPeriod,
-            0, // TRANSLATION_CONFIG.maxModuleSpeedMPS(),
-            0, //    TRANSLATION_CONFIG.maxSpeedMPS(),
-            0, //    ROTATION_CONFIG.maxRotVelocityRadPS(),
-            0.55,
-            0.5,
-            0.65,
-            FRONT_LEFT,
-            FRONT_RIGHT,
-            BACK_LEFT,
-            BACK_RIGHT,
-            Constants.TelemetryConfig.swerve);
-
-    //        private static final LimelightConfig LIMELIGHT_CONFIG =
-    //            new LimelightConfig(
-    //                VISION_PRIMARY_LIMELIGHT_NAME,
-    //                FIELD_EXTENT_METRES_X,
-    //                FIELD_EXTENT_METRES_Y
-    //            );
-    //
-    //        public static final SwerveDriveSubsystemConfig SUBSYSTEM_CONFIG =
-    //            new SwerveDriveSubsystemConfig(
-    //                true,
-    //                CORE_SWERVE_CONFIG,
-    //                GYRO_CONFIG,
-    //                LIMELIGHT_CONFIG,
-    //                TRANSLATION_CONFIG,
-    //                ROTATION_CONFIG,
-    //                TelemetryConfig.drive
-    //            );
   }
 
   public static final class AutoConstants {
@@ -324,84 +163,7 @@ public final class Constants {
 
     public enum FieldLocation {
       // Generalized Multi Alliance Locations
-      PRE_SCORE_LEFT_1(new Pose2d(2.8126, 4.1909, Rotation2d.fromDegrees(0)), 18, 7, true),
-      PRE_SCORE_LEFT_2(new Pose2d(3.2585, 5.8278, Rotation2d.fromDegrees(300)), 19, 6, false),
-      PRE_SCORE_LEFT_3(new Pose2d(3.7943, 5.5598, Rotation2d.fromDegrees(300)), 19, 6, true),
-      PRE_SCORE_LEFT_4(new Pose2d(5.1843, 5.5598, Rotation2d.fromDegrees(240)), 20, 11, false),
-      PRE_SCORE_LEFT_5(new Pose2d(5.4701, 5.3948, Rotation2d.fromDegrees(240)), 20, 11, true),
-      PRE_SCORE_LEFT_6(new Pose2d(6.1660, 4.16, Rotation2d.fromDegrees(180)), 21, 10, false),
-      PRE_SCORE_RIGHT_1(new Pose2d(2.8126, 3.8609, Rotation2d.fromDegrees(0)), 18, 7, false),
-      PRE_SCORE_RIGHT_2(new Pose2d(3.25, 2.23, Rotation2d.fromDegrees(60)), 17, 8, true),
-      PRE_SCORE_RIGHT_3(new Pose2d(3.7943, 2.64, Rotation2d.fromDegrees(60)), 17, 8, false),
-      PRE_SCORE_RIGHT_4(new Pose2d(5.1843, 2.5, Rotation2d.fromDegrees(120)), 22, 9, true),
-      PRE_SCORE_RIGHT_5(new Pose2d(5.4701, 2.6570, Rotation2d.fromDegrees(120)), 22, 9, false),
-      PRE_SCORE_RIGHT_6(new Pose2d(6.1660, 3.8609, Rotation2d.fromDegrees(180)), 21, 10, true),
-      PRE_INTAKE_CENTRE_LEFT_STATION(new Pose2d(1.139, 7.000, Rotation2d.fromDegrees(126)), 13, 1),
-      PRE_INTAKE_CENTRE_RIGHT_STATION(new Pose2d(1.139, 1.052, Rotation2d.fromDegrees(234)), 12, 2),
-      TEST_POSE(new Pose2d(1, 2, Rotation2d.k180deg)),
-
-      // Legacy Alliance Specific Locations
-      blueRightOuterStation(new Pose2d(1.15, 1.02, Rotation2d.fromDegrees(234)), 12, 2),
-      blueLeftOuterStation(new Pose2d(1.15, 7.03, Rotation2d.fromDegrees(-234)), 13, 1),
-
-      // Reef Score Locations (Lettered as seen in manual - counter-clockwise starting from
-      // close-left)
-      redA(
-          new Pose2d(
-              FieldConstants.FIELD_EXTENT_METRES_X - 3.20,
-              FieldConstants.FIELD_EXTENT_METRES_Y - 4.10,
-              Rotation2d.fromDegrees(0))),
-      blueA(new Pose2d(3.20, 4.10, Rotation2d.fromDegrees(0))),
-      redB(
-          new Pose2d(
-              FieldConstants.FIELD_EXTENT_METRES_X - 3.20,
-              FieldConstants.FIELD_EXTENT_METRES_Y - 3.80,
-              Rotation2d.fromDegrees(0))),
-      blueB(new Pose2d(3.20, 3.80, Rotation2d.fromDegrees(0))),
-      redC(
-          new Pose2d(
-              FieldConstants.FIELD_EXTENT_METRES_X - 4.00,
-              FieldConstants.FIELD_EXTENT_METRES_Y - 3.10,
-              Rotation2d.fromDegrees(60))),
-      blueC(new Pose2d(4.00, 3.10, Rotation2d.fromDegrees(60))),
-      redD(
-          new Pose2d(
-              FieldConstants.FIELD_EXTENT_METRES_X - 4.20,
-              FieldConstants.FIELD_EXTENT_METRES_Y - 2.80,
-              Rotation2d.fromDegrees(60))),
-      blueD(new Pose2d(4.20, 2.80, Rotation2d.fromDegrees(60))),
-      redE(
-          new Pose2d(
-              FieldConstants.FIELD_EXTENT_METRES_X - 5.10,
-              FieldConstants.FIELD_EXTENT_METRES_Y - 2.70,
-              Rotation2d.fromDegrees(120))),
-      blueE(new Pose2d(5.10, 2.70, Rotation2d.fromDegrees(120))),
-      blueJ(new Pose2d(5.10, FIELD_EXTENT_METRES_Y - 2.70, Rotation2d.fromDegrees(-120))),
-      blueK(new Pose2d(4.20, FIELD_EXTENT_METRES_Y - 2.80, Rotation2d.fromDegrees(-60))),
-      blueL(new Pose2d(4.00, FIELD_EXTENT_METRES_Y - 3.10, Rotation2d.fromDegrees(-60))),
-
-      // Auto transit poses
-      redRightExitTransit(
-          new Pose2d(
-              FIELD_EXTENT_METRES_X - 4.40,
-              FIELD_EXTENT_METRES_Y - 0.90,
-              Rotation2d.fromDegrees(180))),
-      blueRightExitTransit(new Pose2d(4.40, 0.90, Rotation2d.fromDegrees(180))),
-      redLeftExitTransit(
-          new Pose2d(
-              FIELD_EXTENT_METRES_X - 5.00,
-              FIELD_EXTENT_METRES_Y - 6.00,
-              Rotation2d.fromDegrees(0))),
-      blueLeftExitTransit(new Pose2d(4.40, 6.50, Rotation2d.fromDegrees(0))),
-
-      redRightPickupTransit(
-          new Pose2d(
-              FIELD_EXTENT_METRES_X - 2.80,
-              FIELD_EXTENT_METRES_Y - 1.70,
-              Rotation2d.fromDegrees(-135))),
-      blueRightPickupTransit(new Pose2d(2.80, 1.70, Rotation2d.fromDegrees(-135))),
-      blueLeftPickupTransit(
-          new Pose2d(2.80, FIELD_EXTENT_METRES_Y - 2.22, Rotation2d.fromDegrees(135)));
+      EXAMPLE_POSE(new Pose2d(1, 2, Rotation2d.k180deg));
 
       public final Pose2d pose;
       public final int blueTagId;
@@ -426,34 +188,8 @@ public final class Constants {
   }
 
   public enum BotTarget {
-    // Blue Field Targets
-    BLUE_AMP(new Translation3d(1.8415, 8.2042, 0.873252)),
-    BLUE_SOURCE(new Translation3d(15.632176, 0.564896, 0)),
-    BLUE_SPEAKER(new Translation3d(0.0381, 5.547868, 2.124202)),
-    BLUE_STAGE(new Translation3d(4.86791, 4.105656, 1.6764)),
 
-    // Red Field Targets
-    RED_AMP(new Translation3d(14.700758, 8.2042, 0.873252)),
-    RED_SOURCE(new Translation3d(0.908812, 0.564769, 0)),
-    RED_SPEAKER(new Translation3d(16.579342, 5.547868, 2.124202)),
-    RED_STAGE(new Translation3d(11.676634, 4.105656, 1.6764)),
-
-    // Blue Side Notes
-    BLUE_NOTE_WOLVERINE(new Translation3d(2.9, 4.11, 0)),
-    BLUE_NOTE_BARNUM(new Translation3d(2.9, 5.5, 0)),
-    BLUE_NOTE_VALJEAN(new Translation3d(2.9, 7, 0)),
-
-    // Red Side Notes
-    RED_NOTE_WOLVERINE(new Translation3d(13.53, 4.11, 0)),
-    RED_NOTE_BARNUM(new Translation3d(13.53, 5.5, 0)),
-    RED_NOTE_VALJEAN(new Translation3d(13.53, 7, 0)),
-
-    // Centre Field Notes
-    CENTRE_NOTE_1(new Translation3d(8.16, 0.75, 0)),
-    CENTRE_NOTE_2(new Translation3d(8.16, 2.43, 0)),
-    CENTRE_NOTE_3(new Translation3d(8.16, 4.11, 0)),
-    CENTRE_NOTE_4(new Translation3d(8.16, 5.79, 0)),
-    CENTRE_NOTE_5(new Translation3d(8.16, 7.47, 0)),
+    EXAMPLE_TARGET(new Translation3d(8.16, 7.47, 0)),
 
     // When No Target is Set
     NONE(new Translation3d(0, 0, 0)),
