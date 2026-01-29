@@ -1,6 +1,7 @@
 package ca.team1310.frc.robot.commands;
 
 import ca.team1310.frc.robot.subsystems.ExampleSubsystem;
+import ca.team1310.frc.robot.subsystems.LightingSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -10,9 +11,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ExampleCommand extends Command {
 
   private final ExampleSubsystem exampleSubsystem;
+  private final LightingSubsystem lightingSubsystem;
 
-  public ExampleCommand(ExampleSubsystem exampleSubsystem) {
+  public ExampleCommand(ExampleSubsystem exampleSubsystem, LightingSubsystem lightingSubsystem) {
     this.exampleSubsystem = exampleSubsystem;
+    this.lightingSubsystem = lightingSubsystem;
     addRequirements(exampleSubsystem);
   }
 
@@ -20,6 +23,10 @@ public class ExampleCommand extends Command {
   @Override
   public void initialize() {
     System.out.println("Example Command init");
+
+    System.out.println("Changing lights");
+    lightingSubsystem.setBufferPattern(
+        lightingSubsystem.ledTestingBufferOne, lightingSubsystem.yellowLEDPatern);
   }
 
   // Runs once every robot period

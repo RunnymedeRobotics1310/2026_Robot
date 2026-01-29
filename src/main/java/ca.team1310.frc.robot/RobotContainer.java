@@ -6,6 +6,7 @@ package ca.team1310.frc.robot;
 
 import ca.team1310.frc.robot.operator.OperatorInput;
 import ca.team1310.frc.robot.subsystems.ExampleSubsystem;
+import ca.team1310.frc.robot.subsystems.LightingSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -18,11 +19,14 @@ public class RobotContainer {
 
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
+  private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
+
   private final OperatorInput operatorInput =
       new OperatorInput(
           Constants.OiConstants.DRIVER_CONTROLLER_PORT,
           Constants.OiConstants.CONTROLLER_DEADBAND,
-          exampleSubsystem);
+          exampleSubsystem,
+          lightingSubsystem);
 
   //
   /** The container for the robot. Contains subsystems, OI devices, and commands. */

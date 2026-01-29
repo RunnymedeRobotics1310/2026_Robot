@@ -3,6 +3,7 @@ package ca.team1310.frc.robot.operator;
 import ca.team1310.frc.robot.Constants;
 import ca.team1310.frc.robot.commands.ExampleCommand;
 import ca.team1310.frc.robot.subsystems.ExampleSubsystem;
+import ca.team1310.frc.robot.subsystems.LightingSubsystem;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -16,6 +17,7 @@ public class OperatorInput extends SubsystemBase {
 
   private final XboxController driverController;
   private final ExampleSubsystem exampleSubsystem;
+  private final LightingSubsystem lightingSubsystem;
 
   private Command autonomousCommand = new InstantCommand();
 
@@ -30,9 +32,13 @@ public class OperatorInput extends SubsystemBase {
    * @param driverControllerPort on the driver station which the driver joystick is plugged into
    */
   public OperatorInput(
-      int driverControllerPort, double deadband, ExampleSubsystem exampleSubsystem) {
+      int driverControllerPort,
+      double deadband,
+      ExampleSubsystem exampleSubsystem,
+      LightingSubsystem lightingSubsystem) {
     driverController = new GameController(driverControllerPort, deadband);
     this.exampleSubsystem = exampleSubsystem;
+    this.lightingSubsystem = lightingSubsystem;
   }
 
   /**
@@ -45,7 +51,8 @@ public class OperatorInput extends SubsystemBase {
   public void configureButtonBindings(ExampleSubsystem exampleSubsystem) {
 
     // Example button binding for example command
-    new Trigger(() -> driverController.getYButton()).onTrue(new ExampleCommand(exampleSubsystem));
+    new Trigger(() -> driverController.getYButton())
+        .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
   }
 
   /*

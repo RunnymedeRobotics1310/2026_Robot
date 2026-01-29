@@ -186,6 +186,12 @@ public final class Constants {
     }
   }
 
+  public static final class LightingConstants {
+
+    public static final int LED_STRING_PWM_PORT = 9;
+    public static final int LED_STRING_LENGTH = 31;
+  }
+
   public enum BotTarget {
     EXAMPLE_TARGET(new Translation3d(8.16, 7.47, 0)),
 
