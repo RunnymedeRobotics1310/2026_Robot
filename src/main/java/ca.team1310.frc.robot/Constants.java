@@ -89,7 +89,7 @@ public final class Constants {
 
     // This is physical tag locations on field, from 2025FieldDrawings.pdf but the heading is
     // swapped 180 degrees to indicate heading to face the tag, vs the orientation the tag is facing
-    //TODO: fixme: update these to 2026 tags
+    // TODO: fixme: update these to 2026 tags
     public enum TAGS {
       RED_LEFT_SOURCE(1, new Pose2d(16.697198, 0.655320, Rotation2d.fromDegrees(-54))),
       RED_RIGHT_SOURCE(2, new Pose2d(16.697198, 7.396480, Rotation2d.fromDegrees(54))),
@@ -140,8 +140,7 @@ public final class Constants {
     }
   }
 
-  public static final class Swerve {
-  }
+  public static final class Swerve {}
 
   public static final class AutoConstants {
 
@@ -188,7 +187,6 @@ public final class Constants {
   }
 
   public enum BotTarget {
-
     EXAMPLE_TARGET(new Translation3d(8.16, 7.47, 0)),
 
     // When No Target is Set
