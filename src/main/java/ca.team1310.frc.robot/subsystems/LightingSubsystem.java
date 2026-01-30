@@ -55,7 +55,7 @@ public class LightingSubsystem extends SubsystemBase {
   public void periodic() {}
 
   public void setRangeColour(int rangeStart, int rangeEnd, Color color) {
-    for (int i = 0; i < ledBuffer.getLength(); i++) {
+    for (int i = rangeStart; i < rangeEnd; i++) {
       ledTestingBufferOne.setLED(i, color);
     }
     ledStrip.setData(ledTestingBufferOne);
