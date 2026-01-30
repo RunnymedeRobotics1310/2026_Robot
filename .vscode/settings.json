@@ -1,0 +1,34 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.server.launchMode": "Standard",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "bin/": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
+    "**/*~": true
+  },
+	"[java]": {
+	  "editor.defaultFormatter": "redhat.java",
+	  "editor.formatOnPaste": true,
+	  "editor.formatOnSave": true,
+	  "editor.formatOnType": true,
+	},
+"java.format.settings.profile": "GoogleStyle",
+	"workbench.tree.indent": 14,
+	"java.format.enabled": true,
+	"git.allowForcePush": true,
+	"java.saveActions.organizeImports": true,
+	"java.cleanup.actions": [
+		"renameFileToType",
+		"organizeImports",
+		"addOverride"
+	],
+	"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
+}
