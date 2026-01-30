@@ -12,12 +12,9 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -28,20 +25,17 @@ public class RobotContainer {
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     // TODO set the default commands for any subsystems
     // NOTE default commands will run when no other command is running
     // and typically take the operator input as the first parameter.
-    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
+    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem, lightingSubsystem));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(
-        lightingSubsystem, exampleSubsystem);
+    operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem);
   }
 
   /**
@@ -52,5 +46,4 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return new InstantCommand();
   }
-
 }
