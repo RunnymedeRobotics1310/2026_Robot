@@ -48,7 +48,7 @@ public class OperatorInput extends SubsystemBase {
    *
    * <p>NOTE: This routine must only be called once from the RobotContainer
    */
-  public void configureButtonBindings(ExampleSubsystem exampleSubsystem) {
+  public void configureButtonBindings() {
 
     // Example button binding for example command
     new Trigger(() -> driverController.getYButton())

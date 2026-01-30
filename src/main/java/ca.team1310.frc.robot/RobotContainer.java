@@ -41,7 +41,7 @@ public class RobotContainer {
     //        );
 
     // Configure the trigger bindings
-    operatorInput.configureButtonBindings(exampleSubsystem);
+    operatorInput.configureButtonBindings();
   }
 
   public Command getAutonomousCommand() {
