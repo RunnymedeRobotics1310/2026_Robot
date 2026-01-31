@@ -18,7 +18,7 @@ public class LightingSubsystem extends SubsystemBase {
 
   // Buffer of data to write to the LED strip
   private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH);
+      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH - 1);
 
   public static final AddressableLEDBuffer testingBuffer =
       new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH);
