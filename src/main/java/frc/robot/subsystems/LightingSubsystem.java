@@ -20,9 +20,6 @@ public class LightingSubsystem extends SubsystemBase {
   private final AddressableLEDBuffer ledBuffer =
       new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH - 1);
 
-  public static final AddressableLEDBuffer testingBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH - 1);
-
   private final AddressableLEDBufferView climbLedView =
       ledBuffer.createView(
           Constants.LightingConstants.LED_CLIMB_VIEW_START,
@@ -52,12 +49,9 @@ public class LightingSubsystem extends SubsystemBase {
   public static final LEDPattern blueLedPattern = LEDPattern.solid(Color.kBlue);
   public static final LEDPattern orangeLedPattern = LEDPattern.solid(Color.kOrange);
 
-  // Buffers
   public LightingSubsystem() {
     ledStrip.setLength(ledBuffer.getLength());
     ledStrip.start();
-
-    greenLedPattern.applyTo(testingBuffer);
   }
 
   // runs once every robot period
@@ -175,6 +169,7 @@ public class LightingSubsystem extends SubsystemBase {
     }
   }
 
+  // Robot states
   public enum ClimbStates {
     GOING_TO_CLIMB,
     CLIMBING,
