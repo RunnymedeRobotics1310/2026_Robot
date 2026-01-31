@@ -7,15 +7,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
-  private GameController driverController =
-      new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  private GameController driverController = new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-      LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem) {
+      LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem, ShooterSubsystem shooterSubsystem) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
