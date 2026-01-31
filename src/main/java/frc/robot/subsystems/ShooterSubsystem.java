@@ -10,6 +10,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final LightingSubsystem lightingSubsystem;
 
+  public float hubDistanceInches = 0;
+  public float shooterAngleDegrees = 0;
+  public int shooterSpeedRpm = 0;
+
   /** Creates The Shooter Subsystem. */
   public ShooterSubsystem(LightingSubsystem lightingSubsystem) {
     this.lightingSubsystem = lightingSubsystem;
@@ -18,12 +22,28 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // TODO Update the smartdashboard
-    // TODO Update the lights
+
+    // TODO Update the hub distance here ***
+
+    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceInches) * 100.0) / 100.0f;
+    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceInches));
+
+    // TODO: Make the shooter info actually change the shooter angle and spped
+
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public double calculateShootingAngle(float distanceInches) {
+    return 20 * (Math.pow(Math.E, -0.000587 * distanceInches) + 48);
+  }
+
+  // To do: Edit this method to return the actual shooting speed value
+
+  public double calculateShootingSpeed(float distanceInches) {
+    return 0;
   }
 }
