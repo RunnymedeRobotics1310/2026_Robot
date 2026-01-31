@@ -146,19 +146,22 @@ public class LightingSubsystem extends SubsystemBase {
 
     switch (driveState) {
       case NORMAL_DRIVING:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(driveLedView);
         break;
 
       case BOOST:
-        purpleLedPattern.applyTo(climbLedView);
+        purpleLedPattern.applyTo(driveLedView);
         break;
 
       case ALLIANCE_BLUE:
-        blueLedPattern.applyTo(climbLedView);
+        blueLedPattern.applyTo(driveLedView);
         break;
 
+      case ALLIANCE_RED:
+        redLedPattern.applyTo(driveLedView);
+
       case UNUSED_RED:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(driveLedView);
         break;
 
       case UNUSED_STATE2:
@@ -183,6 +186,7 @@ public class LightingSubsystem extends SubsystemBase {
     NORMAL_DRIVING,
     BOOST,
     ALLIANCE_BLUE,
+    ALLIANCE_RED,
     UNUSED_RED,
     UNUSED_STATE2,
     UNUSED_STATE3

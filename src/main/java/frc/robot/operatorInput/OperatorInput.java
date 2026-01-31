@@ -21,8 +21,58 @@ public class OperatorInput extends SubsystemBase {
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
   }
 
+  public boolean isCancel() {
+    return (driverController.getStartButton() && !driverController.getBackButton());
+  }
+  public boolean isZeroGyro() {
+    return driverController.getBackButton();
+  }
+
+  public boolean getRotate180Val() {
+    return driverController.getAButton();
+  }
+
+  public boolean isFastMode() {
+    return driverController.getRightBumperButton();
+  }
+  public boolean isSlowMode() {
+    return driverController.getLeftBumperButton();
+  }
+
+  public double getDriverControllerAxis(Stick stick, Axis axis) {
+    switch (stick) {
+      case LEFT:
+        switch (axis) {
+          case X:
+            return driverController.getLeftX();
+          case Y:
+            return driverController.getLeftY();
+        }
+        break;
+      case RIGHT:
+        switch (axis) {
+          case X:
+            return driverController.getRightX();
+        }
+        break;
+    }
+
+    return 0;
+  }
+
+  public enum Stick {
+    LEFT,
+    RIGHT
+  }
+
+  public enum Axis {
+    X,
+    Y
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putString("Driver Gamecontroller", driverController.toString());
   }
+
 }
