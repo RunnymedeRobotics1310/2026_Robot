@@ -13,34 +13,30 @@ import frc.robot.Constants;
 public class LightingSubsystem extends SubsystemBase {
 
   // The LED strip is plugged into a DIO port on the RoboRIO
-  private final AddressableLED ledStrip =
-      new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
+  private final AddressableLED ledStrip = new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
 
   // Buffer of data to write to the LED strip
-  private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH - 1);
+  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(
+      Constants.LightingConstants.LED_STRING_LENGTH - 1);
 
-  private final AddressableLEDBufferView climbLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_CLIMB_VIEW_START,
-          Constants.LightingConstants.LED_CLIMB_VIEW_END);
-  private final AddressableLEDBufferView intakeLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_INTAKE_VIEW_START,
-          Constants.LightingConstants.LED_INTAKE_VIEW_END);
-  private final AddressableLEDBufferView robotHealthLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_START,
-          Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_END);
-  private final AddressableLEDBufferView driveLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_DRIVE_VIEW_START,
-          Constants.LightingConstants.LED_DRIVE_VIEW_END);
+  private final AddressableLEDBufferView climbLedView = ledBuffer.createView(
+      Constants.LightingConstants.LED_CLIMB_VIEW_START,
+      Constants.LightingConstants.LED_CLIMB_VIEW_END);
+  private final AddressableLEDBufferView intakeLedView = ledBuffer.createView(
+      Constants.LightingConstants.LED_INTAKE_VIEW_START,
+      Constants.LightingConstants.LED_INTAKE_VIEW_END);
+  private final AddressableLEDBufferView robotHealthLedView = ledBuffer.createView(
+      Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_START,
+      Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_END);
+  private final AddressableLEDBufferView driveLedView = ledBuffer.createView(
+      Constants.LightingConstants.LED_DRIVE_VIEW_START,
+      Constants.LightingConstants.LED_DRIVE_VIEW_END);
 
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
+  // FIXME check the spacing - could be 60 LEDs/m - not sure why we need this?
   public static final Distance kLedSpacing = Units.Meters.of(1 / 120.0);
-  public final LEDPattern scrollingRainbowLedPattern =
-      rainbowLedPattern.scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5), kLedSpacing);
+  public final LEDPattern scrollingRainbowLedPattern = rainbowLedPattern
+      .scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5), kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(Color.kYellow);
   public static final LEDPattern greenLedPattern = LEDPattern.solid(Color.kGreen);
   public static final LEDPattern whiteLedPattern = LEDPattern.solid(Color.kWhite);
@@ -63,7 +59,8 @@ public class LightingSubsystem extends SubsystemBase {
 
   // TODO Make methods based on the current robot functions
   // to set data in the LEDbuffer based on some actions
-  public void setRobotFunction() {}
+  public void setRobotFunction() {
+  }
 
   public void setRobotClimbState(ClimbStates climbState) {
     switch (climbState) {
