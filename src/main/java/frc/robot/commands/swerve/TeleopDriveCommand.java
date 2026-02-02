@@ -17,11 +17,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
-public class TeleopDriveCommand extends Command {
+public class TeleopDriveCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;
     private final OperatorInput oi;
@@ -45,6 +46,7 @@ public class TeleopDriveCommand extends Command {
 
     @Override
     public void initialize() {
+        logCommandStart();
         rotationSettleTimer.start();
         rotationSettleTimer.reset();
         headingSetpointDeg = null;
@@ -156,6 +158,7 @@ public class TeleopDriveCommand extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        logCommandEnd(interrupted);
         headingSetpointDeg = null;
         rotationSettleTimer.reset();
     }
