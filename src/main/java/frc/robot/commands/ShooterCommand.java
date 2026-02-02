@@ -10,7 +10,7 @@ import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class ShooterCommand extends Command {
+public class ShooterCommand extends LoggingCommand {
 
   private final LightingSubsystem lightingSubsystem;
 
@@ -20,7 +20,7 @@ public class ShooterCommand extends Command {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param shooterSubsystem The subsystem used by this command.
    */
   public ShooterCommand(ShooterSubsystem shooterSubsystem, LightingSubsystem lightingSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -32,6 +32,7 @@ public class ShooterCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    logCommandStart();
     shooterSubsystem.shooterMotor.set(0.60);
     shooterSubsystem.kickerMotor.set(0.20);
     timer.reset();
@@ -59,6 +60,7 @@ public class ShooterCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    logCommandEnd(interrupted);
     shooterSubsystem.shooterMotor.set(0.0);
     shooterSubsystem.kickerMotor.set(0.0);
     timer.stop();
