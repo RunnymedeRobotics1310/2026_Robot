@@ -13,7 +13,7 @@ public class ShooterCommand extends Command {
 
   private final LightingSubsystem lightingSubsystem;
 
-  private final ShooterSubsystem ShooterSubsystem;
+  private final ShooterSubsystem shooterSubsystem;
 
   /**
    * Creates a new ExampleCommand.
@@ -21,16 +21,16 @@ public class ShooterCommand extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public ShooterCommand(ShooterSubsystem shooterSubsystem, LightingSubsystem lightingSubsystem) {
-    ShooterSubsystem = shooterSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.lightingSubsystem = lightingSubsystem;
+    this.shooterSubsystem = shooterSubsystem;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    ShooterSubsystem.shooterMotor.set(0.01);
+    shooterSubsystem.shooterMotor.set(0.15);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
