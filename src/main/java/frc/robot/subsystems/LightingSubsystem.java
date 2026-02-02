@@ -93,16 +93,16 @@ public class LightingSubsystem extends SubsystemBase {
   public void setRobotIntakeState(IntakeStates intakeState) {
     switch (intakeState) {
       case FEEDING_INTAKE:
-        yellowLEDPatern.applyTo(climbLedView);
+        yellowLEDPatern.applyTo(intakeLedView);
 
         break;
 
       case SHOOTING:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(intakeLedView);
         break;
 
       case HOPPER_FULL:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(intakeLedView);
         break;
 
       case UNUSED_STATE1:
@@ -119,16 +119,16 @@ public class LightingSubsystem extends SubsystemBase {
   public void setRobotHealthState(RobotHealthStates healthState) {
     switch (healthState) {
       case ROBOT_GOOD:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(robotHealthLedView);
 
         break;
 
       case ROBOT_OKAY:
-        yellowLEDPatern.applyTo(climbLedView);
+        yellowLEDPatern.applyTo(robotHealthLedView);
         break;
 
       case ROBOT_BAD:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(robotHealthLedView);
         break;
 
       case UNUSED_STATE1:
