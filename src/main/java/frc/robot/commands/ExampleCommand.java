@@ -9,7 +9,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends Command {
+public class ExampleCommand extends LoggingCommand {
 
   private final ExampleSubsystem exampleSubsystem;
 
@@ -21,6 +21,7 @@ public class ExampleCommand extends Command {
    * @param subsystem The subsystem used by this command.
    */
   public ExampleCommand(ExampleSubsystem subsystem, LightingSubsystem lightingSubsystem) {
+    super();
     exampleSubsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -29,7 +30,9 @@ public class ExampleCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    logCommandStart();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -43,5 +46,7 @@ public class ExampleCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    logCommandEnd(interrupted);
+  }
 }
