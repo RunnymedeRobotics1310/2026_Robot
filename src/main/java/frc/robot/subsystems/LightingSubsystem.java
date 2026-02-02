@@ -93,16 +93,16 @@ public class LightingSubsystem extends SubsystemBase {
   public void setRobotIntakeState(IntakeStates intakeState) {
     switch (intakeState) {
       case FEEDING_INTAKE:
-        yellowLEDPatern.applyTo(climbLedView);
+        yellowLEDPatern.applyTo(intakeLedView);
 
         break;
 
       case SHOOTING:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(intakeLedView);
         break;
 
       case HOPPER_FULL:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(intakeLedView);
         break;
 
       case UNUSED_STATE1:
@@ -119,16 +119,16 @@ public class LightingSubsystem extends SubsystemBase {
   public void setRobotHealthState(RobotHealthStates healthState) {
     switch (healthState) {
       case ROBOT_GOOD:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(robotHealthLedView);
 
         break;
 
       case ROBOT_OKAY:
-        yellowLEDPatern.applyTo(climbLedView);
+        yellowLEDPatern.applyTo(robotHealthLedView);
         break;
 
       case ROBOT_BAD:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(robotHealthLedView);
         break;
 
       case UNUSED_STATE1:
@@ -146,19 +146,19 @@ public class LightingSubsystem extends SubsystemBase {
 
     switch (driveState) {
       case NORMAL_DRIVING:
-        greenLedPattern.applyTo(climbLedView);
+        greenLedPattern.applyTo(driveLedView);
         break;
 
       case BOOST:
-        purpleLedPattern.applyTo(climbLedView);
+        purpleLedPattern.applyTo(driveLedView);
         break;
 
       case ALLIANCE_BLUE:
-        blueLedPattern.applyTo(climbLedView);
+        blueLedPattern.applyTo(driveLedView);
         break;
 
       case UNUSED_RED:
-        redLedPattern.applyTo(climbLedView);
+        redLedPattern.applyTo(driveLedView);
         break;
 
       case UNUSED_STATE2:
