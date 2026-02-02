@@ -16,16 +16,21 @@ public class OperatorInput extends SubsystemBase {
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
+
       LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem, ShooterSubsystem shooterSubsystem) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
     new Trigger(() -> driverController.getBButtonPressed())
-        .onTrue(new ShooterCommand(shooterSubsystem, lightingSubsystem));
+        .onTrue(new ShooterCommand(shooterSubsystem, lightingSubsystem, this));
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putString("Driver Gamecontroller", driverController.toString());
+  }
+
+  public GameController getDriverController() {
+    return driverController;
   }
 }

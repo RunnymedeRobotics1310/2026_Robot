@@ -43,12 +43,12 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double calculateShootingAngle(float distanceInches) {
-    return 20 * (Math.pow(Math.E, -0.000587 * distanceInches) + 48);
+    return 20 * (Math.pow(Math.E, (-0.000587 * distanceInches)) + 48);
   }
 
   // To do: Edit this method to return the actual shooting speed value
 
   public double calculateShootingSpeed(float distanceInches) {
-    return (distanceInches * 0.01) + 0.2;
+    return (distanceInches * 0.005) + 0.2;
   }
 }
