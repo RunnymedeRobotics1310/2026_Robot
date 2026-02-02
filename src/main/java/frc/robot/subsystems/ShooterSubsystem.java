@@ -49,6 +49,6 @@ public class ShooterSubsystem extends SubsystemBase {
   // To do: Edit this method to return the actual shooting speed value
 
   public double calculateShootingSpeed(float distanceInches) {
-    return 0;
+    return (distanceInches * 0.01) + 0.2;
   }
 }
