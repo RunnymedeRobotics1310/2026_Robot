@@ -4,11 +4,16 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   private final LightingSubsystem lightingSubsystem;
+
+  public final SparkFlex shooterMotor = new SparkFlex(30, SparkFlex.MotorType.kBrushless);
+  public final SparkFlex kickerMotor = new SparkFlex(33, SparkFlex.MotorType.kBrushless);
 
   public float hubDistanceInches = 0;
   public float shooterAngleDegrees = 0;
