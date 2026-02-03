@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -15,6 +16,8 @@ public class ShooterCommand extends LoggingCommand {
   private final LightingSubsystem lightingSubsystem;
 
   private final ShooterSubsystem shooterSubsystem;
+
+  private final LimelightVisionSubsystem vision;
 
   private final OperatorInput operatorInput;
 
@@ -25,12 +28,13 @@ public class ShooterCommand extends LoggingCommand {
    *
    * @param shooterSubsystem The subsystem used by this command.
    */
-  public ShooterCommand(ShooterSubsystem shooterSubsystem, LightingSubsystem lightingSubsystem,
+  public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision, LightingSubsystem lightingSubsystem,
       OperatorInput operatorInput) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.lightingSubsystem = lightingSubsystem;
     this.shooterSubsystem = shooterSubsystem;
+    this.vision = vision;
     this.operatorInput = operatorInput;
   }
 
@@ -47,6 +51,27 @@ public class ShooterCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    double tx = -1310;
+    double distance = -1310;
+
+    if (vision.isTagInViewHopper(26)) {
+      log("26 in view");
+      distance = vision.distanceTagToRobotHopper(26);
+      tx = vision.angleToTargetHopper(26);
+    } else if (vision.isTagInViewHopper(24)) {
+      distance = vision.distanceTagToRobotHopper(24);
+      tx = vision.angleToTargetHopper(24);
+    } else if (vision.isTagInViewHopper(18)) {
+      distance = vision.distanceTagToRobotHopper(18);
+      tx = vision.angleToTargetHopper(18);
+    } else {
+      distance = vision.distanceTagToRobotHopper(-1);
+      tx = vision.angleToTargetHopper(-1);
+    }
+
+    log("tx: " + tx + ", dist: " + distance);
+
     if (operatorInput.getDriverController().getPOV() == 0) {
       shooterSubsystem.kickerMotor.set(0.5);
     } else {

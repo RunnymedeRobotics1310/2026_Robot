@@ -40,6 +40,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     // inputs/configs
     hugh.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
     hugh.getEntry("camMode").setNumber(visionConfig.camModeVision());
+
+    hopper.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
+    hopper.getEntry("camMode").setNumber(visionConfig.camModeVision());
   }
 
   @Override

@@ -11,6 +11,7 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -20,14 +21,14 @@ public class OperatorInput extends SubsystemBase {
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
 
-          SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem, ShooterSubsystem shooterSubsystem) {
+          SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem, ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(() -> isZeroGyro())
             .onTrue(new SetGyroCommand(swerve, 0));
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
     new Trigger(() -> driverController.getBButtonPressed())
-        .onTrue(new ShooterCommand(shooterSubsystem, lightingSubsystem, this));
+        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this));
   }
 
   public boolean isCancel() {
