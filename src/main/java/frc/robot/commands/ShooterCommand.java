@@ -38,7 +38,7 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void initialize() {
     logCommandStart();
-    shooterSubsystem.shooterMotor.set(0.60);
+    shooterSubsystem.shooterMotor.set(0.7);
     timer.reset();
     timer.start();
 
@@ -57,7 +57,7 @@ public class ShooterCommand extends LoggingCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return operatorInput.getDriverController().getXButton();
 
   }
 

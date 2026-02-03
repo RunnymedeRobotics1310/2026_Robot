@@ -14,9 +14,12 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   // MegaTags
   private final DoubleArraySubscriber hughMegaTag;
+  private final DoubleArraySubscriber hopperMegaTag;
 
   // These hold the data from the limelights, updated every periodic()
   private final LimelightBotPose hughBotPoseCache = new LimelightBotPose();
+  private final LimelightBotPose hopperBotPoseCache = new LimelightBotPose();
+
 
   private final SwerveSubsystem swerve;
 
@@ -27,9 +30,12 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
     final NetworkTable hugh =
         NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
+    final NetworkTable hopper = NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
+
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
     hughMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+    hopperMegaTag = hopper.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
 
     // inputs/configs
     hugh.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
@@ -40,6 +46,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   public void periodic() {
     // Pull data from the limelights and update our cache
     hughBotPoseCache.update(hughMegaTag.getAtomic());
+    hopperBotPoseCache.update(hopperMegaTag.getAtomic());
 
     // Update telemetry
     updateTelemetry();
@@ -65,6 +72,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   public double getVisibleTargetTagId() {
     return getBotPose().getTagId(0);
   }
+
+  public double getVisibleTargetTagIdHopper() {
+    return getBotPose().getTagId(0);
+  }
+
 
   /**
    * Get the number of tags visible to the default limelight (hugh)
@@ -101,6 +113,26 @@ public class LimelightVisionSubsystem extends SubsystemBase {
       index = botPose.getTagIndex(tagId);
     }
     return botPose.getTagDistToRobot(index);
+  }
+
+  public double distanceTagToRobotHopper(int tagId) {
+    LimelightBotPose botPose = hopperBotPoseCache;
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return botPose.getTagDistToRobot(index);
+  }
+
+  public double angleToTargetHopper(int tagId) {
+    LimelightBotPose botPose = hopperBotPoseCache;
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return -botPose.getTagTxnc(index);
   }
 
   /**
@@ -186,6 +218,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    */
   public boolean isTagInView(int tagId, boolean leftBranch) {
     LimelightBotPose botPose = getBotPose();
+    return botPose.getTagIndex(tagId) != -1;
+  }
+
+  public boolean isTagInViewHopper(int tagId) {
+    LimelightBotPose botPose = hopperBotPoseCache;
     return botPose.getTagIndex(tagId) != -1;
   }
 

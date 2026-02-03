@@ -90,7 +90,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         final boolean rotate180Val = oi.getRotate180Val();
 
         // Compute boost factor
-        final boolean isSlow = oi.isSlowMode();
+        final boolean isSlow = oi.isSlowMode() || true;
         //    final boolean isSlow = false;
         final boolean isFast = oi.isFastMode();
         final double boostFactor =

@@ -53,7 +53,7 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem, shooterSubsystem);
+    operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem);
   }
 
   /**
