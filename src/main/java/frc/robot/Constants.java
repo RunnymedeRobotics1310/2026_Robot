@@ -223,9 +223,8 @@ public final class Constants {
     public static final VisionConfig VISION_CONFIG =
             new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
 
-    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
-
     //TODO: fixme: rename me
-    public static final String VISION_SECONDARY_LIMELIGHT_NAME = "hopper";
+    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hopper";
+
   }
 }

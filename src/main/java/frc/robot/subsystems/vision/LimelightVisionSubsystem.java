@@ -14,12 +14,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   // MegaTags
   private final DoubleArraySubscriber hughMegaTag;
-  private final DoubleArraySubscriber hopperMegaTag;
 
   // These hold the data from the limelights, updated every periodic()
   private final LimelightBotPose hughBotPoseCache = new LimelightBotPose();
-  private final LimelightBotPose hopperBotPoseCache = new LimelightBotPose();
-
 
   private final SwerveSubsystem swerve;
 
@@ -29,27 +26,20 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     Telemetry.vision.telemetryLevel = visionConfig.telemetryLevel();
 
     final NetworkTable hugh =
-        NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
-    final NetworkTable hopper = NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
-
+            NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
     hughMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
-    hopperMegaTag = hopper.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
 
     // inputs/configs
     hugh.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
     hugh.getEntry("camMode").setNumber(visionConfig.camModeVision());
-
-    hopper.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
-    hopper.getEntry("camMode").setNumber(visionConfig.camModeVision());
   }
 
   @Override
   public void periodic() {
     // Pull data from the limelights and update our cache
     hughBotPoseCache.update(hughMegaTag.getAtomic());
-    hopperBotPoseCache.update(hopperMegaTag.getAtomic());
 
     // Update telemetry
     updateTelemetry();
@@ -76,11 +66,6 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return getBotPose().getTagId(0);
   }
 
-  public double getVisibleTargetTagIdHopper() {
-    return getBotPose().getTagId(0);
-  }
-
-
   /**
    * Get the number of tags visible to the default limelight (hugh)
    *
@@ -97,7 +82,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the distance to robot centre to the nearest or targeted tag
    */
   public double distanceTagToRobot() {
-    return distanceTagToRobot(0, true);
+    return distanceTagToRobot(0);
   }
 
   /**
@@ -105,10 +90,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * set by setTargetTag(), to the limelight handling left or right branch.
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
-   * @param leftBranch Left or Right branch?
    * @return the distance to robot centre to the nearest or targeted tag
    */
-  public double distanceTagToRobot(int tagId, boolean leftBranch) {
+  public double distanceTagToRobot(int tagId) {
     LimelightBotPose botPose = getBotPose();
 
     int index = 0;
@@ -116,26 +100,6 @@ public class LimelightVisionSubsystem extends SubsystemBase {
       index = botPose.getTagIndex(tagId);
     }
     return botPose.getTagDistToRobot(index);
-  }
-
-  public double distanceTagToRobotHopper(int tagId) {
-    LimelightBotPose botPose = hopperBotPoseCache;
-
-    int index = 0;
-    if (tagId > 0) {
-      index = botPose.getTagIndex(tagId);
-    }
-    return botPose.getTagDistToRobot(index);
-  }
-
-  public double angleToTargetHopper(int tagId) {
-    LimelightBotPose botPose = hopperBotPoseCache;
-
-    int index = 0;
-    if (tagId > 0) {
-      index = botPose.getTagIndex(tagId);
-    }
-    return -botPose.getTagTxnc(index);
   }
 
   /**
@@ -173,18 +137,17 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the angle to the nearest or targeted tag
    */
   public double angleToTarget() {
-    return angleToTarget(0, true);
+    return angleToTarget(0);
   }
 
   /**
    * Obtain the angle to the tag either nearest to, or targeted if one has been set by
-   * setTargetTag(), to the limelight handling left or right branch.
+   * setTargetTag()
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
-   * @param leftBranch Left or Right branch?
    * @return the angle to the nearest or targeted tag
    */
-  public double angleToTarget(int tagId, boolean leftBranch) {
+  public double angleToTarget(int tagId) {
     LimelightBotPose botPose = getBotPose();
 
     int index = 0;
@@ -224,24 +187,19 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return botPose.getTagIndex(tagId) != -1;
   }
 
-  public boolean isTagInViewHopper(int tagId) {
-    LimelightBotPose botPose = hopperBotPoseCache;
-    return botPose.getTagIndex(tagId) != -1;
-  }
-
   /** Update telemetry with vision data */
   private void updateTelemetry() {
     if (Telemetry.vision.telemetryLevel == VisionTelemetryLevel.REGULAR
-        || Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
+            || Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
 
       Pose2d odometryPose = swerve.getPose();
       double yaw = swerve.getYaw();
 
       double compareDistance =
-          hughBotPoseCache.getPose().getTranslation().getDistance(odometryPose.getTranslation());
+              hughBotPoseCache.getPose().getTranslation().getDistance(odometryPose.getTranslation());
       double compareHeading =
-          hughBotPoseCache.getPose().getRotation().getDegrees()
-              - odometryPose.getRotation().getDegrees();
+              hughBotPoseCache.getPose().getRotation().getDegrees()
+                      - odometryPose.getRotation().getDegrees();
 
       Telemetry.vision.poseDeltaMetres = compareDistance;
       Telemetry.vision.headingDeltaDegrees = compareHeading;
