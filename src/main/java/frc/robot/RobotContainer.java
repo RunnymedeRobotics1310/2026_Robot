@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ExampleCommand;
@@ -12,9 +14,12 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -24,8 +29,12 @@ public class RobotContainer {
   // TODO declare all of the subsystems here
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
+  // Field used by the simulator to display the field and robot pose
+  private final Field2d field = new Field2d();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
 
     // TODO set the default commands for any subsystems
@@ -36,6 +45,9 @@ public class RobotContainer {
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem);
+    // Publish the field to the dashboard so the simulator can show the field and
+    // robot
+    SmartDashboard.putData("Field", field);
   }
 
   /**
@@ -45,5 +57,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return new InstantCommand();
+  }
+
+  /** Returns the shared Field2d used for simulation visualization. */
+  public Field2d getField2d() {
+    return field;
   }
 }

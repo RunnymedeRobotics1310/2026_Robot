@@ -10,8 +10,7 @@ import frc.robot.subsystems.LightingSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
-  private GameController driverController =
-      new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  private GameController driverController = new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
