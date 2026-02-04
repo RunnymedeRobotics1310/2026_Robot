@@ -18,6 +18,12 @@ public class ShooterSubsystem extends SubsystemBase {
   public float hubDistanceInches = 0;
   public float shooterAngleDegrees = 0;
   public int shooterSpeedRpm = 0;
+  public int kickerSpeedRpm = 0;
+
+  public float hubAngle = 0;
+  public float hubAngleOffset = 0;
+
+  public boolean autoAiming = false;
 
   /** Creates The Shooter Subsystem. */
   public ShooterSubsystem(LightingSubsystem lightingSubsystem) {
@@ -43,12 +49,39 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double calculateShootingAngle(float distanceInches) {
-    return 20 * (Math.pow(Math.E, (-0.000587 * distanceInches)) + 48);
+    return 20 * (Math.pow(Math.E, (-0.000587 * distanceInches)) + 52);
   }
 
   // To do: Edit this method to return the actual shooting speed value
 
   public double calculateShootingSpeed(float distanceInches) {
-    return (distanceInches * 0.005) + 0.2;
+    if (distanceInches < 1.0) {
+      return (distanceInches * 0.005) + 0.2;
+    } else {
+      return 1.0;
+    }
+
   }
+
+  public void autoAim() {
+    if (Math.abs(hubAngleOffset) > 2.0) {
+      if (hubAngleOffset >= 180.0) {
+        /*
+         * Turn right
+         * Untill the hubAngle is within 3 degrees of the current robot angle
+         */
+
+      } else {
+        /*
+         * Turn left
+         * Untill the hubAngle is within 3 degrees of the current robot angle
+         */
+      }
+    }
+  }
+
+  public void cycleAutoAim() {
+    autoAiming = !autoAiming;
+  }
+
 }

@@ -52,6 +52,10 @@ public class ShooterCommand extends LoggingCommand {
     } else {
       shooterSubsystem.kickerMotor.set(0.0);
     }
+
+    if (operatorInput.getDriverController().getYButtonPressed() == true) {
+      shooterSubsystem.cycleAutoAim();
+    }
   }
 
   // Returns true when the command should end.
