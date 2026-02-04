@@ -38,7 +38,7 @@ public class LightingSubsystem extends SubsystemBase {
           Constants.LightingConstants.LED_DRIVE_VIEW_END);
 
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
-  public static final Distance kLedSpacing = Units.Meters.of(1 / 120.0);
+  public static final Distance kLedSpacing = Units.Meters.of(1 / 60.0);
   public final LEDPattern scrollingRainbowLedPattern =
       rainbowLedPattern.scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5), kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(Color.kYellow);
