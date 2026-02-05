@@ -38,9 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceInches) * 100.0) / 100.0f;
     shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceInches));
-
-    // TODO: Make the shooter info actually change the shooter angle and spped
-
   }
 
   @Override
@@ -60,7 +57,6 @@ public class ShooterSubsystem extends SubsystemBase {
     } else {
       return 1.0;
     }
-
   }
 
   public void autoAim() {
@@ -83,5 +79,4 @@ public class ShooterSubsystem extends SubsystemBase {
   public void cycleAutoAim() {
     autoAiming = !autoAiming;
   }
-
 }
