@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.telemetry.Telemetry;
@@ -39,7 +40,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Pull data from the limelights and update our cache
-    hughBotPoseCache.update(hughMegaTag.getAtomic());
+    TimestampedDoubleArray var = hughMegaTag.getAtomic();
+    System.out.println("X: " + var.value[0]);
+    System.out.println("Y: " + var.value[1]);
+    hughBotPoseCache.update(var);
+    System.out.println(hughBotPoseCache.getPose());
 
     // Update telemetry
     updateTelemetry();

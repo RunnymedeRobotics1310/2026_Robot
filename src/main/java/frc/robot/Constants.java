@@ -206,7 +206,7 @@ public final class Constants {
 
     private static final LimelightConfig LIMELIGHT_CONFIG =
             new LimelightConfig(
-                    "jackman", FIELD_EXTENT_METRES_X, FIELD_EXTENT_METRES_Y);
+                    VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME, FIELD_EXTENT_METRES_X, FIELD_EXTENT_METRES_Y);
 
     public static final SwerveDriveSubsystemConfig SUBSYSTEM_CONFIG =
             new SwerveDriveSubsystemConfig(

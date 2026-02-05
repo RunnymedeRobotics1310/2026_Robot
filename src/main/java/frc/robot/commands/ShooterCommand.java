@@ -62,9 +62,13 @@ public class ShooterCommand extends LoggingCommand {
     } else if (vision.isTagInView(18)) {
       distance = vision.distanceTagToRobot(18);
     } else {
-      distance = vision.distanceTagToRobot(-1);
+      distance = vision.distanceTagToRobot(0);
     }
-
+//    log(vision.angleToTarget(0));
+//    distance = vision.distanceTagToRobot(tag);
+//
+//    log("visible: " + tag);
+//
     log("dist: " + distance);
 
     if (operatorInput.getDriverController().getPOV() == 0) {
