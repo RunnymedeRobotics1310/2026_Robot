@@ -7,6 +7,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RunnymedeUtils;
@@ -317,4 +318,31 @@ public class SwerveSubsystem extends SubsystemBase {
     return new Translation2d(
             xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
+
+  public Rotation2d angleToHub() {
+    Pose2d pose = getPose();
+    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+    }
+
+    double dx, dy;
+    dx = hubPose.getX() - pose.getX();
+    dy = hubPose.getY() - pose.getY();
+
+    return new Rotation2d(dy, dx);
+  }
+
+  public double distanceToHub() {
+    Pose2d pose = getPose();
+    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+    }
+
+    double distance = hubPose.getDistance(pose.getTranslation());
+
+    return distance;
+  }
+
 }
