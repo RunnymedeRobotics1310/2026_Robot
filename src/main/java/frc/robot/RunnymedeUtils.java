@@ -94,8 +94,16 @@ public class RunnymedeUtils {
   }
 
   public Rotation2d angleToHub(Pose2d currentPose) {
+    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    if (getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+    }
 
-    return new Rotation2d();
+    double dx, dy;
+    dx = hubPose.getX() - currentPose.getX();
+    dy = hubPose.getY() - currentPose.getY();
+
+    return new Rotation2d(dy, dx);
   }
 
   public static double distanceToHub(Pose2d currentPose) {
