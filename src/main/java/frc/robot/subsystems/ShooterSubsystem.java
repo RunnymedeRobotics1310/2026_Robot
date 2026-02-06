@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -15,13 +16,16 @@ public class ShooterSubsystem extends SubsystemBase {
   public final SparkFlex shooterMotor = new SparkFlex(30, SparkFlex.MotorType.kBrushless);
   public final SparkFlex kickerMotor = new SparkFlex(33, SparkFlex.MotorType.kBrushless);
 
-  public float hubDistanceInches = 0;
+  public float hubDistanceMeters = 0;
   public float shooterAngleDegrees = 0;
   public int shooterSpeedRpm = 0;
   public int kickerSpeedRpm = 0;
 
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
+
+  public final int maxShooterSpeedRpm = 5700;
+  public final float Kp = 0.5f; // proportional gain constant for pid controller
 
   public boolean autoAiming = false;
 
@@ -36,8 +40,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // TODO Update the hub distance here ***
 
-    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceInches) * 100.0) / 100.0f;
-    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceInches));
+    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceMeters) * 100.0) / 100.0f;
+    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceMeters));
   }
 
   @Override
@@ -45,18 +49,24 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  public double calculateShootingAngle(float distanceInches) {
-    return 20 * (Math.pow(Math.E, (-0.000587 * distanceInches)) + 52);
+  public double calculateShootingAngle(float distanceMeters) {
+    return 28 * (Math.pow(Math.E, (-0.231 * distanceMeters)) + 52);
   }
 
   // To do: Edit this method to return the actual shooting speed value
 
-  public double calculateShootingSpeed(float distanceInches) {
-    if (distanceInches < 1.0) {
-      return (distanceInches * 0.005) + 0.2;
+  public double calculateShootingSpeed(float distanceMeters) {
+    if (distanceMeters < 1.0) {
+      return (distanceMeters * 0.08) + 0.2;
     } else {
       return 1.0;
     }
+  }
+
+  private void speedPidControl(double setPoint, SparkMax motor) {
+    double currentSpeed = motor.getEncoder().getVelocity();
+    double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
+    motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
   }
 
   public void autoAim() {
