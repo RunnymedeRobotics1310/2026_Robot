@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -24,8 +25,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
 
-  public final int maxShooterSpeedRpm = 5700;
-  public final float Kp = 0.5f; // proportional gain constant for pid controller
 
   public boolean autoAiming = false;
 
@@ -40,8 +39,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // TODO Update the hub distance here ***
 
-    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceMeters) * 100.0) / 100.0f;
-    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceMeters));
   }
 
   @Override
@@ -55,19 +52,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // To do: Edit this method to return the actual shooting speed value
 
-  public double calculateShootingSpeed(float distanceMeters) {
-    if (distanceMeters < 1.0) {
-      return (distanceMeters * 0.08) + 0.2;
-    } else {
-      return 1.0;
-    }
-  }
-
-  private void speedPidControl(double setPoint, SparkMax motor) {
-    double currentSpeed = motor.getEncoder().getVelocity();
-    double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
-    motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
-  }
 
   public void autoAim() {
     if (Math.abs(hubAngleOffset) > 2.0) {

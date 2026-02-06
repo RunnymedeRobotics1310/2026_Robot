@@ -72,6 +72,14 @@ public final class Constants {
     public static final double FIELD_EXTENT_METRES_X = 16.54;
   }
 
+  public static final class ShooterConstants{
+    public static final double MAX_SHOOTER_RPM = 5700;
+    public static final double KP = 0.5;
+    public static final double SLOPE_VALUE = 0.08;
+    public static final double Y_INT = 0.2;
+
+  }
+
   public static final class Swerve {
 
     /** Front to back from the middle of the wheels */

@@ -4,10 +4,13 @@
 
 package frc.robot.commands;
 
+import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 /** An example command that uses an example subsystem. */
@@ -16,6 +19,8 @@ public class ShooterCommand extends LoggingCommand {
   private final LightingSubsystem lightingSubsystem;
 
   private final ShooterSubsystem shooterSubsystem;
+
+  private final SwerveSubsystem swerveSubsystem;
 
   private final LimelightVisionSubsystem vision;
 
@@ -29,20 +34,21 @@ public class ShooterCommand extends LoggingCommand {
    * @param shooterSubsystem The subsystem used by this command.
    */
   public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision, LightingSubsystem lightingSubsystem,
-      OperatorInput operatorInput) {
+      OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.lightingSubsystem = lightingSubsystem;
     this.shooterSubsystem = shooterSubsystem;
     this.vision = vision;
     this.operatorInput = operatorInput;
+    this.swerveSubsystem = swerveSubsystem;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     logCommandStart();
-    shooterSubsystem.shooterMotor.set(0.7);
+    shooterSubsystem.shooterMotor.set(0.7); // Use for testing
     timer.reset();
     timer.start();
 
@@ -52,24 +58,10 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void execute() {
 
-    double distance = -1310;
+    double distance = swerveSubsystem.distanceToHub();
 
-    if (vision.isTagInView(26)) {
-      log("26 in view");
-      distance = vision.distanceTagToRobot(26);
-    } else if (vision.isTagInView(24)) {
-      distance = vision.distanceTagToRobot(24);
-    } else if (vision.isTagInView(18)) {
-      distance = vision.distanceTagToRobot(18);
-    } else {
-      distance = vision.distanceTagToRobot(0);
-    }
-//    log(vision.angleToTarget(0));
-//    distance = vision.distanceTagToRobot(tag);
-//
-//    log("visible: " + tag);
-//
     log("dist: " + distance);
+
 
     if (operatorInput.getDriverController().getPOV() == 0) {
       shooterSubsystem.kickerMotor.set(0.5);
@@ -78,7 +70,7 @@ public class ShooterCommand extends LoggingCommand {
     }
 
     if (operatorInput.getDriverController().getYButtonPressed() == true) {
-      shooterSubsystem.cycleAutoAim();
+      shooting(distance);
     }
   }
 
@@ -97,4 +89,33 @@ public class ShooterCommand extends LoggingCommand {
     shooterSubsystem.kickerMotor.set(0.0);
     timer.stop();
   }
+
+  public double calculateShootingSpeed(double distanceMeters) {
+    if (distanceMeters < 10.0) {
+      return (distanceMeters * Constants.ShooterConstants.SLOPE_VALUE) + Constants.ShooterConstants.Y_INT; // FIXME add real equation
+    } else {
+      return 1.0;
+    }
+  }
+
+  public void setMotorVelocity(double setPoint, SparkFlex motor) {
+    double maxShooterRpm = Constants.ShooterConstants.MAX_SHOOTER_RPM;
+    double Kp = Constants.ShooterConstants.KP;
+
+    double currentSpeed = motor.getEncoder().getVelocity();
+    double error = (setPoint - currentSpeed) / maxShooterRpm; // Normalize error
+    motor.set((setPoint / maxShooterRpm) + (error * Kp));
+  }
+
+  public void shooting(double distance){
+    double shooterSpeed = calculateShootingSpeed(distance);
+    SparkFlex shooterMotor = shooterSubsystem.shooterMotor;
+    SparkFlex kickerMotor = shooterSubsystem.kickerMotor;
+
+    setMotorVelocity(shooterSpeed, shooterMotor);
+    if(shooterMotor.getEncoder().getVelocity() >= shooterSpeed){
+      kickerMotor.set(0.7);
+    } else kickerMotor.stopMotor();
+  }
+
 }

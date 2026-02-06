@@ -28,7 +28,7 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
     new Trigger(() -> driverController.getBButtonPressed())
-        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this));
+        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this, swerve));
   }
 
   public boolean isCancel() {
