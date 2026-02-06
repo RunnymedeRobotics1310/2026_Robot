@@ -4,6 +4,7 @@ import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -90,5 +91,21 @@ public class RunnymedeUtils {
         Constants.FieldConstants.FIELD_EXTENT_METRES_Y - -blueAlliancePose.getY(),
         Rotation2d.fromDegrees(
             SwerveUtils.normalizeDegrees(blueAlliancePose.getRotation().getDegrees() + 180)));
+  }
+
+  public Rotation2d angleToHub(Pose2d currentPose) {
+
+    return new Rotation2d();
+  }
+
+  public static double distanceToHub(Pose2d currentPose) {
+    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    if (getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+    }
+
+    double distance = hubPose.getDistance(currentPose.getTranslation());
+
+    return distance;
   }
 }
