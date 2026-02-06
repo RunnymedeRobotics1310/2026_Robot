@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -16,16 +15,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public final SparkFlex shooterMotor = new SparkFlex(30, SparkFlex.MotorType.kBrushless);
   public final SparkFlex kickerMotor = new SparkFlex(33, SparkFlex.MotorType.kBrushless);
 
-  public float hubDistanceMeters = 0;
   public float shooterAngleDegrees = 0;
-  public int shooterSpeedRpm = 0;
-  public int kickerSpeedRpm = 0;
+  public int calculatedShooterMotorRpm = 0;
 
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
-
-  public final int maxShooterSpeedRpm = 5700;
-  public final float Kp = 0.5f; // proportional gain constant for pid controller
 
   public boolean autoAiming = false;
 
@@ -37,11 +31,6 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    // TODO Update the hub distance here ***
-
-    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceMeters) * 100.0) / 100.0f;
-    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceMeters));
   }
 
   @Override
@@ -55,18 +44,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // To do: Edit this method to return the actual shooting speed value
 
-  public double calculateShootingSpeed(float distanceMeters) {
+  public double calculateShootingSpeed(double distanceMeters) {
     if (distanceMeters < 1.0) {
       return (distanceMeters * 0.08) + 0.2;
     } else {
       return 1.0;
     }
-  }
-
-  private void speedPidControl(double setPoint, SparkMax motor) {
-    double currentSpeed = motor.getEncoder().getVelocity();
-    double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
-    motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
   }
 
   public void autoAim() {
@@ -89,4 +72,5 @@ public class ShooterSubsystem extends SubsystemBase {
   public void cycleAutoAim() {
     autoAiming = !autoAiming;
   }
+
 }
