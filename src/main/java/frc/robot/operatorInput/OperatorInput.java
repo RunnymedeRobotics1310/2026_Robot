@@ -7,7 +7,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.swerve.SetGyroCommand;
-import frc.robot.operatorInput.OperatorInput.Stick;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -28,7 +27,7 @@ public class OperatorInput extends SubsystemBase {
         .onTrue(new SetGyroCommand(swerve, 0));
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
-    new Trigger(() -> driverController.getBButtonPressed())
+    new Trigger(() -> driverController.getYButtonPressed())
         .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, swerve, this));
   }
 

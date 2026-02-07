@@ -36,7 +36,7 @@ public class ShooterCommand extends LoggingCommand {
   private final float Kp = ShooterConstants.Kp; // proportional gain constant for pid controller
   private final float calcSlope = ShooterConstants.calcSlope; // slope for shooting speed calculation
   private final float calcYIntercept = ShooterConstants.calcYIntercept; // y-intercept for shooting speed calculation
-  public int calculatedShooterRpm = 0; // Calculated shooter rpm based on distance to hub
+  public int TargetMotorRpm = 0; // Calculated shooter rpm based on distance to hub
 
   /**
    * Creates a new ExampleCommand.
@@ -66,17 +66,17 @@ public class ShooterCommand extends LoggingCommand {
       return 1.0;
   }
 
-  public void speedPidControl(int setPoint, SparkFlex motor) {
+  public void holdMotorSpeed(int setPoint, SparkFlex motor) {
     double currentSpeed = motor.getEncoder().getVelocity();
     double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
     motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
   }
 
   public void shoot(double distance) {
-    calculatedShooterRpm = (int) calculateShootingSpeed(distance);
-    speedPidControl(calculatedShooterRpm, shooterSubsystem.shooterMotor);
-    if (shooterSubsystem.shooterMotor.getEncoder().getVelocity() >= (calculatedShooterRpm - 35)) {
-      shooterSubsystem.kickerMotor.set(0.7);
+    TargetMotorRpm = (int) calculateShootingSpeed(distance);
+    holdMotorSpeed(TargetMotorRpm, shooterSubsystem.shooterMotor);
+    if (shooterSubsystem.shooterMotor.getEncoder().getVelocity() >= (TargetMotorRpm - 100)) {
+      shooterSubsystem.kickerMotor.set(0.6);
     }
   }
 
@@ -100,18 +100,18 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.kickerMotor.set(0.7);
     }
 
-    if (operatorInput.getDriverController().getYButtonPressed() == true) {
+    if (operatorInput.getDriverController().getYButton()) {
       shoot(distanceToHub);
     } else
       shooterSubsystem.shooterMotor.set(0.0);
 
     if (operatorInput.getDriverController().getPOV() != 0 &&
-        shooterSubsystem.shooterMotor.getEncoder().getVelocity() < (calculatedShooterRpm - 35)) {
+        shooterSubsystem.shooterMotor.getEncoder().getVelocity() < (TargetMotorRpm - 100)) {
       shooterSubsystem.kickerMotor.set(0.0);
     }
 
     SmartDashboard.putNumber("Shooter Motor RPM", currentShootMotorRpm);
-    SmartDashboard.putNumber("Calculated Shooter RPM", calculatedShooterRpm);
+    SmartDashboard.putNumber("Calculated Shooter RPM", TargetMotorRpm);
 
   }
 
