@@ -16,7 +16,6 @@ public class ShooterSubsystem extends SubsystemBase {
   public final SparkFlex kickerMotor = new SparkFlex(33, SparkFlex.MotorType.kBrushless);
 
   public float shooterAngleDegrees = 0;
-  public int calculatedShooterMotorRpm = 0;
 
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
@@ -43,14 +42,6 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // To do: Edit this method to return the actual shooting speed value
-
-  public double calculateShootingSpeed(double distanceMeters) {
-    if (distanceMeters < 1.0) {
-      return (distanceMeters * 0.08) + 0.2;
-    } else {
-      return 1.0;
-    }
-  }
 
   public void autoAim() {
     if (Math.abs(hubAngleOffset) > 2.0) {

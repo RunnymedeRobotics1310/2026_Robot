@@ -84,8 +84,8 @@ public final class Constants {
         public static final class ShooterConstants {
                 public static final int maxShooterSpeedRpm = 5700;
                 public static final float Kp = 0.5f; // proportional gain constant for pid controller
-                public static final float calcSlope = 0.08f; // slope for shooting speed calculation
-                public static final float calcYIntercept = 0.2f; // y-intercept for shooting speed calculation
+                public static final float calcSlope = 457.0f; // slope for shooting speed calculation
+                public static final float calcYIntercept = 1140; // y-intercept for shooting speed calculation
         }
 
         public static final class Swerve {

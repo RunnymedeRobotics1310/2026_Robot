@@ -7,7 +7,8 @@ package frc.robot.commands;
 import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -29,6 +30,14 @@ public class ShooterCommand extends LoggingCommand {
 
   private Timer timer = new Timer();
 
+  // Variables for shooter speed control
+  public int currentShootMotorRpm = 0;
+  private final int maxShooterSpeedRpm = ShooterConstants.maxShooterSpeedRpm;
+  private final float Kp = ShooterConstants.Kp; // proportional gain constant for pid controller
+  private final float calcSlope = ShooterConstants.calcSlope; // slope for shooting speed calculation
+  private final float calcYIntercept = ShooterConstants.calcYIntercept; // y-intercept for shooting speed calculation
+  public int calculatedShooterRpm = 0; // Calculated shooter rpm based on distance to hub
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -46,27 +55,35 @@ public class ShooterCommand extends LoggingCommand {
     this.operatorInput = operatorInput;
   }
 
-  public void shoot(double distance) {
-    shooterSubsystem.calculatedShooterMotorRpm = (int) shooterSubsystem.calculateShootingSpeed(distance);
-    speedPidControl(shooterSubsystem.calculatedShooterMotorRpm, shooterSubsystem.kickerMotor);
-    if (shooterSubsystem.shooterMotor.getEncoder().getVelocity() >= (shooterSubsystem.calculatedShooterMotorRpm - 25)) {
-      shooterSubsystem.kickerMotor.set(0.7);
-    } else {
-      shooterSubsystem.kickerMotor.set(0.0);
-    }
+  public double calculateShootingSpeed(double distanceMeters) {
+    double calculatedSpeed = (double) ((distanceMeters * calcSlope) + calcYIntercept);
+    if (distanceMeters < 10.0) {
+      if (calculatedSpeed <= 1.0) {
+        return (calculatedSpeed);
+      } else
+        return 1.0;
+    } else
+      return 1.0;
   }
 
   public void speedPidControl(int setPoint, SparkFlex motor) {
     double currentSpeed = motor.getEncoder().getVelocity();
-    double error = (setPoint - currentSpeed) / Constants.ShooterConstants.maxShooterSpeedRpm; // Normalize error
-    motor.set((setPoint / Constants.ShooterConstants.maxShooterSpeedRpm) + (error * Constants.ShooterConstants.Kp));
+    double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
+    motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
+  }
+
+  public void shoot(double distance) {
+    calculatedShooterRpm = (int) calculateShootingSpeed(distance);
+    speedPidControl(calculatedShooterRpm, shooterSubsystem.shooterMotor);
+    if (shooterSubsystem.shooterMotor.getEncoder().getVelocity() >= (calculatedShooterRpm - 35)) {
+      shooterSubsystem.kickerMotor.set(0.7);
+    }
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     logCommandStart();
-    shooterSubsystem.shooterMotor.set(0.7);
     timer.reset();
     timer.start();
 
@@ -75,18 +92,26 @@ public class ShooterCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    currentShootMotorRpm = (int) shooterSubsystem.shooterMotor.getEncoder().getVelocity();
 
     double distanceToHub = swerveSubsystem.distanceToHub();
 
     if (operatorInput.getDriverController().getPOV() == 0) {
       shooterSubsystem.kickerMotor.set(0.7);
-    } else {
-      shooterSubsystem.kickerMotor.set(0.0);
     }
 
     if (operatorInput.getDriverController().getYButtonPressed() == true) {
       shoot(distanceToHub);
+    } else
+      shooterSubsystem.shooterMotor.set(0.0);
+
+    if (operatorInput.getDriverController().getPOV() != 0 &&
+        shooterSubsystem.shooterMotor.getEncoder().getVelocity() < (calculatedShooterRpm - 35)) {
+      shooterSubsystem.kickerMotor.set(0.0);
     }
+
+    SmartDashboard.putNumber("Shooter Motor RPM", currentShootMotorRpm);
+    SmartDashboard.putNumber("Calculated Shooter RPM", calculatedShooterRpm);
 
   }
 
