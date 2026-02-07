@@ -7,9 +7,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.LimelightVisionSubsystem;
+
+import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
+import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,11 +25,13 @@ import frc.robot.subsystems.LightingSubsystem;
  */
 public class RobotContainer {
 
-  private final OperatorInput operatorInput = new OperatorInput();
-
   // TODO declare all of the subsystems here
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG, lightingSubsystem);
+  private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
+
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -31,11 +39,15 @@ public class RobotContainer {
     // TODO set the default commands for any subsystems
     // NOTE default commands will run when no other command is running
     // and typically take the operator input as the first parameter.
+
+    swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
+
     exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem, lightingSubsystem));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem);
+    operatorInput.initAutoSelectors();
   }
 
   /**
@@ -44,6 +56,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new InstantCommand();
+    return operatorInput.getAutonomousCommand();
   }
 }

@@ -157,6 +157,9 @@ public class LightingSubsystem extends SubsystemBase {
         blueLedPattern.applyTo(driveLedView);
         break;
 
+      case ALLIANCE_RED:
+        redLedPattern.applyTo(driveLedView);
+
       case UNUSED_RED:
         redLedPattern.applyTo(driveLedView);
         break;
@@ -183,6 +186,7 @@ public class LightingSubsystem extends SubsystemBase {
     NORMAL_DRIVING,
     BOOST,
     ALLIANCE_BLUE,
+    ALLIANCE_RED,
     UNUSED_RED,
     UNUSED_STATE2,
     UNUSED_STATE3
