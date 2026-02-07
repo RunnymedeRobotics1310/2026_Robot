@@ -72,6 +72,26 @@ public final class Constants {
     public static final double FIELD_EXTENT_METRES_X = 16.54;
   }
 
+  public static final class AutoConstants {
+
+      public enum AutoPattern {
+        DO_NOTHING,
+        EXIT_ZONE,
+        EXAMPLE_AUTO,
+      }
+
+      public enum Delay {
+        NO_DELAY,
+        WAIT_0_5_SECOND,
+        WAIT_1_SECOND,
+        WAIT_1_5_SECONDS,
+        WAIT_2_SECONDS,
+        WAIT_2_5_SECONDS,
+        WAIT_3_SECONDS,
+        WAIT_5_SECONDS
+      }
+  }
+
   public static final class Swerve {
 
     /** Front to back from the middle of the wheels */

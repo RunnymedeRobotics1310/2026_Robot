@@ -25,13 +25,13 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
  */
 public class RobotContainer {
 
-  private final OperatorInput operatorInput = new OperatorInput();
-
   // TODO declare all of the subsystems here
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG, lightingSubsystem);
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
+
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -47,6 +47,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem);
+    operatorInput.initAutoSelectors();
   }
 
   /**
@@ -55,6 +56,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new InstantCommand();
+    return operatorInput.getAutonomousCommand();
   }
 }
