@@ -121,10 +121,9 @@ public class ShooterCommand extends LoggingCommand {
 
   public void shooting(double distance){
     double shooterSpeed = calculateShootingSpeed(distance);
-
-
     shooterSubsystem.setShooterVelocity(shooterSpeed);
-    if(shooterSubsystem.getShooterVelocity() >= shooterSpeed){
+
+    if(Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 20){
       shooterSubsystem.setKickerSpeed(0.7);
     } else shooterSubsystem.setKickerSpeed(0);
   }
