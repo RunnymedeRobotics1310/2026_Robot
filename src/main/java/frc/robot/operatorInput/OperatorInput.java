@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.swerve.SetGyroCommand;
@@ -29,6 +30,8 @@ public class OperatorInput extends SubsystemBase {
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
     new Trigger(() -> driverController.getBButtonPressed())
         .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this, swerve));
+
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
 
   public boolean isCancel() {

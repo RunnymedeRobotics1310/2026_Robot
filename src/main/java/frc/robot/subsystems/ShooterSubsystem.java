@@ -94,4 +94,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public void cycleAutoAim() {
     autoAiming = !autoAiming;
   }
+
+  public void stop() {
+    shooterMotor.stopMotor();
+    kickerMotor.stopMotor();
+  }
 }
