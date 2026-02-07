@@ -5,11 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import static frc.robot.Constants.ShooterConstants.KP;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
@@ -39,22 +37,20 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("1310/shooter/currentmotorspeed", getShooterVelocity());
+    SmartDashboard.putNumber("1310/shooter/currentmotorvelocity", getShooterVelocity());
     SmartDashboard.putNumber("1310/shooter/targetmotorvelocity", targetMotorVelocity);
 
-  }
-
-  public void setShooterSpeed(double speed) {
-    shooterMotor.set(speed);
-    targetMotorVelocity = speed;
   }
 
   public double getShooterVelocity() {
     return shooterMotor.getEncoder().getVelocity();
   }
+  public double getKickerVelocity(){return kickerMotor.getEncoder().getVelocity();}
 
-  public void setKickerSpeed(double speed) {
-    kickerMotor.set(speed);
+  public void setKickerVelocity(double setPoint) {
+    double currentSpeed = getKickerVelocity();
+    double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
+    kickerMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
   }
 
   public void setShooterVelocity(double setPoint) {
@@ -63,6 +59,9 @@ public class ShooterSubsystem extends SubsystemBase {
     double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
     shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
   }
+
+  public void setShooterSpeed(double speed){shooterMotor.set(speed);}
+  public void setKickerSpeed(double speed){shooterMotor.set(speed);}
 
   @Override
   public void simulationPeriodic() {

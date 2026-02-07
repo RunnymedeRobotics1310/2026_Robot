@@ -112,7 +112,7 @@ public class ShooterCommand extends LoggingCommand {
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
     if (distanceMeters < 10.0) {
-      shooterSpeed = (distanceMeters * SLOPE_VALUE) + Y_INT;
+      shooterSpeed = ((distanceMeters * SLOPE_VALUE) + Y_INT) - shooterSubsystem.getKickerVelocity();
 //      log("Target speed: " + shooterSpeed);
     }
     return shooterSpeed;
@@ -124,7 +124,7 @@ public class ShooterCommand extends LoggingCommand {
     shooterSubsystem.setShooterVelocity(shooterSpeed);
 
     if(Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 20){
-      shooterSubsystem.setKickerSpeed(0.7);
+      shooterSubsystem.setKickerVelocity(300);
     } else shooterSubsystem.setKickerSpeed(0);
   }
 

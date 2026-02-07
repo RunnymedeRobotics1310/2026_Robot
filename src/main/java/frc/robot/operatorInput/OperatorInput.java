@@ -44,7 +44,7 @@ public class OperatorInput extends SubsystemBase {
   public boolean getRotate180Val() {
     return driverController.getAButton();
   }
-  public boolean getShooterActive(){return driverController.getYButton();}
+  public boolean getShooterActive(){return driverController.getRightTriggerAxis() > 0.5;}
 
   public boolean isFastMode() {
     return driverController.getRightBumperButton();
