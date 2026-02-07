@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.auto.DemoAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
@@ -37,6 +38,8 @@ public class OperatorInput extends SubsystemBase {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve));
   }
 
   public boolean isCancel() {
