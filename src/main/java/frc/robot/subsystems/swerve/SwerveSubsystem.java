@@ -330,7 +330,7 @@ public class SwerveSubsystem extends SubsystemBase {
     dx = hubPose.getX() - pose.getX();
     dy = hubPose.getY() - pose.getY();
 
-    return new Rotation2d(dy, dx);
+    return new Rotation2d(dx, dy);
   }
 
   public double distanceToHub() {

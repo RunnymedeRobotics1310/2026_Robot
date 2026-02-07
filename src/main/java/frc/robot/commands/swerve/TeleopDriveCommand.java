@@ -89,6 +89,8 @@ public class TeleopDriveCommand extends LoggingCommand {
 
         final boolean rotate180Val = oi.getRotate180Val();
 
+        final boolean doAutoAim = oi.getShooterActive();
+
         // Compute boost factor
         final boolean isSlow = oi.isSlowMode() || true;
         //    final boolean isSlow = false;
@@ -100,6 +102,7 @@ public class TeleopDriveCommand extends LoggingCommand {
 
         final boolean doFlip = rotate180Val && !prevRotate180Val;
         prevRotate180Val = rotate180Val;
+
 
         final double omegaRadiansPerSecond;
         double desiredOmegaRadiansPerSecond;
@@ -119,6 +122,10 @@ public class TeleopDriveCommand extends LoggingCommand {
             // TODO: tune timer duration
             if (rotationSettleTimer.hasElapsed(0.5) && headingSetpointDeg == null) {
                 headingSetpointDeg = swerve.getYaw();
+            }
+
+            if(doAutoAim){
+                headingSetpointDeg = swerve.angleToHub().getDegrees() + 180; //FIXME Remove for comp robot
             }
 
             // rotate 180º button

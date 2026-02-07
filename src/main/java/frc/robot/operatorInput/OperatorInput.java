@@ -28,8 +28,8 @@ public class OperatorInput extends SubsystemBase {
             .onTrue(new SetGyroCommand(swerve, 0));
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
-    new Trigger(() -> driverController.getBButtonPressed())
-        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this, swerve));
+    new Trigger(this::getShooterActive)
+        .whileTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this, swerve));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
@@ -44,6 +44,7 @@ public class OperatorInput extends SubsystemBase {
   public boolean getRotate180Val() {
     return driverController.getAButton();
   }
+  public boolean getShooterActive(){return driverController.getYButton();}
 
   public boolean isFastMode() {
     return driverController.getRightBumperButton();

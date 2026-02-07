@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -27,7 +28,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
-
+  private double targetMotorVelocity;
 
   public boolean autoAiming = false;
 
@@ -38,14 +39,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-
-    // TODO Update the hub distance here ***
+    SmartDashboard.putNumber("1310/shooter/currentmotorspeed", getShooterVelocity());
+    SmartDashboard.putNumber("1310/shooter/targetmotorvelocity", targetMotorVelocity);
 
   }
 
   public void setShooterSpeed(double speed) {
     shooterMotor.set(speed);
+    targetMotorVelocity = speed;
   }
 
   public double getShooterVelocity() {
@@ -57,6 +58,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterVelocity(double setPoint) {
+    targetMotorVelocity = setPoint;
     double currentSpeed = getShooterVelocity();
     double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
     shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
@@ -69,30 +71,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public double calculateShootingAngle(float distanceMeters) {
     return 28 * (Math.pow(Math.E, (-0.231 * distanceMeters)) + 52);
-  }
-
-  // To do: Edit this method to return the actual shooting speed value
-
-
-  public void autoAim() {
-    if (Math.abs(hubAngleOffset) > 2.0) {
-      if (hubAngleOffset >= 180.0) {
-        /*
-         * Turn right
-         * Untill the hubAngle is within 3 degrees of the current robot angle
-         */
-
-      } else {
-        /*
-         * Turn left
-         * Untill the hubAngle is within 3 degrees of the current robot angle
-         */
-      }
-    }
-  }
-
-  public void cycleAutoAim() {
-    autoAiming = !autoAiming;
   }
 
   public void stop() {
