@@ -10,6 +10,9 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+
 public class ShooterSubsystem extends SubsystemBase {
 
   private final LightingSubsystem lightingSubsystem;
@@ -39,6 +42,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // TODO Update the hub distance here ***
 
+  }
+
+  public void setShooterSpeed(double speed) {
+    shooterMotor.set(speed);
+  }
+
+  public double getShooterVelocity() {
+    return shooterMotor.getEncoder().getVelocity();
+  }
+
+  public void setKickerSpeed(double speed) {
+    kickerMotor.set(speed);
+  }
+
+  public void setShooterVelocity(double setPoint) {
+
+    double currentSpeed = getShooterVelocity();
+    double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
+    shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP ));
   }
 
   @Override

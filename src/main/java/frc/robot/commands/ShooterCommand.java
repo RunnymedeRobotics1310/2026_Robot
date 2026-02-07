@@ -4,9 +4,11 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -28,6 +30,8 @@ public class ShooterCommand extends LoggingCommand {
 
   private Timer timer = new Timer();
 
+  private double testShooterSpeed;
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -48,7 +52,7 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void initialize() {
     logCommandStart();
-    shooterSubsystem.shooterMotor.set(0.7); // Use for testing
+//    shooterSubsystem.shooterMotor.set(1); // Use for testing
     timer.reset();
     timer.start();
 
@@ -59,19 +63,31 @@ public class ShooterCommand extends LoggingCommand {
   public void execute() {
 
     double distance = swerveSubsystem.distanceToHub();
-
-    log("dist: " + distance);
-
+    SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
+//    log("Speed: " + shooterSubsystem.getShooterVelocity());
 
     if (operatorInput.getDriverController().getPOV() == 0) {
-      shooterSubsystem.kickerMotor.set(0.5);
-    } else {
-      shooterSubsystem.kickerMotor.set(0.0);
+      testShooterSpeed += 100;
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
+    else if(operatorInput.getDriverController().getPOV() == 180) {
+      testShooterSpeed -= 100;
+      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
     }
 
-    if (operatorInput.getDriverController().getYButtonPressed() == true) {
-      shooting(distance);
-    }
+    if(operatorInput.getDriverController().getPOV() == 270){
+      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+    }else shooterSubsystem.setShooterSpeed(0);
+
+//      shooterSubsystem.setKickerSpeed(0.5);
+//    } else {
+//      shooterSubsystem.setKickerSpeed(0.0);
+//    }
+
+    if (operatorInput.getDriverController().getYButtonPressed()) {
+      shooterSubsystem.setKickerSpeed(0.7);
+    } else shooterSubsystem.setKickerSpeed(0);
   }
 
   // Returns true when the command should end.
@@ -85,37 +101,30 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
-    shooterSubsystem.shooterMotor.set(0.0);
-    shooterSubsystem.kickerMotor.set(0.0);
+    shooterSubsystem.setShooterSpeed(0.0);
+    shooterSubsystem.setKickerSpeed(0.0);
     timer.stop();
   }
 
   public double calculateShootingSpeed(double distanceMeters) {
+    double shooterSpeed = 0;
     if (distanceMeters < 10.0) {
-      return (distanceMeters * Constants.ShooterConstants.SLOPE_VALUE) + Constants.ShooterConstants.Y_INT; // FIXME add real equation
-    } else {
-      return 1.0;
+      shooterSpeed = (distanceMeters * SLOPE_VALUE) + Y_INT;
+//      log("Target speed: " + shooterSpeed);
     }
+    return shooterSpeed;
   }
 
-  public void setMotorVelocity(double setPoint, SparkFlex motor) {
-    double maxShooterRpm = Constants.ShooterConstants.MAX_SHOOTER_RPM;
-    double Kp = Constants.ShooterConstants.KP;
-
-    double currentSpeed = motor.getEncoder().getVelocity();
-    double error = (setPoint - currentSpeed) / maxShooterRpm; // Normalize error
-    motor.set((setPoint / maxShooterRpm) + (error * Kp));
-  }
 
   public void shooting(double distance){
-    double shooterSpeed = calculateShootingSpeed(distance);
-    SparkFlex shooterMotor = shooterSubsystem.shooterMotor;
-    SparkFlex kickerMotor = shooterSubsystem.kickerMotor;
+    double shooterSpeed = calculateShootingSpeed(distance) - 20;
 
-    setMotorVelocity(shooterSpeed, shooterMotor);
-    if(shooterMotor.getEncoder().getVelocity() >= shooterSpeed){
-      kickerMotor.set(0.7);
-    } else kickerMotor.stopMotor();
+    log("actual: " + shooterSubsystem.getShooterVelocity());
+
+    shooterSubsystem.setShooterVelocity(shooterSpeed);
+    if(shooterSubsystem.getShooterVelocity() >= shooterSpeed){
+      shooterSubsystem.setKickerSpeed(0.5);
+    } else shooterSubsystem.setKickerSpeed(0);
   }
 
 }
