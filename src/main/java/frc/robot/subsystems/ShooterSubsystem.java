@@ -57,10 +57,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterVelocity(double setPoint) {
-
     double currentSpeed = getShooterVelocity();
     double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
-    shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP ));
+    shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
   }
 
   @Override

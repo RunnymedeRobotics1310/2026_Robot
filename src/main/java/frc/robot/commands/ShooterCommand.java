@@ -32,6 +32,8 @@ public class ShooterCommand extends LoggingCommand {
 
   private double testShooterSpeed;
 
+  private int lastPov = -1;
+
   /**
    * Creates a new ExampleCommand.
    *
@@ -61,33 +63,33 @@ public class ShooterCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    int currentPOV = operatorInput.getDriverController().getPOV();
 
     double distance = swerveSubsystem.distanceToHub();
     SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
 //    log("Speed: " + shooterSubsystem.getShooterVelocity());
 
-    if (operatorInput.getDriverController().getPOV() == 0) {
-      testShooterSpeed += 100;
-      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
-    }
-    else if(operatorInput.getDriverController().getPOV() == 180) {
-      testShooterSpeed -= 100;
-      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+    if (currentPOV == 0 && lastPov == -1) {
+      testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
       SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
     }
 
-    if(operatorInput.getDriverController().getPOV() == 270){
+    if(currentPOV == 180 && lastPov == -1) {
+      testShooterSpeed = Math.max(testShooterSpeed - 50, 0);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
+
+    if(operatorInput.getDriverController().getYButton()){
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
+      SmartDashboard.putNumber("1310/shooter/currentspeed", shooterSubsystem.getShooterVelocity());
     }else shooterSubsystem.setShooterSpeed(0);
 
-//      shooterSubsystem.setKickerSpeed(0.5);
-//    } else {
-//      shooterSubsystem.setKickerSpeed(0.0);
-//    }
+    lastPov = currentPOV;
 
-    if (operatorInput.getDriverController().getYButtonPressed()) {
+    if(operatorInput.getDriverController().getPOV() == 270){
       shooterSubsystem.setKickerSpeed(0.7);
-    } else shooterSubsystem.setKickerSpeed(0);
+    }else shooterSubsystem.setKickerSpeed(0);
+
   }
 
   // Returns true when the command should end.
@@ -117,7 +119,7 @@ public class ShooterCommand extends LoggingCommand {
 
 
   public void shooting(double distance){
-    double shooterSpeed = calculateShootingSpeed(distance) - 20;
+    double shooterSpeed = calculateShootingSpeed(distance);
 
     log("actual: " + shooterSubsystem.getShooterVelocity());
 
