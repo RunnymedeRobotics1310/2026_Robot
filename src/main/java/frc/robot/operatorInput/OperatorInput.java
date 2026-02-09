@@ -53,6 +53,10 @@ public class OperatorInput extends SubsystemBase {
     return driverController.getAButton();
   }
 
+  public boolean getFaceHub() {
+    return driverController.getYButton();
+  }
+
   public boolean isFastMode() {
     return driverController.getRightBumperButton();
   }

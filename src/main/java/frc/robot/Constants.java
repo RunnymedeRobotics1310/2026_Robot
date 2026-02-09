@@ -52,7 +52,7 @@ public final class Constants {
   public static final class LightingConstants {
 
     public static final int LED_STRING_PWM_PORT = 9;
-    public static final int LED_STRING_LENGTH = 38;
+    public static final int LED_STRING_LENGTH = 36;
 
     public static final int LED_CLIMB_VIEW_START = 0;
     public static final int LED_CLIMB_VIEW_END = 4;

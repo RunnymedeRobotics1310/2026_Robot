@@ -40,7 +40,7 @@ public class RobotContainer {
     // NOTE default commands will run when no other command is running
     // and typically take the operator input as the first parameter.
 
-    swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
+    swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, lightingSubsystem, operatorInput));
 
     exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem, lightingSubsystem));
 

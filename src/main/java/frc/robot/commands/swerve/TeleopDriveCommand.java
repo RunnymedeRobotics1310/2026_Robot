@@ -16,9 +16,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -26,20 +26,24 @@ public class TeleopDriveCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;
     private final OperatorInput oi;
-    private final LimelightVisionSubsystem visionSubsystem;
+    private final LimelightVisionSubsystem vision;
+    private final LightingSubsystem lighting;
     private boolean invert;
     private Double headingSetpointDeg = null;
     private boolean fieldOriented = true;
     private Timer rotationSettleTimer = new Timer();
     private boolean prevRotate180Val = false;
+    private boolean lockOnHub = false;
 
     /** Used to drive a swerve robot in full field-centric mode. */
     public TeleopDriveCommand(
             SwerveSubsystem swerve,
-            LimelightVisionSubsystem visionSubsystem,
+            LimelightVisionSubsystem vision,
+            LightingSubsystem lighting,
             OperatorInput operatorInput) {
         this.swerve = swerve;
-        this.visionSubsystem = visionSubsystem;
+        this.vision = vision;
+        this.lighting = lighting;
         this.oi = operatorInput;
         addRequirements(swerve);
     }
@@ -89,6 +93,8 @@ public class TeleopDriveCommand extends LoggingCommand {
 
         final boolean rotate180Val = oi.getRotate180Val();
 
+        final boolean faceHub = oi.getFaceHub();
+
         // Compute boost factor
         final boolean isSlow = oi.isSlowMode();
         //    final boolean isSlow = false;
@@ -108,6 +114,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         // Compute Omega
         if (correctedCcwRotAngularVelPct != 0) {
             // User is steering!
+            lockOnHub = false;
             omegaRadiansPerSecond =
                     Math.pow(correctedCcwRotAngularVelPct, 3) * ROTATION_CONFIG.maxRotVelocityRadPS();
             // Save previous heading for when we are finished steering and slow enough.
@@ -121,8 +128,14 @@ public class TeleopDriveCommand extends LoggingCommand {
                 headingSetpointDeg = swerve.getYaw();
             }
 
+            if (faceHub || lockOnHub) {
+                lockOnHub =  true;
+                headingSetpointDeg = swerve.angleToHub().getDegrees() + 180;
+            }
+
             // rotate 180º button
             if (doFlip) {
+                lockOnHub = false;
                 if (headingSetpointDeg == null) {
                     headingSetpointDeg = swerve.getYaw() + 180;
                 } else {
@@ -132,6 +145,7 @@ public class TeleopDriveCommand extends LoggingCommand {
 
             // Don't spin around on zero gyro!
             if (isZeroGyro) {
+                lockOnHub = false;
                 headingSetpointDeg = null;
             }
 
