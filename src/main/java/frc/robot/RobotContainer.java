@@ -27,9 +27,9 @@ public class RobotContainer {
 
   // TODO declare all of the subsystems here
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG, lightingSubsystem);
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
-  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
+  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
   private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem);
 
@@ -40,13 +40,13 @@ public class RobotContainer {
     // NOTE default commands will run when no other command is running
     // and typically take the operator input as the first parameter.
 
-    swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, lightingSubsystem, operatorInput));
+    swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(lightingSubsystem, exampleSubsystem);
+    operatorInput.configureButtonBindings(exampleSubsystem);
     operatorInput.initAutoSelectors();
   }
 

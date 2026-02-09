@@ -13,7 +13,6 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.auto.DemoAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class OperatorInput extends SubsystemBase {
@@ -34,10 +33,10 @@ public class OperatorInput extends SubsystemBase {
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-      LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem) {
+      ExampleSubsystem exampleSubsystem) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(() -> driverController.getAButtonPressed())
-        .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+        .onTrue(new ExampleCommand(exampleSubsystem));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve));
   }

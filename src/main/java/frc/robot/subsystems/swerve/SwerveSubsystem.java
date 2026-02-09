@@ -11,7 +11,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RunnymedeUtils;
-import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.telemetry.Telemetry;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -23,9 +22,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SlewRateLimiter omegaLimiter;
   private final PIDController headingPIDController;
 
-  private final LightingSubsystem lighting;
-
-  public SwerveSubsystem(SwerveDriveSubsystemConfig config, LightingSubsystem lighting) {
+  public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
     this.drive =
             new LimelightAwareSwerveDrive(
                     config.coreConfig(), config.gyroConfig(), config.limelightConfig());
@@ -42,8 +39,6 @@ public class SwerveSubsystem extends SubsystemBase {
     headingPIDController.enableContinuousInput(-180, 180);
     headingPIDController.setTolerance(2);
     Telemetry.drive.enabled = config.telemetryEnabled();
-
-    this.lighting = lighting;
   }
 
   public void periodic() {

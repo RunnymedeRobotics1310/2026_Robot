@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
-import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -27,7 +26,6 @@ public class TeleopDriveCommand extends LoggingCommand {
     private final SwerveSubsystem swerve;
     private final OperatorInput oi;
     private final LimelightVisionSubsystem vision;
-    private final LightingSubsystem lighting;
     private boolean invert;
     private Double headingSetpointDeg = null;
     private boolean fieldOriented = true;
@@ -39,11 +37,9 @@ public class TeleopDriveCommand extends LoggingCommand {
     public TeleopDriveCommand(
             SwerveSubsystem swerve,
             LimelightVisionSubsystem vision,
-            LightingSubsystem lighting,
             OperatorInput operatorInput) {
         this.swerve = swerve;
         this.vision = vision;
-        this.lighting = lighting;
         this.oi = operatorInput;
         addRequirements(swerve);
     }
