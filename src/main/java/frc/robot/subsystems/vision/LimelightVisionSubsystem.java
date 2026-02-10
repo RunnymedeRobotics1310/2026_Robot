@@ -82,7 +82,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the distance to robot centre to the nearest or targeted tag
    */
   public double distanceTagToRobot() {
-    return distanceTagToRobot(0, true);
+    return distanceTagToRobot(0);
   }
 
   /**
@@ -90,10 +90,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * set by setTargetTag(), to the limelight handling left or right branch.
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
-   * @param leftBranch Left or Right branch?
    * @return the distance to robot centre to the nearest or targeted tag
    */
-  public double distanceTagToRobot(int tagId, boolean leftBranch) {
+  public double distanceTagToRobot(int tagId) {
     LimelightBotPose botPose = getBotPose();
 
     int index = 0;
@@ -138,7 +137,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the angle to the nearest or targeted tag
    */
   public double angleToTarget() {
-    return angleToTarget(0, true);
+    return angleToTarget(0);
   }
 
   /**
@@ -146,10 +145,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * setTargetTag(), to the limelight handling left or right branch.
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
-   * @param leftBranch Left or Right branch?
    * @return the angle to the nearest or targeted tag
    */
-  public double angleToTarget(int tagId, boolean leftBranch) {
+  public double angleToTarget(int tagId) {
     LimelightBotPose botPose = getBotPose();
 
     int index = 0;
@@ -157,6 +155,26 @@ public class LimelightVisionSubsystem extends SubsystemBase {
       index = botPose.getTagIndex(tagId);
     }
     return -botPose.getTagTxnc(index);
+  }
+
+  public double heightOfTarget(int tagId) {
+    LimelightBotPose botPose = getBotPose();
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return -botPose.getTagTync(index);
+  }
+
+  public double areaOfTarget(int tagId) {
+    LimelightBotPose botPose = getBotPose();
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return -botPose.getTagTa(index);
   }
 
   /**

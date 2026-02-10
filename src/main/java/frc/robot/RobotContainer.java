@@ -31,7 +31,7 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
 
-  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem);
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

@@ -12,8 +12,13 @@ import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.auto.DemoAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
+import frc.robot.commands.auto.TestAuto;
+import frc.robot.commands.swerve.DriveToLeftTowerCommand;
+import frc.robot.commands.swerve.FaceHubCommand;
+import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -21,24 +26,27 @@ public class OperatorInput extends SubsystemBase {
       new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
+  private final LimelightVisionSubsystem vision;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
           new SendableChooser<>();
   private final SendableChooser<Constants.AutoConstants.Delay> delayChooser =
           new SendableChooser<>();
 
-  public OperatorInput(SwerveSubsystem swerve) {
+  public OperatorInput(SwerveSubsystem swerve, LimelightVisionSubsystem vision) {
     this.swerve = swerve;
+    this.vision = vision;
   }
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
       ExampleSubsystem exampleSubsystem) {
     // Schedule `ExampleCommand` when `A' button is pressed.
-    new Trigger(() -> driverController.getAButtonPressed())
-        .onTrue(new ExampleCommand(exampleSubsystem));
+    new Trigger(() -> driverController.getBButtonPressed())
+        .onTrue(new FaceHubCommand(swerve));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve));
+    new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
   }
 
   public boolean isCancel() {
@@ -106,6 +114,8 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.setDefaultOption(
             "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
     autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
+    autoPatternChooser.addOption("Example Auto", Constants.AutoConstants.AutoPattern.EXAMPLE_AUTO);
+    autoPatternChooser.addOption("Watch this is gonna be bad", Constants.AutoConstants.AutoPattern.LEIA_AUTO);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -134,7 +144,8 @@ public class OperatorInput extends SubsystemBase {
 
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
-      case EXAMPLE_AUTO -> new DemoAutoCommand(swerve);
+      case EXAMPLE_AUTO -> new DemoAutoCommand(swerve, vision);
+      case LEIA_AUTO -> new TestAuto(swerve, vision);
 
       default -> new InstantCommand();
     };
