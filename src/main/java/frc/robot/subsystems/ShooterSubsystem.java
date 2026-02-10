@@ -4,13 +4,13 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+
 import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.Constants.ShooterConstants.KP;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -45,7 +45,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public double getShooterVelocity() {
     return shooterMotor.getEncoder().getVelocity();
   }
-  public double getKickerVelocity(){return kickerMotor.getEncoder().getVelocity();}
+
+  public double getKickerVelocity() {
+    return kickerMotor.getEncoder().getVelocity();
+  }
 
   public void setKickerVelocity(double setPoint) {
     double currentSpeed = getKickerVelocity();
@@ -60,8 +63,13 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
   }
 
-  public void setShooterSpeed(double speed){shooterMotor.set(speed);}
-  public void setKickerSpeed(double speed){shooterMotor.set(speed);}
+  public void setShooterSpeed(double speed) {
+    shooterMotor.set(speed);
+  }
+
+  public void setKickerSpeed(double speed) {
+    kickerMotor.set(speed);
+  }
 
   @Override
   public void simulationPeriodic() {

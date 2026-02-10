@@ -4,9 +4,8 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
-import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.operatorInput.OperatorInput;
@@ -30,7 +29,6 @@ public class ShooterCommand extends LoggingCommand {
 
   private Timer timer = new Timer();
 
-
   private double testShooterSpeed;
 
   private int lastPov = -1;
@@ -40,7 +38,8 @@ public class ShooterCommand extends LoggingCommand {
    *
    * @param shooterSubsystem The subsystem used by this command.
    */
-  public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision, LightingSubsystem lightingSubsystem,
+  public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision,
+      LightingSubsystem lightingSubsystem,
       OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
@@ -55,7 +54,7 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void initialize() {
     logCommandStart();
-//    shooterSubsystem.shooterMotor.set(1); // Use for testing
+    // shooterSubsystem.shooterMotor.set(1); // Use for testing
     timer.reset();
     timer.start();
 
@@ -66,30 +65,32 @@ public class ShooterCommand extends LoggingCommand {
   public void execute() {
     int currentPOV = operatorInput.getDriverController().getPOV();
     double distance = swerveSubsystem.distanceToHub();
-    shooting(distance);
-//    SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
-//   log("Speed: " + shooterSubsystem.getShooterVelocity());
-//
-//    if (currentPOV == 0 && lastPov == -1) {
-//      testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
-//      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
-//    }
-//
-//    if(currentPOV == 180 && lastPov == -1) {
-//      testShooterSpeed = Math.max(testShooterSpeed - 50, 0);
-//      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
-//    }
-//
-//    if(operatorInput.getDriverController().getYButton()){
-//      shooterSubsystem.setShooterVelocity(testShooterSpeed);
-//      SmartDashboard.putNumber("1310/shooter/currentspeed", shooterSubsystem.getShooterVelocity());
-//    }else shooterSubsystem.setShooterSpeed(0);
-//
-//    lastPov = currentPOV;
-//
-//    if(operatorInput.getDriverController().getPOV() == 270){
-//      shooterSubsystem.setKickerSpeed(0.7);
-//    }else shooterSubsystem.setKickerSpeed(0);
+    // shooting(distance);
+    SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
+    log("Speed: " + shooterSubsystem.getShooterVelocity());
+
+    if (currentPOV == 0 && lastPov == -1) {
+      testShooterSpeed = Math.min(testShooterSpeed + 20, MAX_SHOOTER_RPM);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
+
+    if (currentPOV == 180 && lastPov == -1) {
+      testShooterSpeed = Math.max(testShooterSpeed - 20, 0);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
+
+    if (operatorInput.getDriverController().getYButton()) {
+      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+      SmartDashboard.putNumber("1310/shooter/currentspeed", shooterSubsystem.getShooterVelocity());
+    } else
+      shooterSubsystem.setShooterSpeed(0.0);
+
+    lastPov = currentPOV;
+
+    if (operatorInput.getDriverController().getPOV() == 270) {
+      shooterSubsystem.setKickerSpeed(0.7);
+    } else
+      shooterSubsystem.setKickerSpeed(0.0);
 
   }
 
@@ -109,23 +110,23 @@ public class ShooterCommand extends LoggingCommand {
     timer.stop();
   }
 
-  public double calculateShootingSpeed(double distanceMeters) {
-    double shooterSpeed = 0;
-    if (distanceMeters < 10.0) {
-      shooterSpeed = (distanceMeters * SLOPE_VALUE) + Y_INT;
-//      log("Target speed: " + shooterSpeed);
-    }
-    return shooterSpeed;
-  }
+  // public double calculateShootingSpeed(double distanceMeters) {
+  // double shooterSpeed = 0;
+  // if (distanceMeters < 10.0) {
+  // shooterSpeed = (distanceMeters * SLOPE_VALUE) + Y_INT;
+  // // log("Target speed: " + shooterSpeed);
+  // }
+  // return shooterSpeed;
+  // }
 
+  // public void shooting(double distance) {
+  // double shooterSpeed = calculateShootingSpeed(distance);
+  // shooterSubsystem.setShooterVelocity(shooterSpeed);
 
-  public void shooting(double distance){
-    double shooterSpeed = calculateShootingSpeed(distance);
-    shooterSubsystem.setShooterVelocity(shooterSpeed);
-
-    if(Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 20){
-      shooterSubsystem.setKickerSpeed(0.7);
-    } else shooterSubsystem.setKickerSpeed(0);
-  }
+  // if (Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 20) {
+  // shooterSubsystem.setKickerSpeed(0.7);
+  // } else
+  // shooterSubsystem.setKickerSpeed(0.0);
+  // }
 
 }
