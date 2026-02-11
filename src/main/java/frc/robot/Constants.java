@@ -83,7 +83,7 @@ public final class Constants {
 
         public static final class ShooterConstants {
                 public static final double MAX_SHOOTER_RPM = 1580;
-                public static final double KP = 2;
+                public static final double KP = 0.5;
                 public static final double SLOPE_VALUE = 277.78;
                 public static final double Y_INT = 194.44;
 
