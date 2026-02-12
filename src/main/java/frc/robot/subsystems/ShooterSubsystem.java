@@ -4,9 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
+import com.revrobotics.spark.SparkFlex;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -23,9 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public float hubAngle = 0;
   public float hubAngleOffset = 0;
-
-  public final int maxShooterSpeedRpm = 5700;
-  public final float Kp = 0.5f; // proportional gain constant for pid controller
+  private double targetMotorVelocity;
 
   public boolean autoAiming = false;
 
@@ -36,12 +37,38 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("1310/shooter/currentmotorvelocity", getShooterVelocity());
+    SmartDashboard.putNumber("1310/shooter/targetmotorvelocity", targetMotorVelocity);
 
-    // TODO Update the hub distance here ***
+  }
 
-    shooterAngleDegrees = Math.round(calculateShootingAngle(hubDistanceMeters) * 100.0) / 100.0f;
-    shooterSpeedRpm = (int) Math.round(calculateShootingSpeed(hubDistanceMeters));
+  public double getShooterVelocity() {
+    return shooterMotor.getEncoder().getVelocity();
+  }
+
+  public double getKickerVelocity() {
+    return kickerMotor.getEncoder().getVelocity();
+  }
+
+  public void setKickerVelocity(double setPoint) {
+    double currentSpeed = getKickerVelocity();
+    double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
+    kickerMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
+  }
+
+  public void setShooterVelocity(double setPoint) {
+    targetMotorVelocity = setPoint;
+    double currentSpeed = getShooterVelocity();
+    double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
+    shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
+  }
+
+  public void setShooterSpeed(double speed) {
+    shooterMotor.set(speed);
+  }
+
+  public void setKickerSpeed(double speed) {
+    kickerMotor.set(speed);
   }
 
   @Override
@@ -53,41 +80,9 @@ public class ShooterSubsystem extends SubsystemBase {
     return 28 * (Math.pow(Math.E, (-0.231 * distanceMeters)) + 52);
   }
 
-  // To do: Edit this method to return the actual shooting speed value
-
-  public double calculateShootingSpeed(float distanceMeters) {
-    if (distanceMeters < 1.0) {
-      return (distanceMeters * 0.08) + 0.2;
-    } else {
-      return 1.0;
-    }
-  }
-
-  private void speedPidControl(double setPoint, SparkMax motor) {
-    double currentSpeed = motor.getEncoder().getVelocity();
-    double error = (setPoint - currentSpeed) / maxShooterSpeedRpm; // Normalize error
-    motor.set((setPoint / maxShooterSpeedRpm) + (error * Kp));
-  }
-
-  public void autoAim() {
-    if (Math.abs(hubAngleOffset) > 2.0) {
-      if (hubAngleOffset >= 180.0) {
-        /*
-         * Turn right
-         * Untill the hubAngle is within 3 degrees of the current robot angle
-         */
-
-      } else {
-        /*
-         * Turn left
-         * Untill the hubAngle is within 3 degrees of the current robot angle
-         */
-      }
-    }
-  }
-
-  public void cycleAutoAim() {
-    autoAiming = !autoAiming;
+  public void stop() {
+    shooterMotor.stopMotor();
+    kickerMotor.stopMotor();
   }
 
   public void stop() {

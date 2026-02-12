@@ -41,10 +41,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   public void periodic() {
     // Pull data from the limelights and update our cache
     TimestampedDoubleArray var = hughMegaTag.getAtomic();
-    System.out.println("X: " + var.value[0]);
-    System.out.println("Y: " + var.value[1]);
+
     hughBotPoseCache.update(var);
-    System.out.println(hughBotPoseCache.getPose());
 
     // Update telemetry
     updateTelemetry();
