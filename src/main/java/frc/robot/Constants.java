@@ -96,14 +96,14 @@ public final class Constants {
   public static final class Swerve {
 
     /** Front to back from the middle of the wheels */
-    public static final double WHEEL_BASE_METRES = inchesToMeters(24.75);
+    public static final double WHEEL_BASE_METRES = inchesToMeters(16.75);
 
     /** Side to side from the middle of the wheels */
-    public static final double TRACK_WIDTH_METRES = inchesToMeters(22.75);
+    public static final double TRACK_WIDTH_METRES = inchesToMeters(16.75);
 
-    public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.051;
+    public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.0485;
 
-    public static final GyroConfig GYRO_CONFIG = GyroConfig.navx();
+    public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG =
             new SwerveTranslationConfig(
@@ -141,7 +141,7 @@ public final class Constants {
 
     private static final MotorConfig DRIVE_MOTOR_CONFIG =
             new MotorConfig(
-                    /* motor hardware type */ MotorType.NEO_SPARK_MAX,
+                    /* motor hardware type */ MotorType.NEO_SPARK_FLEX,
                     /* inverted? */ false,
                     /* current limit (A) */ 40,
                     /* nominal voltage (V) */ 12,
@@ -165,7 +165,7 @@ public final class Constants {
                     11,
                     ANGLE_MOTOR_CONFIG,
                     12,
-                    Rotation2d.fromRotations(0.619385).getDegrees(),
+                    Rotation2d.fromRotations(0.281982).getDegrees(),
                     ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig FRONT_RIGHT =
@@ -178,7 +178,7 @@ public final class Constants {
                     16,
                     ANGLE_MOTOR_CONFIG,
                     17,
-                    Rotation2d.fromRotations(0.033691).getDegrees(),
+                    Rotation2d.fromRotations(0.411377).getDegrees(),
                     ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_RIGHT =
@@ -191,7 +191,7 @@ public final class Constants {
                     21,
                     ANGLE_MOTOR_CONFIG,
                     22,
-                    Rotation2d.fromRotations(0.564941).getDegrees(),
+                    Rotation2d.fromRotations(0.353271).getDegrees(),
                     ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_LEFT =
@@ -204,7 +204,7 @@ public final class Constants {
                     26,
                     ANGLE_MOTOR_CONFIG,
                     27,
-                    Rotation2d.fromRotations(0.928467).getDegrees(),
+                    Rotation2d.fromRotations(0.506836).getDegrees(),
                     ANGLE_ENCODER_CONFIG);
 
     public static final CoreSwerveConfig CORE_SWERVE_CONFIG =
@@ -217,7 +217,7 @@ public final class Constants {
                     TRANSLATION_CONFIG.maxSpeedMPS(),
                     ROTATION_CONFIG.maxRotVelocityRadPS(),
                     0.55,
-                    0.85,
+                    0.5,
                     0.65,
                     FRONT_LEFT,
                     FRONT_RIGHT,
@@ -244,6 +244,6 @@ public final class Constants {
     public static final VisionConfig VISION_CONFIG =
             new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
 
-    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
+    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hopper";
   }
 }
