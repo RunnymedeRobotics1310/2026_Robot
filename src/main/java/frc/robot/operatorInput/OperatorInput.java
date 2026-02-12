@@ -9,11 +9,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.auto.DemoAutoCommand;
+import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
-import frc.robot.commands.auto.TestAuto;
-import frc.robot.commands.swerve.DriveToLeftTowerCommand;
+import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.swerve.FaceHubCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -114,8 +112,8 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.setDefaultOption(
             "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
     autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
-    autoPatternChooser.addOption("Example Auto", Constants.AutoConstants.AutoPattern.EXAMPLE_AUTO);
-    autoPatternChooser.addOption("Watch this is gonna be bad", Constants.AutoConstants.AutoPattern.LEIA_AUTO);
+    autoPatternChooser.addOption("Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
+    autoPatternChooser.addOption("Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -144,8 +142,8 @@ public class OperatorInput extends SubsystemBase {
 
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
-      case EXAMPLE_AUTO -> new DemoAutoCommand(swerve, vision);
-      case LEIA_AUTO -> new TestAuto(swerve, vision);
+      case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, vision);
+      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, vision);
 
       default -> new InstantCommand();
     };

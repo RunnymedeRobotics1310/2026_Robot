@@ -77,8 +77,8 @@ public final class Constants {
       public enum AutoPattern {
         DO_NOTHING,
         EXIT_ZONE,
-        EXAMPLE_AUTO,
-        LEIA_AUTO,
+        SIMPLE_CENTER,
+        OPPORTUNISTIC_OUTPOST,
       }
 
       public enum Delay {
