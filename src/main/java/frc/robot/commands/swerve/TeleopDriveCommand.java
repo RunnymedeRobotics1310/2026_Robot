@@ -132,7 +132,7 @@ public class TeleopDriveCommand extends LoggingCommand {
             }
 
             if (doAutoAim) {
-                headingSetpointDeg = swerve.angleToHub().getDegrees() + 184; // FIXME Remove for comp robot
+                headingSetpointDeg = swerve.angleToHub().getDegrees() + 183; // FIXME Remove for comp robot
             }
 
             // rotate 180º button
