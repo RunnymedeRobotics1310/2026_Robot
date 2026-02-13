@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.SetGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
@@ -24,12 +25,13 @@ public class OperatorInput extends SubsystemBase {
       SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem,
       ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
-    new Trigger(() -> isZeroGyro())
-        .onTrue(new SetGyroCommand(swerve, 0));
-    new Trigger(() -> driverController.getAButtonPressed())
-        .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+    new Trigger(this::isZeroGyro).onTrue(new SetGyroCommand(swerve, 0));
+
     new Trigger(this::getShooterActive)
-        .whileTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this, swerve));
+        .whileTrue(new ShooterCommand(shooterSubsystem, vision, this, swerve));
+
+    new Trigger(() -> driverController.getXButton())
+            .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
