@@ -25,13 +25,13 @@ public class ShooterSubsystem extends SubsystemBase {
           IS_HOPPER_ATTACHED ? new SparkMax(33, SparkFlex.MotorType.kBrushless) : null;
   private final Servo hoodServo = new Servo(8);
 
-  public float hubDistanceMeters = 0;
-  public float shooterAngleDegrees = 0;
+  public double hubDistanceMeters = 0;
+  public double shooterAngleDegrees = 0;
   public int shooterSpeedRpm = 0;
   public int kickerSpeedRpm = 0;
 
-  public float hubAngle = 0;
-  public float hubAngleOffset = 0;
+  public double hubAngle = 0;
+  public double hubAngleOffset = 0;
   private double targetMotorVelocity;
 
   public boolean autoAiming = false;
@@ -100,7 +100,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  public double calculateShootingAngle(float distanceMeters) {
+  public double calculateShootingAngle(double distanceMeters) {
     return 28 * (Math.pow(Math.E, (-0.231 * distanceMeters)) + 52);
   }
 
