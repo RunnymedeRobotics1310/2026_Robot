@@ -14,7 +14,7 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
 
         addCommands(new SetAllianceGyroCommand(swerve, 180));
         addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 1, 0, 180)
-                .withTimeout(2));
+                .withTimeout(1));
 
         addCommands(new NullDriveCommand(swerve).withTimeout(3));
 
