@@ -7,7 +7,7 @@ import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
-public class DriveToLeftTowerCommand extends LoggingCommand {
+public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
   private static final int TOWER_TX_OFFSET = 20;
@@ -20,8 +20,8 @@ public class DriveToLeftTowerCommand extends LoggingCommand {
   private int theta = 0;
 
 
-  public DriveToLeftTowerCommand(
-      SwerveSubsystem swerve, LimelightVisionSubsystem vision) {
+  public DriveToTowerCommand(
+      SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean rightSide) {
     this.swerve = swerve;
     this.vision = vision;
     addRequirements(swerve, vision);

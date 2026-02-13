@@ -2,7 +2,7 @@ package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.swerve.DriveRobotOrientedAtHeadingCommand;
-import frc.robot.commands.swerve.DriveToLeftTowerCommand;
+import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.NullDriveCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -21,7 +21,7 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
         addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 0)
                 .withTimeout(2));
 
-        addCommands(new DriveToLeftTowerCommand(swerve, vision));
+        addCommands(new DriveToTowerCommand(swerve, vision, true));
 
         // 9 secs to aligned
     }

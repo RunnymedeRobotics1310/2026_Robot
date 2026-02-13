@@ -126,7 +126,7 @@ public class TeleopDriveCommand extends LoggingCommand {
 
             if (faceHub || lockOnHub) {
                 lockOnHub =  true;
-                headingSetpointDeg = swerve.angleToHub().getDegrees() + 180;
+                headingSetpointDeg = swerve.angleToHub().getDegrees();
             }
 
             // rotate 180º button

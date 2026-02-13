@@ -11,6 +11,7 @@ public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
     public OpportunisticOutpostAutoCommand(SwerveSubsystem swerve, LimelightVisionSubsystem vision) {
     addCommands(new SetAllianceGyroCommand(swerve, 0));
+
     addCommands(new DriveToFieldLocationCommand(swerve,
             new Pose2d(0.8, 0.6, Rotation2d.fromDegrees(0))));
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -0.3, 0, 0)
@@ -23,8 +24,7 @@ public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
     addCommands(new DriveToFieldLocationCommand(swerve,
             new Pose2d(2.4, 4, Rotation2d.fromDegrees(0))));
-
-    addCommands(new DriveToLeftTowerCommand(swerve, vision));
+    addCommands(new DriveToTowerCommand(swerve, vision, true));
 
     // 15 secs to aligned
 

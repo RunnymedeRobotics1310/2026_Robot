@@ -21,7 +21,7 @@ public class FaceHubCommand extends LoggingCommand {
     @Override
     public void execute() {
         Rotation2d hubAngle = swerve.angleToHub() ;
-        double omega = swerve.computeOmega(hubAngle.getDegrees() + 180);
+        double omega = swerve.computeOmega(hubAngle.getDegrees());
         swerve.driveFieldOriented(0, 0, omega);
     }
 
