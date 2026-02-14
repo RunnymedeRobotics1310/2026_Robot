@@ -29,14 +29,14 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
  */
 public class RobotContainer {
 
-  private final OperatorInput operatorInput = new OperatorInput();
-
   // TODO declare all of the subsystems here
   private final LightingSubsystem lightingSubsystem = new LightingSubsystem();
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG, lightingSubsystem);
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
-  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
+  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(lightingSubsystem);
+
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,11 +49,12 @@ public class RobotContainer {
 
     swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+    exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem, visionSubsystem);
+    operatorInput.initAutoSelectors();
   }
 
   /**
@@ -62,6 +63,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new InstantCommand();
+    return operatorInput.getAutonomousCommand();
   }
 }

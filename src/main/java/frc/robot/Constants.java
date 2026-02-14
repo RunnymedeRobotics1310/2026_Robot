@@ -61,7 +61,7 @@ public final class Constants {
         public static final class LightingConstants {
 
                 public static final int LED_STRING_PWM_PORT = 9;
-                public static final int LED_STRING_LENGTH = 38;
+                public static final int LED_STRING_LENGTH = 36;
 
                 public static final int LED_CLIMB_VIEW_START = 0;
                 public static final int LED_CLIMB_VIEW_END = 4;
@@ -81,17 +81,38 @@ public final class Constants {
                 public static final double FIELD_EXTENT_METRES_X = 16.54;
         }
 
-        public static final class ShooterConstants {
-                public static final boolean IS_HOPPER_ATTACHED = true;
+  public static final class AutoConstants {
 
-                public static final double MAX_SHOOTER_RPM = 4000;
-                public static final double KP = 0.7;
-                public static final double SLOPE_VALUE = 372.78;
-                public static final double Y_INT = 172.44;
+      public enum AutoPattern {
+        DO_NOTHING,
+        EXIT_ZONE,
+        SIMPLE_CENTER,
+        OPPORTUNISTIC_OUTPOST,
+      }
 
-        }
+      public enum Delay {
+        NO_DELAY,
+        WAIT_0_5_SECOND,
+        WAIT_1_SECOND,
+        WAIT_1_5_SECONDS,
+        WAIT_2_SECONDS,
+        WAIT_2_5_SECONDS,
+        WAIT_3_SECONDS,
+        WAIT_5_SECONDS
+      }
+  }
 
-        public static final class Swerve {
+    public static final class ShooterConstants {
+        public static final boolean IS_HOPPER_ATTACHED = true;
+
+        public static final double MAX_SHOOTER_RPM = 4000;
+        public static final double KP = 0.7;
+        public static final double SLOPE_VALUE = 372.78;
+        public static final double Y_INT = 172.44;
+
+    }
+
+    public static final class Swerve {
 
                 /** Front to back from the middle of the wheels */
                 public static final double WHEEL_BASE_METRES = inchesToMeters(16.75);
