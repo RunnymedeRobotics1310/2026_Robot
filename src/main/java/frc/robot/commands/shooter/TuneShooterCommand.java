@@ -51,12 +51,12 @@ public class TuneShooterCommand extends LoggingCommand {
     SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
 
      if (currentPOV == 0 && lastPov == -1) {
-       testShooterSpeed = Math.min(testShooterSpeed + 20, MAX_SHOOTER_RPM);
+       testShooterSpeed = Math.min(testShooterSpeed + 100, MAX_SHOOTER_RPM);
        SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
      }
 
      if (currentPOV == 180 && lastPov == -1) {
-       testShooterSpeed = Math.max(testShooterSpeed - 20, 0);
+       testShooterSpeed = Math.max(testShooterSpeed - 100, 0);
        SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
      }
 
@@ -65,6 +65,8 @@ public class TuneShooterCommand extends LoggingCommand {
 //       shooterSubsystem.setShooterSpeed(testShooterSpeed);
        SmartDashboard.putNumber("1310/shooter/currentspeed",
        shooterSubsystem.getShooterVelocity());
+     } else if (operatorInput.getDriverController().getBButton()) {
+       shooterSubsystem.setShooterSpeed(1);
      } else {
        shooterSubsystem.setShooterSpeed(0.0);
      }

@@ -1,14 +1,15 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.units.Units;
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.*;
+import static edu.wpi.first.wpilibj.util.Color.*;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RunnymedeUtils;
+import frc.robot.telemetry.Telemetry;
 
 public class LightingSubsystem extends SubsystemBase {
 
@@ -18,195 +19,108 @@ public class LightingSubsystem extends SubsystemBase {
 
   // Buffer of data to write to the LED strip
   private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH - 1);
+      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH);
 
-  private final AddressableLEDBufferView climbLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_CLIMB_VIEW_START,
-          Constants.LightingConstants.LED_CLIMB_VIEW_END);
-  private final AddressableLEDBufferView intakeLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_INTAKE_VIEW_START,
-          Constants.LightingConstants.LED_INTAKE_VIEW_END);
-  private final AddressableLEDBufferView robotHealthLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_START,
-          Constants.LightingConstants.LED_ROBOT_HEALTH_VIEW_END);
-  private final AddressableLEDBufferView driveLedView =
-      ledBuffer.createView(
-          Constants.LightingConstants.LED_DRIVE_VIEW_START,
-          Constants.LightingConstants.LED_DRIVE_VIEW_END);
 
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
-  public static final Distance kLedSpacing = Units.Meters.of(1 / 120.0);
+  public static final Distance kLedSpacing = Meters.of(1 / 120.0);
   public final LEDPattern scrollingRainbowLedPattern =
-      rainbowLedPattern.scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5), kLedSpacing);
-  public static final LEDPattern yellowLEDPatern = LEDPattern.solid(Color.kYellow);
-  public static final LEDPattern greenLedPattern = LEDPattern.solid(Color.kGreen);
-  public static final LEDPattern whiteLedPattern = LEDPattern.solid(Color.kWhite);
-  public static final LEDPattern purpleLedPattern = LEDPattern.solid(Color.kDarkViolet);
-  public static final LEDPattern redLedPattern = LEDPattern.solid(Color.kRed);
-  public static final LEDPattern blueLedPattern = LEDPattern.solid(Color.kBlue);
-  public static final LEDPattern orangeLedPattern = LEDPattern.solid(Color.kOrange);
+      rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing);
+  public static final LEDPattern yellowLEDPatern = LEDPattern.solid(kYellow);
+  public static final LEDPattern greenLedPattern = LEDPattern.solid(kGreen);
+  public static final LEDPattern whiteLedPattern = LEDPattern.solid(kWhite);
+  public static final LEDPattern purpleLedPattern = LEDPattern.solid(kDarkViolet);
+  public static final LEDPattern redLedPattern = LEDPattern.solid(kRed);
+  public static final LEDPattern blueLedPattern = LEDPattern.solid(kBlue);
+  public static final LEDPattern orangeLedPattern = LEDPattern.solid(kOrangeRed);
+  private LEDPattern alliancePattern;
+
+  // Blink Constants
+  private final Timer blinkTimer = new Timer();
+  private boolean isAllianceColor = false;
 
   public LightingSubsystem() {
     ledStrip.setLength(ledBuffer.getLength());
     ledStrip.start();
+    blinkTimer.start();
   }
 
   // runs once every robot period
+  // TODO Make methods based on the current robot functions
   @Override
   public void periodic() {
+
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      alliancePattern = LEDPattern.solid(kFirstRed);
+      } else alliancePattern = LEDPattern.solid(kFirstBlue);
+
+    if (DriverStation.isEnabled()) {
+      // if climbing
+      // if aligned to climb
+      // if climb is up
+      // if ready to shoot
+      // if in range
+      // if intake running
+      // else DEFAULT PATTERN (based on alliance?)
+      if (/*Telemetry.climb.level == 3*/ false) {
+        scrollingRainbowLedPattern.applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.climb.level == 2*/ false) {
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kViolet)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
+                .applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.climb.level == 1*/ false) {
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kDarkViolet)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
+                .applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.climb.alignedToTower*/ false) {
+        greenLedPattern.applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.climb.climbEncoder > 0*/ false) {
+        blink(LEDPattern.solid(kViolet), 0.25);
+      }
+      else if (/*Telemetry.shooter.atSpeed*/ false) {
+        yellowLEDPatern.applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.swerve.distanceToHub <= Constants.Swerve.MAX_SHOOTER_DIST*/ false) {
+        orangeLedPattern.applyTo(ledBuffer);
+      }
+      else if (/*Telemetry.intake.intakeSpeed > 0*/ false) {
+        blink(yellowLEDPatern, 0.5);
+      }
+      else {
+        alliancePattern.applyTo(ledBuffer);
+      }
+    } else {
+      if (/*Telemetry.climb.level == 3*/ false) {
+        scrollingRainbowLedPattern.applyTo(ledBuffer);
+      } else if (Telemetry.healthyRobot == Telemetry.AlertLevel.ERROR) {
+        orangeLedPattern.blink(Second.of(0.1)).applyTo(ledBuffer);
+      } else if (Telemetry.healthyRobot == Telemetry.AlertLevel.WARNING) {
+        LEDPattern.solid(kGreenYellow).blink(Second.of(0.1)).applyTo(ledBuffer);
+      } else if (Telemetry.swerve.hasVisPose) {
+        greenLedPattern.applyTo(ledBuffer);
+      } else {
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, kBlack)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
+                .applyTo(ledBuffer);
+      }
+    }
+
     // every loop, write the buffer to the LEDs
     ledStrip.setData(ledBuffer);
   }
 
-  // TODO Make methods based on the current robot functions
-  // to set data in the LEDbuffer based on some actions
-  public void setRobotFunction() {}
-
-  public void setRobotClimbState(ClimbStates climbState) {
-    switch (climbState) {
-      case GOING_TO_CLIMB:
-        yellowLEDPatern.applyTo(climbLedView);
-        break;
-
-      case CLIMBING:
-        greenLedPattern.applyTo(climbLedView);
-        break;
-
-      case CLIMB_FAILED:
-        redLedPattern.applyTo(climbLedView);
-        break;
-
-      case UNUSED_STATE1:
-        break;
-
-      case UNUSED_STATE2:
-        break;
-
-      case UNUSED_STATE3:
-        break;
+  private void blink(LEDPattern pattern, double blinkPeriod) {
+    if (blinkTimer.hasElapsed(blinkPeriod)) {
+      blinkTimer.restart();
+      isAllianceColor = !isAllianceColor;
     }
+
+    LEDPattern active = isAllianceColor ? alliancePattern : pattern;
+    active.applyTo(ledBuffer);
   }
 
-  public void setRobotIntakeState(IntakeStates intakeState) {
-    switch (intakeState) {
-      case FEEDING_INTAKE:
-        yellowLEDPatern.applyTo(intakeLedView);
-
-        break;
-
-      case SHOOTING:
-        greenLedPattern.applyTo(intakeLedView);
-        break;
-
-      case HOPPER_FULL:
-        redLedPattern.applyTo(intakeLedView);
-        break;
-
-      case UNUSED_STATE1:
-        break;
-
-      case UNUSED_STATE2:
-        break;
-
-      case UNUSED_STATE3:
-        break;
-    }
-  }
-
-  public void setRobotHealthState(RobotHealthStates healthState) {
-    switch (healthState) {
-      case ROBOT_GOOD:
-        greenLedPattern.applyTo(robotHealthLedView);
-
-        break;
-
-      case ROBOT_OKAY:
-        yellowLEDPatern.applyTo(robotHealthLedView);
-        break;
-
-      case ROBOT_BAD:
-        redLedPattern.applyTo(robotHealthLedView);
-        break;
-
-      case UNUSED_STATE1:
-        break;
-
-      case UNUSED_STATE2:
-        break;
-
-      case UNUSED_STATE3:
-        break;
-    }
-  }
-
-  public void setRobotDriveState(DriveStates driveState) {
-
-    switch (driveState) {
-      case NORMAL_DRIVING:
-        greenLedPattern.applyTo(driveLedView);
-        break;
-
-      case BOOST:
-        purpleLedPattern.applyTo(driveLedView);
-        break;
-
-      case ALLIANCE_BLUE:
-        blueLedPattern.applyTo(driveLedView);
-        break;
-
-      case ALLIANCE_RED:
-        redLedPattern.applyTo(driveLedView);
-
-      case UNUSED_RED:
-        redLedPattern.applyTo(driveLedView);
-        break;
-
-      case UNUSED_STATE2:
-        break;
-
-      case UNUSED_STATE3:
-        break;
-    }
-  }
-
-  // Robot states
-  public enum ClimbStates {
-    GOING_TO_CLIMB,
-    CLIMBING,
-    CLIMB_FAILED,
-    UNUSED_STATE1,
-    UNUSED_STATE2,
-    UNUSED_STATE3
-  }
-
-  public enum DriveStates {
-    NORMAL_DRIVING,
-    BOOST,
-    ALLIANCE_BLUE,
-    ALLIANCE_RED,
-    UNUSED_RED,
-    UNUSED_STATE2,
-    UNUSED_STATE3
-  }
-
-  public enum RobotHealthStates {
-    ROBOT_GOOD,
-    ROBOT_OKAY,
-    ROBOT_BAD,
-    UNUSED_STATE1,
-    UNUSED_STATE2,
-    UNUSED_STATE3
-  }
-
-  public enum IntakeStates {
-    FEEDING_INTAKE,
-    SHOOTING,
-    HOPPER_FULL,
-    UNUSED_STATE1,
-    UNUSED_STATE2,
-    UNUSED_STATE3
-  }
 }
