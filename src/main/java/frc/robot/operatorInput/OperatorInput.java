@@ -78,7 +78,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean getFaceHub() {
-    return driverController.getYButton();
+    return getShooterActive();
   }
 
   public boolean isFastMode() {

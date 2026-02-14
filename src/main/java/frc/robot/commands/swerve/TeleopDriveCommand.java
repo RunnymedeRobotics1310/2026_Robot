@@ -96,14 +96,14 @@ public class TeleopDriveCommand extends LoggingCommand {
         // vice versa.
         // The coordinate system has positive motion as CCW.
         // Therefore, negative x stick value maps to positive rotation on the field.
-        final double ccwRotAngularVelPct = -oi.getDriverControllerAxis(RIGHT, X) * 0.65; // TODO: put this in constants?
+        final double ccwRotAngularVelPct = -oi.getDriverControllerAxis(RIGHT, X) * 0.25; // TODO: put this in constants?
 
         final boolean rotate180Val = oi.getRotate180Val();
 
         final boolean faceHub = oi.getFaceHub();
 
         // Compute boost factor
-        final boolean isSlow = oi.isSlowMode() || true;
+        final boolean isSlow = oi.isSlowMode();
         // final boolean isSlow = false;
         final boolean isFast = oi.isFastMode();
         final double boostFactor = isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);

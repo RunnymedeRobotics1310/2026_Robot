@@ -4,20 +4,16 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.KP;
-import static frc.robot.Constants.ShooterConstants.IS_HOPPER_ATTACHED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+import com.revrobotics.spark.*;
 
-import com.revrobotics.spark.SparkFlex;
-
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.*;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterSubsystem extends SubsystemBase {
+import static frc.robot.Constants.ShooterConstants.*;
 
-  private final LightingSubsystem lightingSubsystem;
+public class ShooterSubsystem extends SubsystemBase {
 
   private final SparkFlex shooterMotor =
           IS_HOPPER_ATTACHED ? new SparkFlex(30, SparkFlex.MotorType.kBrushless) : null;
@@ -37,15 +33,12 @@ public class ShooterSubsystem extends SubsystemBase {
   public boolean autoAiming = false;
 
   /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem(LightingSubsystem lightingSubsystem) {
-    this.lightingSubsystem = lightingSubsystem;
-  }
+  public ShooterSubsystem() {}
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("1310/shooter/currentmotorvelocity", getShooterVelocity());
     SmartDashboard.putNumber("1310/shooter/targetmotorvelocity", targetMotorVelocity);
-
   }
 
   public double getShooterVelocity() {
@@ -66,13 +59,13 @@ public class ShooterSubsystem extends SubsystemBase {
     } else System.out.println("SETTING KICKER VELOCITY TO: " + setPoint);
   }
 
-  public void setShooterVelocity(double setPoint) {
+  public void setShooterVelocity(double target) {
     if (IS_HOPPER_ATTACHED) {
-      targetMotorVelocity = setPoint;
+      targetMotorVelocity = target;
       double currentSpeed = getShooterVelocity();
-      double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
-      shooterMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
-    } else System.out.println("SETTING SHOOTER VELOCITY TO: " + setPoint);
+      double error = (target - currentSpeed); // Normalize error
+      shooterMotor.set((target * KFF) + (error * KP));
+    } else System.out.println("SETTING SHOOTER VELOCITY TO: " + target);
   }
 
   public void setShooterSpeed(double speed) {
