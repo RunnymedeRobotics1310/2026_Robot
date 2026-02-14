@@ -85,7 +85,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         // The coordinate system has positive motion as CCW.
         // Therefore, negative x stick value maps to positive rotation on the field.
         final double ccwRotAngularVelPct =
-                -oi.getDriverControllerAxis(RIGHT, X) * 0.65; // TODO: put this in constants?
+                -oi.getDriverControllerAxis(RIGHT, X) * 0.25; // TODO: put this in constants?
 
         final boolean rotate180Val = oi.getRotate180Val();
 

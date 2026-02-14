@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import ca.team1310.swerve.RunnymedeSwerveDrive;
+import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -60,6 +61,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafely(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
+    omega = SwerveUtils.clamp(
+            -config.rotationConfig().maxRotVelocityRadPS(),
+            omega,
+            config.rotationConfig().maxRotVelocityRadPS()
+    );
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -78,6 +84,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafelyFieldOriented(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
+    omega = SwerveUtils.clamp(
+            -config.rotationConfig().maxRotVelocityRadPS(),
+            omega,
+            config.rotationConfig().maxRotVelocityRadPS()
+    );
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -247,36 +258,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public double computeOmega(double desiredHeadingDegrees, double maxOmegaRadPerSec) {
     double omega = headingPIDController.calculate(drive.getYaw(), desiredHeadingDegrees);
-    return Math.min(omega, maxOmegaRadPerSec);
-  }
-
-  public double oldComputeTranslateVelocity(double distance, double maxSpeedMPS, double tolerance) {
-    final double decelZoneMetres = 1.2;
-    final double verySlowZone = 0.2;
-    final double verySlowSpeed = 0.15;
-    double speed;
-
-    final double absDist = Math.abs(distance);
-
-    if (absDist < tolerance) {
-      return 0;
-    }
-    // Very slow zone
-    if (absDist < verySlowZone) {
-      speed = verySlowSpeed;
-    }
-    // Full speed ahead!
-    else if (absDist >= decelZoneMetres) {
-      speed = maxSpeedMPS;
-    }
-    // Decel Zone
-    else {
-      speed = (absDist / decelZoneMetres) * maxSpeedMPS;
-    }
-
-    speed *= Math.signum(distance);
-
-    return speed;
+    return SwerveUtils.clamp(-maxOmegaRadPerSec, omega, maxOmegaRadPerSec);
   }
 
   public Translation2d computeVelocity(Translation2d translationToTravel, double maxSpeed) {
