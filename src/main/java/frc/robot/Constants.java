@@ -61,7 +61,7 @@ public final class Constants {
         public static final class LightingConstants {
 
                 public static final int LED_STRING_PWM_PORT = 9;
-                public static final int LED_STRING_LENGTH = 38;
+                public static final int LED_STRING_LENGTH = 36;
 
                 public static final int LED_CLIMB_VIEW_START = 0;
                 public static final int LED_CLIMB_VIEW_END = 4;
@@ -81,15 +81,39 @@ public final class Constants {
                 public static final double FIELD_EXTENT_METRES_X = 16.54;
         }
 
-        public static final class ShooterConstants {
-                public static final double MAX_SHOOTER_RPM = 1580;
-                public static final double KP = 0.7;
-                public static final double SLOPE_VALUE = 372.78;
-                public static final double Y_INT = 172.44;
+  public static final class AutoConstants {
 
-        }
+      public enum AutoPattern {
+        DO_NOTHING,
+        EXIT_ZONE,
+        SIMPLE_CENTER,
+        OPPORTUNISTIC_OUTPOST,
+      }
 
-        public static final class Swerve {
+      public enum Delay {
+        NO_DELAY,
+        WAIT_0_5_SECOND,
+        WAIT_1_SECOND,
+        WAIT_1_5_SECONDS,
+        WAIT_2_SECONDS,
+        WAIT_2_5_SECONDS,
+        WAIT_3_SECONDS,
+        WAIT_5_SECONDS
+      }
+  }
+
+    public static final class ShooterConstants {
+        public static final boolean IS_HOPPER_ATTACHED = false;
+
+        public static final double MAX_SHOOTER_RPM = 6200;
+        public static final double KP = 0.00005;
+        public static final double KFF = 1 / MAX_SHOOTER_RPM;
+        public static final double SLOPE_VALUE = 372.78;
+        public static final double Y_INT = 172.44;
+
+    }
+
+    public static final class Swerve {
 
                 /** Front to back from the middle of the wheels */
                 public static final double WHEEL_BASE_METRES = inchesToMeters(16.75);
@@ -97,23 +121,23 @@ public final class Constants {
                 /** Side to side from the middle of the wheels */
                 public static final double TRACK_WIDTH_METRES = inchesToMeters(16.75);
 
-                public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.0485;
+                public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.051;
 
                 public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
 
                 public static final SwerveTranslationConfig TRANSLATION_CONFIG = new SwerveTranslationConfig(
                                 /* tolerance (m) */ 0.02,
                                 /* min speed (m/s) */ 1.0,
-                                /* max speed (m/s) */ 4.8,
+                                /* max speed (m/s) */ 1,
                                 /* max module speed (m/s) */ 5.36,
-                                /* max acceleration (m/s/s) */ 42.0,
+                                /* max acceleration (m/s/s) */ 10.0,
                                 /* velocity PID p */ 1.2,
                                 /* velocity PID i */ 0,
                                 /* velocity PID d */ 0);
 
                 public static final SwerveRotationConfig ROTATION_CONFIG = new SwerveRotationConfig(
-                                /* max rot vel (rad/s) */ Rotation2d.fromRotations(1.5).getRadians(),
-                                /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.75).getRadians(),
+                                /* max rot vel (rad/s) */ Rotation2d.fromRotations(0.75).getRadians(),
+                                /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.25).getRadians(),
                                 /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(2).getRadians(),
                                 /* heading PID p */ 0.033, // Rads/Deg
                                 /* heading PID i */ 0,
@@ -124,7 +148,7 @@ public final class Constants {
                                 /* inverted? */ true,
                                 /* current limit (A) */ 20,
                                 /* nominal voltage (V) */ 12,
-                                /* ramp rate 0 to full power (s) */ 0.25,
+                                /* ramp rate 0 to full power (s) */ 0.02,
                                 /* angle motor gear ratio */ 150.0 / 7 /* SDS MK4i 150/7:1 */,
                                 /* angle motor PID p */ 0.009,
                                 /* angle motor PID i */ 0,
@@ -137,7 +161,7 @@ public final class Constants {
                                 /* inverted? */ false,
                                 /* current limit (A) */ 40,
                                 /* nominal voltage (V) */ 12,
-                                /* ramp rate 0 to full power (s) */ 0.25, // TODO: FIXME: TRY LOWERING THIS A LOT
+                                /* ramp rate 0 to full power (s) */ 0.02, // TODO: FIXME: TRY LOWERING THIS A LOT
                                 /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
                                 /* drive motor PID p */ 0.075,
                                 /* drive motor PID i */ 0,

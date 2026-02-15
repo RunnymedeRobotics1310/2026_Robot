@@ -39,13 +39,7 @@ public class DriveTelemetry {
    */
   public double fieldOrientedDeltaToPoseHeading = Double.MIN_VALUE;
 
-  public double ultrasonicDistanceM = Double.MIN_VALUE;
-  public double ultrasonicVoltage = Double.MIN_VALUE;
-
   void post() {
-
-    SmartDashboard.putNumber(PREFIX + "Drive/Ultrasonic Distance M", ultrasonicDistanceM);
-    SmartDashboard.putNumber(PREFIX + "Drive/Ultrasonic Voltage", ultrasonicVoltage);
 
     if (enabled) {
       double fieldSpeed = Math.hypot(fieldOrientedVelocityX, fieldOrientedVelocityY);
