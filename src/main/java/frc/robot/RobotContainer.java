@@ -34,7 +34,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(lightingSubsystem);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
 

@@ -103,7 +103,7 @@ public final class Constants {
   }
 
     public static final class ShooterConstants {
-        public static final boolean IS_HOPPER_ATTACHED = false;
+        public static final boolean IS_HOPPER_ATTACHED = true;
 
         public static final double MAX_SHOOTER_RPM = 6200;
         public static final double KP = 0.00005;
