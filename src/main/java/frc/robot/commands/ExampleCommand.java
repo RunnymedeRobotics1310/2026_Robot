@@ -6,26 +6,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.LightingSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class ExampleCommand extends LoggingCommand {
 
   private final ExampleSubsystem exampleSubsystem;
 
-  private final LightingSubsystem lightingSubsystem;
-
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem, LightingSubsystem lightingSubsystem) {
+  public ExampleCommand(ExampleSubsystem subsystem) {
     super();
     exampleSubsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
-    this.lightingSubsystem = lightingSubsystem;
   }
 
   // Called when the command is initially scheduled.

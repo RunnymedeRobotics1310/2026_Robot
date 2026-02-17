@@ -8,18 +8,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ExampleSubsystem extends SubsystemBase {
 
-  LightingSubsystem lightingSubsystem;
-
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem(LightingSubsystem lightingSubsystem) {
-    this.lightingSubsystem = lightingSubsystem;
+  public ExampleSubsystem() {
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     // TODO Update the smartdashboard
-    // TODO Update the lights
   }
 
   @Override

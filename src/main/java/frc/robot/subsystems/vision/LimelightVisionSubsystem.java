@@ -160,6 +160,26 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return -botPose.getTagTxnc(index);
   }
 
+  public double heightOfTarget(int tagId) {
+    LimelightBotPose botPose = getBotPose();
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return -botPose.getTagTync(index);
+  }
+
+  public double areaOfTarget(int tagId) {
+    LimelightBotPose botPose = getBotPose();
+
+    int index = 0;
+    if (tagId > 0) {
+      index = botPose.getTagIndex(tagId);
+    }
+    return -botPose.getTagTa(index);
+  }
+
   /**
    * Get the number of tags visible to the default limelight (hugh)
    *
