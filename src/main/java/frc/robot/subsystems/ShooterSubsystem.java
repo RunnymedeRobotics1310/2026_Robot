@@ -5,12 +5,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkFlex;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
-
-  private final LightingSubsystem lightingSubsystem;
 
   public final SparkFlex shooterMotor = new SparkFlex(30, SparkFlex.MotorType.kBrushless);
   public final SparkFlex kickerMotor = new SparkFlex(33, SparkFlex.MotorType.kBrushless);
@@ -20,8 +17,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public int shooterSpeedRpm = 0;
 
   /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem(LightingSubsystem lightingSubsystem) {
-    this.lightingSubsystem = lightingSubsystem;
+  public ShooterSubsystem() {
+    
   }
 
   @Override

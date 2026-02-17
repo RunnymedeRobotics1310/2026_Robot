@@ -9,6 +9,6 @@ public class AutoTwo extends SequentialCommandGroup {
   public AutoTwo(SwerveSubsystem swerve, double delay) {
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    addCommands(new TestAuto(swerve, delay).withTimeout(0.5).andThen(new TestAuto(swerve, delay)));
+    addCommands(new TestAuto(swerve, delay).withTimeout(0.5).andThen(new NullDriveCommand(swerve)));
   }
 }

@@ -5,11 +5,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.swerve.SetGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -20,20 +18,23 @@ public class OperatorInput extends SubsystemBase {
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-
-          SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem, ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve,
+      LightingSubsystem lightingSubsystem,
+      ExampleSubsystem exampleSubsystem /*, ShooterSubsystem shooterSubsystem*/,
+      LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
-    new Trigger(() -> isZeroGyro())
-            .onTrue(new SetGyroCommand(swerve, 0));
+    new Trigger(() -> isZeroGyro()).onTrue(new SetGyroCommand(swerve, 0));
     new Trigger(() -> driverController.getAButtonPressed())
         .onTrue(new ExampleCommand(exampleSubsystem, lightingSubsystem));
+    /*
     new Trigger(() -> driverController.getBButtonPressed())
-        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this));
+        .onTrue(new ShooterCommand(shooterSubsystem, vision, lightingSubsystem, this)); */
   }
 
   public boolean isCancel() {
     return (driverController.getStartButton() && !driverController.getBackButton());
   }
+
   public boolean isZeroGyro() {
     return driverController.getBackButton();
   }
@@ -45,6 +46,7 @@ public class OperatorInput extends SubsystemBase {
   public boolean isFastMode() {
     return driverController.getRightBumperButton();
   }
+
   public boolean isSlowMode() {
     return driverController.getLeftBumperButton();
   }

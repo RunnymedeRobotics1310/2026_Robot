@@ -7,9 +7,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RunnymedeUtils;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.telemetry.Telemetry;
 
@@ -26,17 +24,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem(SwerveDriveSubsystemConfig config, LightingSubsystem lighting) {
     this.drive =
-            new LimelightAwareSwerveDrive(
-                    config.coreConfig(), config.gyroConfig(), config.limelightConfig());
+        new LimelightAwareSwerveDrive(
+            config.coreConfig(), config.gyroConfig(), config.limelightConfig());
     this.config = config;
+    Telemetry.swerve = drive.getSwerveTelemetry();
     this.xLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.yLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.omegaLimiter = new SlewRateLimiter(config.rotationConfig().maxAccelerationRadPS2());
     headingPIDController =
-            new PIDController(
-                    config.rotationConfig().headingP(),
-                    config.rotationConfig().headingI(),
-                    config.rotationConfig().headingD());
+        new PIDController(
+            config.rotationConfig().headingP(),
+            config.rotationConfig().headingI(),
+            config.rotationConfig().headingD());
     headingPIDController.enableContinuousInput(-180, 180);
     headingPIDController.setTolerance(2);
     Telemetry.drive.enabled = config.telemetryEnabled();
@@ -44,15 +43,7 @@ public class SwerveSubsystem extends SubsystemBase {
     this.lighting = lighting;
   }
 
-  public void periodic() {
-
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      lighting.setRobotDriveState(LightingSubsystem.DriveStates.ALLIANCE_RED);
-    } else {
-      lighting.setRobotDriveState(LightingSubsystem.DriveStates.ALLIANCE_BLUE);
-    }
-
-  }
+  public void periodic() {}
 
   /*
    * *********************************************************************************************
@@ -221,12 +212,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StringBuilder sb = new StringBuilder();
     sb.append(this.getClass().getSimpleName())
-            .append(": Pose: ")
-            .append(Math.round(x * 100d) / 100d)
-            .append(",")
-            .append(Math.round(y * 100d) / 100d)
-            .append(",")
-            .append(Math.round(theta * 10d) / 10d);
+        .append(": Pose: ")
+        .append(Math.round(x * 100d) / 100d)
+        .append(",")
+        .append(Math.round(y * 100d) / 100d)
+        .append(",")
+        .append(Math.round(theta * 10d) / 10d);
 
     return sb.toString();
   }
@@ -315,6 +306,6 @@ public class SwerveSubsystem extends SubsystemBase {
     double xSign = Math.signum(translationToTravel.getX());
     double ySign = Math.signum(translationToTravel.getY());
     return new Translation2d(
-            xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
+        xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
 }

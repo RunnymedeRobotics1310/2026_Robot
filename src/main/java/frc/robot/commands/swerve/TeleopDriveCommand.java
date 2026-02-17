@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -90,7 +89,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         final boolean rotate180Val = oi.getRotate180Val();
 
         // Compute boost factor
-        final boolean isSlow = oi.isSlowMode() || true;
+        final boolean isSlow = oi.isSlowMode();
         //    final boolean isSlow = false;
         final boolean isFast = oi.isFastMode();
         final double boostFactor =

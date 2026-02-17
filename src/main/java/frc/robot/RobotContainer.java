@@ -14,7 +14,6 @@ import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -34,8 +33,9 @@ public class RobotContainer {
       new SwerveSubsystem(SUBSYSTEM_CONFIG, lightingSubsystem);
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
-  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem(lightingSubsystem);
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(lightingSubsystem);
+  private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+
+  //  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -52,7 +52,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(
-        swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem, visionSubsystem);
+        swerveSubsystem,
+        lightingSubsystem,
+        exampleSubsystem, /* shooterSubsystem, */
+        visionSubsystem);
   }
 
   /**
