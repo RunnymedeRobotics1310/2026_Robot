@@ -4,19 +4,18 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
+import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-
-import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
-import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,7 +35,7 @@ public class RobotContainer {
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
-  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -53,7 +52,8 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem, visionSubsystem);
+    operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem,
+        visionSubsystem);
     operatorInput.initAutoSelectors();
   }
 
