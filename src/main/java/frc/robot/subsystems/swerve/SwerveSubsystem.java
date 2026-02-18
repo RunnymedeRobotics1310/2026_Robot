@@ -24,48 +24,48 @@ public class SwerveSubsystem extends SubsystemBase {
   private final PIDController headingPIDController;
 
   public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
-    this.drive =
-            new LimelightAwareSwerveDrive(
-                    config.coreConfig(), config.gyroConfig(), config.limelightConfig());
+    this.drive = new LimelightAwareSwerveDrive(
+        config.coreConfig(), config.gyroConfig(), config.limelightConfig());
     Telemetry.swerve = drive.getSwerveTelemetry();
     this.config = config;
     this.xLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.yLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.omegaLimiter = new SlewRateLimiter(config.rotationConfig().maxAccelerationRadPS2());
-    headingPIDController =
-            new PIDController(
-                    config.rotationConfig().headingP(),
-                    config.rotationConfig().headingI(),
-                    config.rotationConfig().headingD());
+    headingPIDController = new PIDController(
+        config.rotationConfig().headingP(),
+        config.rotationConfig().headingI(),
+        config.rotationConfig().headingD());
     headingPIDController.enableContinuousInput(-180, 180);
     headingPIDController.setTolerance(2);
     Telemetry.drive.enabled = config.telemetryEnabled();
   }
 
+  @Override
   public void periodic() {
   }
 
   /*
-   * *********************************************************************************************
+   * *****************************************************************************
+   * ****************
    * Core methods for controlling the drivebase
    */
 
   /**
-   * Add limiters to the change in drive values. Note this may not scale evenly - one may reach
+   * Add limiters to the change in drive values. Note this may not scale evenly -
+   * one may reach
    * desired speed before another.
    *
-   * @param x m/s
-   * @param y m/s
+   * @param x     m/s
+   * @param y     m/s
    * @param omega rad/s
    */
   private void driveSafely(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
     omega = SwerveUtils.clamp(
-            -config.rotationConfig().maxRotVelocityRadPS(),
-            omega,
-            config.rotationConfig().maxRotVelocityRadPS()
-    );
+        -config.rotationConfig().maxRotVelocityRadPS(),
+        omega,
+        config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -74,21 +74,21 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Add limiters to the change in drive values. Note this may not scale evenly - one may reach
+   * Add limiters to the change in drive values. Note this may not scale evenly -
+   * one may reach
    * desired speed before another.
    *
-   * @param x m/s
-   * @param y m/s
+   * @param x     m/s
+   * @param y     m/s
    * @param omega rad/s
    */
   private void driveSafelyFieldOriented(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
     omega = SwerveUtils.clamp(
-            -config.rotationConfig().maxRotVelocityRadPS(),
-            omega,
-            config.rotationConfig().maxRotVelocityRadPS()
-    );
+        -config.rotationConfig().maxRotVelocityRadPS(),
+        omega,
+        config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -97,16 +97,19 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * The primary method for controlling the drivebase. The provided parameters specify the
+   * The primary method for controlling the drivebase. The provided parameters
+   * specify the
    * robot-relative chassis speeds of the robot.
    *
-   * <p>This method is responsible for applying safety code to prevent the robot from attempting to
+   * <p>
+   * This method is responsible for applying safety code to prevent the robot from
+   * attempting to
    * exceed its physical limits both in terms of speed and acceleration.
    *
    * <p>
    *
-   * @param x m/s
-   * @param y m/s
+   * @param x     m/s
+   * @param y     m/s
    * @param omega rad/s
    */
   public final void driveRobotOriented(double x, double y, double omega) {
@@ -126,14 +129,19 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Convenience method for controlling the robot in field-oriented drive mode. Transforms the
-   * field-oriented inputs into the required robot-oriented inputs that can be used by the robot.
+   * Convenience method for controlling the robot in field-oriented drive mode.
+   * Transforms the
+   * field-oriented inputs into the required robot-oriented inputs that can be
+   * used by the robot.
    *
-   * @param x the linear velocity of the robot in metres per second. Positive x is away from the
-   *     blue alliance wall
-   * @param y the linear velocity of the robot in metres per second. Positive y is to the left of
-   *     the robot
-   * @param omega the rotation rate of the heading of the robot in radians per second. CCW positive.
+   * @param x     the linear velocity of the robot in metres per second. Positive
+   *              x is away from the
+   *              blue alliance wall
+   * @param y     the linear velocity of the robot in metres per second. Positive
+   *              y is to the left of
+   *              the robot
+   * @param omega the rotation rate of the heading of the robot in radians per
+   *              second. CCW positive.
    */
   public final void driveFieldOriented(double x, double y, double omega) {
     Telemetry.drive.fieldOrientedDeltaToPoseX = 0;
@@ -147,7 +155,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Lock the swerve drive to prevent it from moving. This can only be called when the robot is
+   * Lock the swerve drive to prevent it from moving. This can only be called when
+   * the robot is
    * nearly stationary.
    *
    * @return true if successfully locked, false otherwise
@@ -157,7 +166,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+   * Gets the current pose (position and rotation) of the robot, as reported by
+   * odometry.
    *
    * @return The robot's pose
    */
@@ -183,15 +193,18 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
+   * Resets the gyro angle to zero and resets odometry to the same position, but
+   * facing toward 0.
    */
   public void zeroGyro() {
     drive.zeroGyro();
   }
 
   /**
-   * Change the robot's internal understanding of its position and rotation. This is not an
-   * incremental change or suggestion, it discontinuously re-sets the pose to the specified pose.
+   * Change the robot's internal understanding of its position and rotation. This
+   * is not an
+   * incremental change or suggestion, it discontinuously re-sets the pose to the
+   * specified pose.
    *
    * @param pose the new location and heading of the robot.
    */
@@ -200,14 +213,17 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Set the desired module state for the named module. This should ONLY be used when testing the
+   * Set the desired module state for the named module. This should ONLY be used
+   * when testing the
    * serve drivebase in a controlled environment.
    *
-   * <p>This SHOULD NOT be called during normal operation - it is designed for TEST MODE ONLY!
+   * <p>
+   * This SHOULD NOT be called during normal operation - it is designed for TEST
+   * MODE ONLY!
    *
    * @param moduleName the module to activate
-   * @param speed in m/s
-   * @param angle in degrees
+   * @param speed      in m/s
+   * @param angle      in degrees
    */
   public void setModuleState(String moduleName, double speed, double angle) {
     drive.setModuleState(moduleName, speed, angle);
@@ -222,24 +238,27 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StringBuilder sb = new StringBuilder();
     sb.append(this.getClass().getSimpleName())
-            .append(": Pose: ")
-            .append(Math.round(x * 100d) / 100d)
-            .append(",")
-            .append(Math.round(y * 100d) / 100d)
-            .append(",")
-            .append(Math.round(theta * 10d) / 10d);
+        .append(": Pose: ")
+        .append(Math.round(x * 100d) / 100d)
+        .append(",")
+        .append(Math.round(y * 100d) / 100d)
+        .append(",")
+        .append(Math.round(theta * 10d) / 10d);
 
     return sb.toString();
   }
 
   /*
-   * *********************************************************************************************
+   * *****************************************************************************
+   * ****************
    * Convenience methods for subsystem users
    */
 
   /**
-   * Compute the required rotation speed of the robot given the desired heading. Note the desired
-   * heading is specified in degrees, adn the returned value is in radians per second.
+   * Compute the required rotation speed of the robot given the desired heading.
+   * Note the desired
+   * heading is specified in degrees, adn the returned value is in radians per
+   * second.
    *
    * @param desiredHeadingDegrees the desired heading of the robot
    * @return the required rotation speed of the robot (omega) in rad/s
@@ -249,11 +268,14 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Compute the required rotation speed of the robot given the desired heading. Note the desired
-   * heading is specified in degrees, adn the returned value is in radians per second.
+   * Compute the required rotation speed of the robot given the desired heading.
+   * Note the desired
+   * heading is specified in degrees, adn the returned value is in radians per
+   * second.
    *
    * @param desiredHeadingDegrees the desired heading of the robot
-   * @param maxOmegaRadPerSec the maximum allowable rotation speed of the robot
+   * @param maxOmegaRadPerSec     the maximum allowable rotation speed of the
+   *                              robot
    * @return the required rotation speed of the robot (omega) in rad/s
    */
   public double computeOmega(double desiredHeadingDegrees, double maxOmegaRadPerSec) {
@@ -316,7 +338,7 @@ public class SwerveSubsystem extends SubsystemBase {
     double xSign = Math.signum(translationToTravel.getX());
     double ySign = Math.signum(translationToTravel.getY());
     return new Translation2d(
-            xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
+        xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
 
   public Rotation2d angleToHub() {

@@ -30,7 +30,7 @@ public class ShooterCommand extends LoggingCommand {
    * @param shooterSubsystem The subsystem used by this command.
    */
   public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision,
-                        OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
+      OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
@@ -85,13 +85,18 @@ public class ShooterCommand extends LoggingCommand {
     double shooterSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(shooterSpeed);
     SmartDashboard.putNumber("1310/shooter/targetspeed", shooterSpeed);
+    if (swerveSubsystem.distanceToHub() > 2.5) {
+      shooterSubsystem.setHood(0.8);
+    } else {
+      shooterSubsystem.setHood(0.6);
+    }
 
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
 
-    if (timer.hasElapsed(2.5)) {
+    if (timer.hasElapsed(2.0)) {
       shooterSubsystem.setKickerSpeed(-0.7);
     }
-    if (timer.hasElapsed(2.8)) {
+    if (timer.hasElapsed(2.3)) {
       shooterSubsystem.setKickerSpeed(0.0);
       timer.reset();
       timer.stop();
