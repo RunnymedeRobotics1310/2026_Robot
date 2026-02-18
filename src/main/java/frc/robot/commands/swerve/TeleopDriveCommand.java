@@ -121,8 +121,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         if (correctedCcwRotAngularVelPct != 0) {
             // User is steering!
             lockOnHub = false;
-            omegaRadiansPerSecond =
-                    Math.pow(correctedCcwRotAngularVelPct, 1) * ROTATION_CONFIG.maxRotVelocityRadPS();
+            omegaRadiansPerSecond = Math.pow(correctedCcwRotAngularVelPct, 1) * ROTATION_CONFIG.maxRotVelocityRadPS();
             // Save previous heading for when we are finished steering and slow enough.
             // headingSetpoint = Rotation2d.fromDegrees(swerve.getYaw());
             headingSetpointDeg = null;
@@ -135,8 +134,9 @@ public class TeleopDriveCommand extends LoggingCommand {
             }
 
             if (faceHub || lockOnHub) {
-                lockOnHub =  true;
+                lockOnHub = true;
                 headingSetpointDeg = swerve.angleToHub().getDegrees();
+
             }
 
             // rotate 180º button
