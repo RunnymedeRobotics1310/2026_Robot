@@ -262,6 +262,6 @@ public final class Constants {
         new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
 
     // TODO: fixme: rename me
-    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
+    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hopper";
   }
 }

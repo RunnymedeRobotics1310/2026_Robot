@@ -45,6 +45,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
     primaryLimelightPoseCache.update(var);
 
+    System.out.println("31: " + angleToTarget(31));
+    System.out.println("general: " + angleToTarget());
+
     // Update telemetry
     updateTelemetry();
   }
@@ -263,6 +266,6 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   @Override
   public String toString() {
-    return "AC/DeepSea Vision Subsystem";
+    return "Swervy Vision Subsystem";
   }
 }

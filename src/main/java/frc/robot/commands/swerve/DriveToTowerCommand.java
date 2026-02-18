@@ -50,9 +50,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double tX;
     if (vision.isTagInView(tagId)) {
       noDataCount = 0;
-      tX =
-          vision.angleToTarget(
-              tagId); // this is actually tY but we named it tX so we don't have to change all the
+      tX = vision.angleToTarget(tagId);
       // code below
     } else {
       noDataCount++;
@@ -63,7 +61,7 @@ public class DriveToTowerCommand extends LoggingCommand {
       if (Math.abs(swerve.getYaw() - theta) > 5) {
         swerve.driveRobotOriented(0, 0, omega);
       } else {
-        swerve.driveRobotOriented(0, -0.7, omega);
+        swerve.driveRobotOriented(0, -0.4, omega);
       }
       return;
     }
@@ -74,10 +72,10 @@ public class DriveToTowerCommand extends LoggingCommand {
     if (Math.abs(tX + TOWER_TX_OFFSET) > 20) {
       vX = 0;
     } else {
-      vX = -0.35;
+      vX = -0.2;
     }
-    vY = 0.07 * (tX + TOWER_TX_OFFSET);
-    log("tx: " + tX);
+    vY = 0.03 * (tX);
+    //    log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
