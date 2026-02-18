@@ -14,6 +14,7 @@ import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
+import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
@@ -40,9 +41,11 @@ public class OperatorInput extends SubsystemBase {
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-
-      SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem,
-      ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve,
+      LightingSubsystem lightingSubsystem,
+      ExampleSubsystem exampleSubsystem,
+      ShooterSubsystem shooterSubsystem,
+      LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
 
@@ -51,6 +54,9 @@ public class OperatorInput extends SubsystemBase {
 
     new Trigger(() -> driverController.getXButton())
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
+
+    new Trigger(() -> driverController.getPOV() == 90)
+        .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
@@ -130,8 +136,10 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.setDefaultOption(
         "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
     autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
-    autoPatternChooser.addOption("Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
-    autoPatternChooser.addOption("Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
+    autoPatternChooser.addOption(
+        "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
+    autoPatternChooser.addOption(
+        "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 

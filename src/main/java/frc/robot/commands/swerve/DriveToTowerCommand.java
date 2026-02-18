@@ -1,6 +1,5 @@
 package frc.robot.commands.swerve;
 
-
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
@@ -19,11 +18,13 @@ public class DriveToTowerCommand extends LoggingCommand {
   private int noDataCount = 0;
   private int theta = 0;
 
+  private boolean isRightSide;
 
   public DriveToTowerCommand(
-      SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean rightSide) {
+      SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean isRightSide) {
     this.swerve = swerve;
     this.vision = vision;
+    this.isRightSide = isRightSide;
     addRequirements(swerve, vision);
   }
 
@@ -35,6 +36,7 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       tagId = 15;
+
       theta = 180; // this will change when we get the comp bot
     } else {
       tagId = 31;
@@ -48,9 +50,13 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double tX;
     if (vision.isTagInView(tagId)) {
       noDataCount = 0;
-      tX = vision.angleToTarget(tagId);
+      tX =
+          vision.angleToTarget(
+              tagId); // this is actually tY but we named it tX so we don't have to change all the
+      // code below
     } else {
       noDataCount++;
+      log("Tag " + tagId + " not in view");
 
       double omega = swerve.computeOmega(theta);
 
@@ -63,14 +69,15 @@ public class DriveToTowerCommand extends LoggingCommand {
     }
 
     // drive to tag
-    final double vX;
-    final double vY;
-    if (Math.abs(tX+TOWER_TX_OFFSET) > 20) {
+    final double vX; // forward/backward speed
+    final double vY; // left/right speed
+    if (Math.abs(tX + TOWER_TX_OFFSET) > 20) {
       vX = 0;
     } else {
       vX = -0.35;
     }
-    vY = 0.07 * (tX+TOWER_TX_OFFSET);
+    vY = 0.07 * (tX + TOWER_TX_OFFSET);
+    log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
@@ -86,9 +93,9 @@ public class DriveToTowerCommand extends LoggingCommand {
     }
 
     // if ur in the spot, stop
-    final double tY = vision.heightOfTarget(tagId);
-    log("TY: " + tY);
-    return tY > -11 && tY < -1;
+    final double tA = vision.areaOfTarget(tagId);
+    //    log("TA: " + tA);
+    return tA > 0.7 && tA < 1;
   }
 
   @Override
