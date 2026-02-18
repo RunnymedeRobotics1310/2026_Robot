@@ -5,20 +5,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 
+import static frc.robot.operatorInput.OperatorInput.Axis.Y;
+import static frc.robot.operatorInput.OperatorInput.Stick.RIGHT;
+
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends LoggingCommand {
+public class ClimbCommand extends LoggingCommand {
 
   private final ClimbSubsystem climb;
   private final OperatorInput input;
 
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public ExampleCommand(ClimbSubsystem climb, OperatorInput input) {
+  public ClimbCommand(ClimbSubsystem climb, OperatorInput input) {
     super();
     this.climb = climb;
     this.input = input;
@@ -35,7 +35,7 @@ public class ExampleCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setClimbMotor(input.getDriverControllerAxis(RIGHT, Y););
+    climb.setClimbMotor(input.getDriverControllerAxis(RIGHT, Y));
   }
 
   // Returns true when the command should end.

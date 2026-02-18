@@ -6,9 +6,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -30,6 +32,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
 
   private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
 
@@ -41,7 +44,7 @@ public class RobotContainer {
     // and typically take the operator input as the first parameter.
 
     swerveSubsystem.setDefaultCommand(new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
-
+    climbSubsystem.setDefaultCommand(new ClimbCommand(climbSubsystem, operatorInput));
     exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
 
     // Configure the trigger bindings

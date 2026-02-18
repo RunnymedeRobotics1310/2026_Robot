@@ -4,15 +4,18 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class ClimbSubsystem extends SubsystemBase {
 
-    climbMotor = new SparkMax(50, MotorType.kBrushless);
-    secondaryClimbMotor = new SparkMax(51, MotorType.kBrushless);
-    pirvate double climbMotorSpeed = 0;
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {
+    private final SparkMax climbMotor = new SparkMax(50, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax secondaryClimbMotor = new SparkMax(51, SparkLowLevel.MotorType.kBrushless);
+    private double climbMotorSpeed = 0;
+
+
+  public ClimbSubsystem() {
   }
 
   @Override
@@ -20,11 +23,11 @@ public class ExampleSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     // TODO Update the smartdashboard
 
-    climbMotor.getEncoder().getPosition();
     if (climbMotor.getEncoder().getPosition() < 0) {
-    System.out.println("You are at the bottom");
-    if (climbMotorSpeed < 0) {
-        climbMotorSpeed = 0;
+        System.out.println("You are at the bottom");
+        if (climbMotorSpeed < 0) {
+            climbMotorSpeed = 0;
+        }
     }
     else if (climbMotor.getEncoder().getPosition() > 100) {
         System.out.println("You are at the top");
@@ -36,13 +39,9 @@ public class ExampleSubsystem extends SubsystemBase {
     secondaryClimbMotor.set(climbMotorSpeed);
   }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
-public void setClimbMotor(double speed) {
-    climbMotorSpeed = speed;
-
+    public void setClimbMotor(double speed) {
+        climbMotorSpeed = speed;
+    }
     
 
 }
