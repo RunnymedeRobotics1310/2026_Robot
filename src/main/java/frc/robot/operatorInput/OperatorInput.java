@@ -14,7 +14,6 @@ import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
-import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
@@ -55,8 +54,8 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(() -> driverController.getXButton())
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
-    new Trigger(() -> driverController.getPOV() == 90)
-        .onTrue(new DriveToTowerCommand(swerve, vision, true));
+    // new Trigger(() -> driverController.getPOV() == 90)
+    // .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }

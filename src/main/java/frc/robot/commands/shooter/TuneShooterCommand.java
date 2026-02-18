@@ -1,12 +1,12 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-
-import static frc.robot.Constants.ShooterConstants.*;
 
 /** An example command that uses an example subsystem. */
 public class TuneShooterCommand extends LoggingCommand {
@@ -27,8 +27,8 @@ public class TuneShooterCommand extends LoggingCommand {
    * @param shooterSubsystem The subsystem used by this command.
    */
   public TuneShooterCommand(ShooterSubsystem shooterSubsystem,
-                            OperatorInput operatorInput,
-                            SwerveSubsystem swerveSubsystem) {
+      OperatorInput operatorInput,
+      SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
@@ -50,32 +50,32 @@ public class TuneShooterCommand extends LoggingCommand {
     double distance = swerveSubsystem.distanceToHub();
     SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
 
-     if (currentPOV == 0 && lastPov == -1) {
-       testShooterSpeed = Math.min(testShooterSpeed + 100, MAX_SHOOTER_RPM);
-       SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
-     }
+    if (currentPOV == 0 && lastPov == -1) {
+      testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
 
-     if (currentPOV == 180 && lastPov == -1) {
-       testShooterSpeed = Math.max(testShooterSpeed - 100, 0);
-       SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
-     }
+    if (currentPOV == 180 && lastPov == -1) {
+      testShooterSpeed = Math.max(testShooterSpeed - 50, 0);
+      SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
+    }
 
-     if (YButton) {
-       shooterSubsystem.setShooterVelocity(testShooterSpeed);
-//       shooterSubsystem.setShooterSpeed(testShooterSpeed);
-       SmartDashboard.putNumber("1310/shooter/currentspeed",
-       shooterSubsystem.getShooterVelocity());
-     } else if (operatorInput.getDriverController().getBButton()) {
-       shooterSubsystem.setShooterSpeed(1);
-     } else {
-       shooterSubsystem.setShooterSpeed(0.0);
-     }
+    if (YButton) {
+      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+      // shooterSubsystem.setShooterSpeed(testShooterSpeed);
+      SmartDashboard.putNumber("1310/shooter/currentspeed",
+          shooterSubsystem.getShooterVelocity());
+    } else if (operatorInput.getDriverController().getBButton()) {
+      shooterSubsystem.setShooterSpeed(1);
+    } else {
+      shooterSubsystem.setShooterSpeed(0.0);
+    }
 
-     if (currentPOV == 270) {
-       shooterSubsystem.setKickerSpeed(-0.7);
-     } else {
-       shooterSubsystem.setKickerSpeed(0.0);
-     }
+    if (currentPOV == 270) {
+      shooterSubsystem.setKickerSpeed(-0.7);
+    } else {
+      shooterSubsystem.setKickerSpeed(0.0);
+    }
 
     // hood control
     if (currentPOV == 90) {

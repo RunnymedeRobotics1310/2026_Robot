@@ -85,8 +85,8 @@ public class ShooterCommand extends LoggingCommand {
     double shooterSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(shooterSpeed);
     SmartDashboard.putNumber("1310/shooter/targetspeed", shooterSpeed);
-    if (swerveSubsystem.distanceToHub() > 2.5) {
-      shooterSubsystem.setHood(0.8);
+    if (swerveSubsystem.distanceToHub() > 2.2) {
+      shooterSubsystem.setHood(1.0);
     } else {
       shooterSubsystem.setHood(0.6);
     }
