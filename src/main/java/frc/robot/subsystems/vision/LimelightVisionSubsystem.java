@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision;
 
+import static frc.robot.Constants.VisionConstants.*;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -9,15 +11,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.telemetry.Telemetry;
 
-import static frc.robot.Constants.VisionConstants.*;
-
 public class LimelightVisionSubsystem extends SubsystemBase {
 
   // MegaTags
   private final DoubleArraySubscriber hughMegaTag;
 
   // These hold the data from the limelights, updated every periodic()
-  private final LimelightBotPose hughBotPoseCache = new LimelightBotPose();
+  private final LimelightBotPose primaryLimelightPoseCache = new LimelightBotPose();
+  private final LimelightBotPose secondaryLimelightPoseCache = new LimelightBotPose();
 
   private final SwerveSubsystem swerve;
 
@@ -27,7 +28,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     Telemetry.vision.telemetryLevel = visionConfig.telemetryLevel();
 
     final NetworkTable hugh =
-            NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
+        NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
     hughMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
@@ -42,12 +43,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     // Pull data from the limelights and update our cache
     TimestampedDoubleArray var = hughMegaTag.getAtomic();
 
-    hughBotPoseCache.update(var);
+    primaryLimelightPoseCache.update(var);
 
     // Update telemetry
     updateTelemetry();
   }
-
 
   /**
    * If targeting the left reef, use the left reef pose, otherwise use the right reef pose
@@ -55,7 +55,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return Appropriate botPose data for Hugh
    */
   private LimelightBotPose getBotPose() {
-    return hughBotPoseCache;
+    return primaryLimelightPoseCache;
   }
 
   /* Public API */
@@ -75,7 +75,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the number of tags visible to the default limelight (hugh)
    */
   public int getNumTagsVisible() {
-    return (int) hughBotPoseCache.getTagCount();
+    return (int) primaryLimelightPoseCache.getTagCount();
   }
 
   /**
@@ -186,7 +186,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the number of tags visible to the default limelight (hugh)
    */
   public double getTagCount() {
-    return hughBotPoseCache.getTagCount();
+    return primaryLimelightPoseCache.getTagCount();
   }
 
   /**
@@ -197,6 +197,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    */
   public boolean isTagInView(int tagId) {
     return isTagInView(tagId, true);
+  }
+
+  public boolean isSecondaryTagInView(int tagId) {
+    LimelightBotPose botPose = secondaryLimelightPoseCache;
+    return botPose.getTagIndex(tagId) != -1;
   }
 
   /**
@@ -213,39 +218,46 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   /** Update telemetry with vision data */
   private void updateTelemetry() {
     if (Telemetry.vision.telemetryLevel == VisionTelemetryLevel.REGULAR
-            || Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
+        || Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
 
       Pose2d odometryPose = swerve.getPose();
       double yaw = swerve.getYaw();
 
       double compareDistance =
-              hughBotPoseCache.getPose().getTranslation().getDistance(odometryPose.getTranslation());
+          primaryLimelightPoseCache
+              .getPose()
+              .getTranslation()
+              .getDistance(odometryPose.getTranslation());
       double compareHeading =
-              hughBotPoseCache.getPose().getRotation().getDegrees()
-                      - odometryPose.getRotation().getDegrees();
+          primaryLimelightPoseCache.getPose().getRotation().getDegrees()
+              - odometryPose.getRotation().getDegrees();
 
       Telemetry.vision.poseDeltaMetres = compareDistance;
       Telemetry.vision.headingDeltaDegrees = compareHeading;
       Telemetry.vision.poseMetresX = odometryPose.getX();
       Telemetry.vision.poseMetresY = odometryPose.getY();
       Telemetry.vision.poseHeadingDegrees = odometryPose.getRotation().getDegrees();
-      Telemetry.vision.visionPoseX = hughBotPoseCache.getPoseX();
-      Telemetry.vision.visionPoseY = hughBotPoseCache.getPoseY();
-      Telemetry.vision.visionPoseHeading = hughBotPoseCache.getPoseRotationYaw();
+      Telemetry.vision.visionPoseX = primaryLimelightPoseCache.getPoseX();
+      Telemetry.vision.visionPoseY = primaryLimelightPoseCache.getPoseY();
+      Telemetry.vision.visionPoseHeading = primaryLimelightPoseCache.getPoseRotationYaw();
       Telemetry.vision.navxYaw = yaw;
       Telemetry.vision.navxYawDelta = odometryPose.getRotation().getDegrees() - yaw;
     }
 
     if (Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
-      Telemetry.vision.poseXSeries.add(hughBotPoseCache.getPoseX());
-      Telemetry.vision.poseYSeries.add(hughBotPoseCache.getPoseY());
-      Telemetry.vision.poseDegSeries.add(hughBotPoseCache.getPoseRotationYaw());
+      Telemetry.vision.poseXSeries.add(primaryLimelightPoseCache.getPoseX());
+      Telemetry.vision.poseYSeries.add(primaryLimelightPoseCache.getPoseY());
+      Telemetry.vision.poseDegSeries.add(primaryLimelightPoseCache.getPoseRotationYaw());
 
-      Telemetry.vision.nikVisibleTags = hughBotPoseCache.getVisibleTags();
-      Telemetry.vision.nikTx = hughBotPoseCache.getTagTxnc(0);
-      Telemetry.vision.nikDistanceToRobot = hughBotPoseCache.getTagDistToRobot(0);
-      Telemetry.vision.nikDistanceToCam = hughBotPoseCache.getTagDistToCamera(0);
+      Telemetry.vision.nikVisibleTags = primaryLimelightPoseCache.getVisibleTags();
+      Telemetry.vision.nikTx = primaryLimelightPoseCache.getTagTxnc(0);
+      Telemetry.vision.nikDistanceToRobot = primaryLimelightPoseCache.getTagDistToRobot(0);
+      Telemetry.vision.nikDistanceToCam = primaryLimelightPoseCache.getTagDistToCamera(0);
 
+      Telemetry.vision.tomVisibleTags = secondaryLimelightPoseCache.getVisibleTags();
+      Telemetry.vision.tomTx = secondaryLimelightPoseCache.getTagTxnc(0);
+      Telemetry.vision.tomDistanceToRobot = secondaryLimelightPoseCache.getTagDistToRobot(0);
+      Telemetry.vision.tomDistanceToCam = secondaryLimelightPoseCache.getTagDistToCamera(0);
     }
   }
 

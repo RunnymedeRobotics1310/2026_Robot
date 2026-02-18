@@ -9,19 +9,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.shooter.ShooterCommand;
-import frc.robot.commands.shooter.TuneShooterCommand;
-import frc.robot.commands.swerve.SetGyroCommand;
-import frc.robot.commands.CancelCommand;
-import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
-import frc.robot.commands.swerve.FaceHubCommand;
+import frc.robot.commands.auto.SimpleCenterAutoCommand;
+import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.shooter.TuneShooterCommand;
+import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -29,15 +24,16 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
-  private GameController driverController = new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  private GameController driverController =
+      new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
-          new SendableChooser<>();
+      new SendableChooser<>();
   private final SendableChooser<Constants.AutoConstants.Delay> delayChooser =
-          new SendableChooser<>();
+      new SendableChooser<>();
 
   public OperatorInput(SwerveSubsystem swerve, LimelightVisionSubsystem vision) {
     this.swerve = swerve;
@@ -46,9 +42,11 @@ public class OperatorInput extends SubsystemBase {
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-
-      SwerveSubsystem swerve, LightingSubsystem lightingSubsystem, ExampleSubsystem exampleSubsystem,
-      ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve,
+      LightingSubsystem lightingSubsystem,
+      ExampleSubsystem exampleSubsystem,
+      ShooterSubsystem shooterSubsystem,
+      LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
 
@@ -56,7 +54,10 @@ public class OperatorInput extends SubsystemBase {
         .whileTrue(new ShooterCommand(shooterSubsystem, vision, this, swerve));
 
     new Trigger(() -> driverController.getXButton())
-            .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
+        .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
+
+    new Trigger(() -> driverController.getPOV() == 90)
+        .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
@@ -134,10 +135,12 @@ public class OperatorInput extends SubsystemBase {
     SmartDashboard.putData("1310/auto/Auto Selector", autoPatternChooser);
 
     autoPatternChooser.setDefaultOption(
-            "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
+        "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
     autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
-    autoPatternChooser.addOption("Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
-    autoPatternChooser.addOption("Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
+    autoPatternChooser.addOption(
+        "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
+    autoPatternChooser.addOption(
+        "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -153,16 +156,16 @@ public class OperatorInput extends SubsystemBase {
 
   public Command getAutonomousCommand() {
     double delay =
-            switch (delayChooser.getSelected()) {
-              case WAIT_0_5_SECOND -> 0.5;
-              case WAIT_1_SECOND -> 1;
-              case WAIT_1_5_SECONDS -> 1.5;
-              case WAIT_2_SECONDS -> 2;
-              case WAIT_2_5_SECONDS -> 2.5;
-              case WAIT_3_SECONDS -> 3;
-              case WAIT_5_SECONDS -> 5;
-              default -> 0;
-            };
+        switch (delayChooser.getSelected()) {
+          case WAIT_0_5_SECOND -> 0.5;
+          case WAIT_1_SECOND -> 1;
+          case WAIT_1_5_SECONDS -> 1.5;
+          case WAIT_2_SECONDS -> 2;
+          case WAIT_2_5_SECONDS -> 2.5;
+          case WAIT_3_SECONDS -> 3;
+          case WAIT_5_SECONDS -> 5;
+          default -> 0;
+        };
 
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
