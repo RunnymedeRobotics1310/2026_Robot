@@ -35,7 +35,7 @@ public class ClimbCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setClimbMotor(input.getDriverControllerAxis(RIGHT, Y));
+    climb.setClimbSpeed(input.getDriverControllerAxis(RIGHT, Y));
   }
 
   // Returns true when the command should end.

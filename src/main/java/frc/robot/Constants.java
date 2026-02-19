@@ -246,4 +246,10 @@ public final class Constants {
 
     public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
   }
+
+  public static final class ClimbConstants {
+    public static final double MAX_CLIMB_POSITION = 200;
+    public static final double HOOK_TOLERANCE = 1;
+    public static final double HOOK_EXTENDED_POSITION = 25;
+  }
 }
