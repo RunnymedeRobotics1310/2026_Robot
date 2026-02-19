@@ -246,4 +246,9 @@ public final class Constants {
 
     public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
   }
+  public static final class  IntakeConstants{
+    public static final double ARM_FAST_SPEED = 0.436;
+    public static final double ARM_ANGLE_TOLERANCE = 1.2;
+
+  }
 }
