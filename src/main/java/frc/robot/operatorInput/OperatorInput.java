@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.auto.DemoAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.TestAuto;
@@ -47,6 +48,8 @@ public class OperatorInput extends SubsystemBase {
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve));
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
+
+
   }
 
   public boolean isCancel() {
@@ -70,6 +73,8 @@ public class OperatorInput extends SubsystemBase {
   public boolean isSlowMode() {
     return driverController.getLeftBumperButton();
   }
+
+  public boolean isIntakeDoingStuff(){ return driverController.getLeftTriggerAxis()>0.5;}
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
     switch (stick) {

@@ -46,6 +46,8 @@ public class RobotContainer {
 
     exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
 
+    intakeSubsystem.setDefaultCommand(new )
+
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine

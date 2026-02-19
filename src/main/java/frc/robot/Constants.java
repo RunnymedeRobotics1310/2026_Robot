@@ -249,6 +249,8 @@ public final class Constants {
   public static final class  IntakeConstants{
     public static final double ARM_FAST_SPEED = 0.436;
     public static final double ARM_ANGLE_TOLERANCE = 1.2;
+    public static final double ARM_SLOW_ZONE_ANGLE = 0;
+    public static final double ARM_SLOW_ZONE_SPEED = 0;
 
   }
 }
