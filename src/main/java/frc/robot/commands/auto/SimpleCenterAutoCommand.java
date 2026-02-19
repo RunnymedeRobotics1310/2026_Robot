@@ -14,19 +14,18 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
 
     public SimpleCenterAutoCommand(SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
 
-        addCommands(new SetAllianceGyroCommand(swerve, 180));
-        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 1, 0, 180)
+        addCommands(new SetAllianceGyroCommand(swerve, 0));
+        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 1, 0, 0)
                 .withTimeout(1));
 
         addCommands(new NullDriveCommand(swerve).withTimeout(3));
         addCommands(new LazyShooterCommand(shooter, 3150));
 
-        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 0)
+        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180)
                 .withTimeout(2));
 
         addCommands(new DriveToTowerCommand(swerve, vision, true));
 
-        // 9 secs to aligned
     }
 
 }
