@@ -8,14 +8,16 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class DriveToTowerCommand extends LoggingCommand {
 
-  private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
-  private static int TOWER_TX_OFFSET = -7;
+  private static final int MAX_NO_DATA_COUNT_CYCLES = 50; //TODO: fixme: move these to constants
+  private static final int LEFT_TOWER_TX_OFFSET = -7;
+  private static final int RIGHT_TOWER_TX_OFFSET = 7;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
 
   private int tagId = -1;
   private int noDataCount = 0;
+  private int tXOffset;
   private int theta = 0;
 
   private boolean isRightSide;
@@ -28,16 +30,15 @@ public class DriveToTowerCommand extends LoggingCommand {
     addRequirements(swerve, vision);
 
     if (isRightSide) {
-      int TOWER_TX_OFFSET = 30;
+      tXOffset = RIGHT_TOWER_TX_OFFSET;
     } else {
-      int TOWER_TX_OFFSET = 6;
+      tXOffset = LEFT_TOWER_TX_OFFSET;
     }
   }
 
   @Override
   public void initialize() {
     logCommandStart();
-
     noDataCount = 0;
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
@@ -64,9 +65,11 @@ public class DriveToTowerCommand extends LoggingCommand {
 
       double omega = swerve.computeOmega(theta);
 
+      // if more than 5º off, don't drive, just rotate
       if (Math.abs(swerve.getYaw() - theta) > 5) {
         swerve.driveRobotOriented(0, 0, omega);
       } else {
+        //TODO: Do we need this?
         swerve.driveRobotOriented(0, -0.7, omega);
       }
       return;
@@ -75,7 +78,8 @@ public class DriveToTowerCommand extends LoggingCommand {
     // drive to tag
     final double vX; // forward/backward speed
     final double vY; // left/right speed
-    if (Math.abs(tX + TOWER_TX_OFFSET) > 10) {
+    if (Math.abs(tX + tXOffset) > 10) {
+      // if offset is big, don't go forwards, unless ur far away
       if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
         vX = 0.4;
       } else {
@@ -85,7 +89,8 @@ public class DriveToTowerCommand extends LoggingCommand {
       vX = 0.2;
     }
 
-    vY = -0.07 * (tX+TOWER_TX_OFFSET);
+    // align to tag
+    vY = -0.07 * (tX + tXOffset);
     log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
