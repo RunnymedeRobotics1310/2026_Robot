@@ -9,7 +9,7 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
-  private static final int TOWER_TX_OFFSET = 20;
+  private static int TOWER_TX_OFFSET = 20;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
@@ -26,6 +26,12 @@ public class DriveToTowerCommand extends LoggingCommand {
     this.vision = vision;
     this.isRightSide = isRightSide;
     addRequirements(swerve, vision);
+
+    if (isRightSide) {
+      int TOWER_TX_OFFSET = 30;
+    } else {
+      int TOWER_TX_OFFSET = 6;
+    }
   }
 
   @Override
@@ -48,10 +54,11 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // get offset
     final double tX;
+    final double tA;
     if (vision.isTagInView(tagId)) {
       noDataCount = 0;
       tX = vision.angleToTarget(tagId);
-      // code below
+      tA = vision.areaOfTarget(tagId);
     } else {
       noDataCount++;
       log("Tag " + tagId + " not in view");
@@ -61,7 +68,7 @@ public class DriveToTowerCommand extends LoggingCommand {
       if (Math.abs(swerve.getYaw() - theta) > 5) {
         swerve.driveRobotOriented(0, 0, omega);
       } else {
-        swerve.driveRobotOriented(0, -0.4, omega);
+        swerve.driveRobotOriented(0, -0.7, omega);
       }
       return;
     }
@@ -69,13 +76,18 @@ public class DriveToTowerCommand extends LoggingCommand {
     // drive to tag
     final double vX; // forward/backward speed
     final double vY; // left/right speed
-    if (Math.abs(tX + TOWER_TX_OFFSET) > 20) {
-      vX = 0;
+    if (Math.abs(tX + TOWER_TX_OFFSET) > 10) {
+      if (Math.abs(tA + TOWER_TX_OFFSET) < 5) { // Untested 1!!!1!1!!!11!!1
+        vX = 0.4;
+      } else {
+        vX = 0;
+      }
     } else {
       vX = -0.2;
     }
-    vY = 0.03 * (tX);
-    //    log("tx: " + tX);
+
+    vY = 0.07 * (tX);
+    log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
@@ -92,7 +104,7 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // if ur in the spot, stop
     final double tA = vision.areaOfTarget(tagId);
-    //    log("TA: " + tA);
+    log("TA: " + tA);
     return tA > 0.7 && tA < 1;
   }
 

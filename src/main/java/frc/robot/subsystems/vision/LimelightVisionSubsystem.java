@@ -15,6 +15,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   // MegaTags
   private final DoubleArraySubscriber hughMegaTag;
+  private final DoubleArraySubscriber hopperMegaTag;
 
   // These hold the data from the limelights, updated every periodic()
   private final LimelightBotPose primaryLimelightPoseCache = new LimelightBotPose();
@@ -36,17 +37,27 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     // inputs/configs
     hugh.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
     hugh.getEntry("camMode").setNumber(visionConfig.camModeVision());
+
+    final NetworkTable hopper =
+        NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
+
+    // Initialize the NT subscribers for whichever of MT1/2 is used
+    hopperMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+
+    // inputs/configs
+    hopper.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
+    hopper.getEntry("camMode").setNumber(visionConfig.camModeVision());
   }
 
   @Override
   public void periodic() {
     // Pull data from the limelights and update our cache
     TimestampedDoubleArray var = hughMegaTag.getAtomic();
-
     primaryLimelightPoseCache.update(var);
 
-    System.out.println("31: " + angleToTarget(31));
-    System.out.println("general: " + angleToTarget());
+    // Pull data from the limelights and update our cache
+    var = hopperMegaTag.getAtomic();
+    secondaryLimelightPoseCache.update(var);
 
     // Update telemetry
     updateTelemetry();

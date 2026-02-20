@@ -14,6 +14,7 @@ import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
+import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
@@ -23,16 +24,20 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
-  private GameController driverController = new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+  private GameController driverController =
+      new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
   private final ShooterSubsystem shooter;
   private final LimelightVisionSubsystem vision;
 
-  private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser = new SendableChooser<>();
-  private final SendableChooser<Constants.AutoConstants.Delay> delayChooser = new SendableChooser<>();
+  private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
+      new SendableChooser<>();
+  private final SendableChooser<Constants.AutoConstants.Delay> delayChooser =
+      new SendableChooser<>();
 
-  public OperatorInput(SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+  public OperatorInput(
+      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
     this.swerve = swerve;
     this.shooter = shooter;
     this.vision = vision;
@@ -54,8 +59,8 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(() -> driverController.getXButton())
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
-    // new Trigger(() -> driverController.getPOV() == 90)
-    // .onTrue(new DriveToTowerCommand(swerve, vision, true));
+    new Trigger(() -> driverController.getAButton())
+        .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
@@ -69,7 +74,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean getRotate180Val() {
-    return driverController.getAButton();
+    return driverController.getAButton() && false;
   }
 
   public boolean getShooterActive() {
@@ -153,16 +158,17 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public Command getAutonomousCommand() {
-    double delay = switch (delayChooser.getSelected()) {
-      case WAIT_0_5_SECOND -> 0.5;
-      case WAIT_1_SECOND -> 1;
-      case WAIT_1_5_SECONDS -> 1.5;
-      case WAIT_2_SECONDS -> 2;
-      case WAIT_2_5_SECONDS -> 2.5;
-      case WAIT_3_SECONDS -> 3;
-      case WAIT_5_SECONDS -> 5;
-      default -> 0;
-    };
+    double delay =
+        switch (delayChooser.getSelected()) {
+          case WAIT_0_5_SECOND -> 0.5;
+          case WAIT_1_SECOND -> 1;
+          case WAIT_1_5_SECONDS -> 1.5;
+          case WAIT_2_SECONDS -> 2;
+          case WAIT_2_5_SECONDS -> 2.5;
+          case WAIT_3_SECONDS -> 3;
+          case WAIT_5_SECONDS -> 5;
+          default -> 0;
+        };
 
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
