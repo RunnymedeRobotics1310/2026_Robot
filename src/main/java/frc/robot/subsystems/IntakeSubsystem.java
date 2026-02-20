@@ -22,20 +22,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double armSetpoint = 0;
 
-    //bottom roller
+    //TODO: fixme: we won't be using this. there will instead be 2 limit switches
     private final RelativeEncoder armEncoder = armMotor.getEncoder();
 
     /**
      * Creates a new IntakeSubsystem.
      */
-    public IntakeSubsystem() {
-        SparkMaxConfig maxConfig = new SparkMaxConfig();
-    }
+    public IntakeSubsystem() {}
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        // TODO Update the smartdashboard
+        // TODO Update telemetry
     }
 
     @Override
@@ -43,8 +41,8 @@ public class IntakeSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run during simulation
     }
 
-    public void setRollerSpeeds(double topLoraxSpeed, double bottomRollerSpeed) {
-        topRollerMotor.set(topLoraxSpeed);
+    public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
+        topRollerMotor.set(topRollerSpeed);
         bottomRollerMotor.set(bottomRollerSpeed);
     }
 
@@ -64,6 +62,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean moveArmToAngle(double armAngle) {
+        /*
+         * this method should be replaced with a setArmState(boolean extended) method.
+         * we will only ever be moving the arm to 2 states, extended, or retracted.
+         * there will be 2 limit switches, 1 for extended and 1 for retracted.
+         */
 
         double currentAngle = getArmAngle();
 
