@@ -55,15 +55,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     TimestampedDoubleArray var = hughMegaTag.getAtomic();
     primaryLimelightPoseCache.update(var);
 
-    System.out.print("Primary Limelight: ");
-    System.out.print(angleToTarget(31, VISION_PRIMARY_LIMELIGHT_NAME));
-
     // Pull data from the limelights and update our cache
     var = hopperMegaTag.getAtomic();
     secondaryLimelightPoseCache.update(var);
-
-    System.out.print("Secondary Limelight: ");
-    System.out.println(angleToTarget(31, VISION_SECONDARY_LIMELIGHT_NAME));
 
     // Update telemetry
     updateTelemetry();

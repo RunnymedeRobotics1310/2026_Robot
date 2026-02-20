@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
@@ -68,13 +69,16 @@ public class DriveToTowerCommand extends LoggingCommand {
       double omega = swerve.computeOmega(theta);
 
       // if more than 5º off, don't drive, just rotate
-      if (Math.abs(swerve.getYaw() - theta) > 5) {
+      double normalYaw = (swerve.getYaw()+360)%360;
+
+      if (Math.abs(normalYaw-theta) > 5) {
+        log("Yaw: " + swerve.getYaw() + " Theta: " + theta);
         swerve.driveRobotOriented(0, 0, omega);
-        log("turning");
+//        log("turning");
       } else {
         // TODO: Do we need this? - YES
         swerve.driveRobotOriented(0, -0.7, omega);
-        log("driving");
+//        log("driving");
       }
       return;
     }
@@ -95,7 +99,7 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // align to tag
     vY = -0.07 * (tX + tXOffset);
-    log("tx: " + tX);
+//    log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
@@ -107,14 +111,13 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if u can't see the tag for a few secs, stop
     if (noDataCount > MAX_NO_DATA_COUNT_CYCLES && Math.abs(swerve.getYaw() - theta) < 5) {
       log("Finishing - no vision data for " + noDataCount + " cycles");
-      //      return true;
+      return true;
     }
 
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
-    log("TY: " + tY);
-    //    return tY < -6.5; // tY when aligned is -6.7ish
-    return false;
+      log("TY: " + tY);
+      return tY > 7.5; // tY when aligned is -6.7ish
   }
 
   @Override
