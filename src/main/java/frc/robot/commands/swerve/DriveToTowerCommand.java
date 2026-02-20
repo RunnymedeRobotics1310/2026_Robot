@@ -9,24 +9,22 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; //TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = -7;
-  private static final int RIGHT_TOWER_TX_OFFSET = 7;
+  private static final int LEFT_TOWER_TX_OFFSET = -10;
+  private static final int RIGHT_TOWER_TX_OFFSET = 29;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
 
   private int tagId = -1;
   private int noDataCount = 0;
-  private int tXOffset;
+  private final int tXOffset;
   private int theta = 0;
-
-  private boolean isRightSide;
 
   public DriveToTowerCommand(
       SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean isRightSide) {
+    super();
     this.swerve = swerve;
     this.vision = vision;
-    this.isRightSide = isRightSide;
     addRequirements(swerve, vision);
 
     if (isRightSide) {
@@ -68,9 +66,11 @@ public class DriveToTowerCommand extends LoggingCommand {
       // if more than 5º off, don't drive, just rotate
       if (Math.abs(swerve.getYaw() - theta) > 5) {
         swerve.driveRobotOriented(0, 0, omega);
+        log("turning");
       } else {
-        //TODO: Do we need this?
+        //TODO: Do we need this? - YES
         swerve.driveRobotOriented(0, -0.7, omega);
+        log("driving");
       }
       return;
     }
@@ -80,11 +80,11 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double vY; // left/right speed
     if (Math.abs(tX + tXOffset) > 10) {
       // if offset is big, don't go forwards, unless ur far away
-      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
+//      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
         vX = 0.4;
-      } else {
-        vX = 0;
-      }
+      //} else {
+//        vX = 0;
+      //}
     } else {
       vX = 0.2;
     }
@@ -103,13 +103,14 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if u can't see the tag for a few secs, stop
     if (noDataCount > MAX_NO_DATA_COUNT_CYCLES && Math.abs(swerve.getYaw() - theta) < 5) {
       log("Finishing - no vision data for " + noDataCount + " cycles");
-      return true;
+//      return true;
     }
 
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId);
     log("TY: " + tY);
-    return tY < -6.5; // tY when aligned is -6.7ish
+//    return tY < -6.5; // tY when aligned is -6.7ish
+    return false;
   }
 
   @Override
