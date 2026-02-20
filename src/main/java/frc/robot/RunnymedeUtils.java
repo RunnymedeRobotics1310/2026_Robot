@@ -91,4 +91,13 @@ public class RunnymedeUtils {
         Rotation2d.fromDegrees(
             SwerveUtils.normalizeDegrees(blueAlliancePose.getRotation().getDegrees() + 180)));
   }
+
+  /**
+   * Rounds a number to 2 decimal places
+   * @param num the number you want to round
+   * @return the rounded number
+   */
+  public static double round(double num) {
+    return ((int) (num * 100) + 0.5) / 100.0;
+  }
 }
