@@ -9,7 +9,7 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
-  private static int TOWER_TX_OFFSET = 20;
+  private static int TOWER_TX_OFFSET = -7;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
@@ -42,10 +42,9 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       tagId = 15;
-
-      theta = 180; // this will change when we get the comp bot
     } else {
       tagId = 31;
+      theta = 180;
     }
   }
 
@@ -77,16 +76,16 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double vX; // forward/backward speed
     final double vY; // left/right speed
     if (Math.abs(tX + TOWER_TX_OFFSET) > 10) {
-      if (Math.abs(tA + TOWER_TX_OFFSET) < 5) { // Untested 1!!!1!1!!!11!!1
+      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
         vX = 0.4;
       } else {
         vX = 0;
       }
     } else {
-      vX = -0.2;
+      vX = 0.2;
     }
 
-    vY = 0.07 * (tX);
+    vY = -0.07 * (tX+TOWER_TX_OFFSET);
     log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
@@ -105,7 +104,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if ur in the spot, stop
     final double tA = vision.areaOfTarget(tagId);
     log("TA: " + tA);
-    return tA > 0.7 && tA < 1;
+    return tA > 1; // use ty and use -6
   }
 
   @Override
