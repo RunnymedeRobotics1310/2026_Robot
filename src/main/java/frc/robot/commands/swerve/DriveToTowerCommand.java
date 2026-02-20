@@ -8,6 +8,8 @@ import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
+import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAME;
+
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
@@ -16,9 +18,6 @@ public class DriveToTowerCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
-
-  private final String VISION_PRIMARY_LIMELIGHT_NAME =
-      Constants.VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME;
 
   private int tagId = -1;
   private int noDataCount = 0;
@@ -57,28 +56,20 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // get offset
     final double tX;
-    final double tA;
-    if (vision.isTagInView(tagId, VISION_PRIMARY_LIMELIGHT_NAME)) {
+    if (vision.isTagInView(tagId, VISION_SECONDARY_LIMELIGHT_NAME)) {
       noDataCount = 0;
-      tX = vision.angleToTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
-      tA = vision.areaOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
+      tX = vision.angleToTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     } else {
       noDataCount++;
       log("Tag " + tagId + " not in view");
 
       double omega = swerve.computeOmega(theta);
-
       // if more than 5º off, don't drive, just rotate
       double normalYaw = (swerve.getYaw()+360)%360;
-
       if (Math.abs(normalYaw-theta) > 5) {
-        log("Yaw: " + swerve.getYaw() + " Theta: " + theta);
         swerve.driveRobotOriented(0, 0, omega);
-//        log("turning");
       } else {
-        // TODO: Do we need this? - YES
         swerve.driveRobotOriented(0, -0.7, omega);
-//        log("driving");
       }
       return;
     }
@@ -89,9 +80,9 @@ public class DriveToTowerCommand extends LoggingCommand {
     if (Math.abs(tX + tXOffset) > 10) {
       // if offset is big, don't go forwards, unless ur far away
       //      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
-      vX = 0.4;
+//      vX = 0.4;
       // } else {
-      //        vX = 0;
+              vX = 0;
       // }
     } else {
       vX = 0.2;
@@ -99,7 +90,6 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // align to tag
     vY = -0.07 * (tX + tXOffset);
-//    log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
@@ -115,8 +105,8 @@ public class DriveToTowerCommand extends LoggingCommand {
     }
 
     // if ur in the spot, stop
-    final double tY = vision.heightOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
-      log("TY: " + tY);
+    final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
+//      log("TY: " + tY);
       return tY > 7.5; // tY when aligned is -6.7ish
   }
 
