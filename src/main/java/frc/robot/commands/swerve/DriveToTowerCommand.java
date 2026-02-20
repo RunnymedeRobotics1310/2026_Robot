@@ -1,6 +1,7 @@
 package frc.robot.commands.swerve;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -8,12 +9,15 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class DriveToTowerCommand extends LoggingCommand {
 
-  private static final int MAX_NO_DATA_COUNT_CYCLES = 50; //TODO: fixme: move these to constants
+  private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
   private static final int LEFT_TOWER_TX_OFFSET = -10;
   private static final int RIGHT_TOWER_TX_OFFSET = 29;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
+
+  private final String VISION_PRIMARY_LIMELIGHT_NAME =
+      Constants.VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME;
 
   private int tagId = -1;
   private int noDataCount = 0;
@@ -53,10 +57,10 @@ public class DriveToTowerCommand extends LoggingCommand {
     // get offset
     final double tX;
     final double tA;
-    if (vision.isTagInView(tagId)) {
+    if (vision.isTagInView(tagId, VISION_PRIMARY_LIMELIGHT_NAME)) {
       noDataCount = 0;
-      tX = vision.angleToTarget(tagId);
-      tA = vision.areaOfTarget(tagId);
+      tX = vision.angleToTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
+      tA = vision.areaOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
     } else {
       noDataCount++;
       log("Tag " + tagId + " not in view");
@@ -68,7 +72,7 @@ public class DriveToTowerCommand extends LoggingCommand {
         swerve.driveRobotOriented(0, 0, omega);
         log("turning");
       } else {
-        //TODO: Do we need this? - YES
+        // TODO: Do we need this? - YES
         swerve.driveRobotOriented(0, -0.7, omega);
         log("driving");
       }
@@ -80,11 +84,11 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double vY; // left/right speed
     if (Math.abs(tX + tXOffset) > 10) {
       // if offset is big, don't go forwards, unless ur far away
-//      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
-        vX = 0.4;
-      //} else {
-//        vX = 0;
-      //}
+      //      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
+      vX = 0.4;
+      // } else {
+      //        vX = 0;
+      // }
     } else {
       vX = 0.2;
     }
@@ -103,13 +107,13 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if u can't see the tag for a few secs, stop
     if (noDataCount > MAX_NO_DATA_COUNT_CYCLES && Math.abs(swerve.getYaw() - theta) < 5) {
       log("Finishing - no vision data for " + noDataCount + " cycles");
-//      return true;
+      //      return true;
     }
 
     // if ur in the spot, stop
-    final double tY = vision.heightOfTarget(tagId);
+    final double tY = vision.heightOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
     log("TY: " + tY);
-//    return tY < -6.5; // tY when aligned is -6.7ish
+    //    return tY < -6.5; // tY when aligned is -6.7ish
     return false;
   }
 
