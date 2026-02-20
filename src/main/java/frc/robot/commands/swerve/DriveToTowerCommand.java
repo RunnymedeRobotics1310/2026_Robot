@@ -1,6 +1,7 @@
 package frc.robot.commands.swerve;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -10,6 +11,9 @@ public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
   private static int TOWER_TX_OFFSET = -7;
+
+  private static final String VISION_PRIMARY_LIMELIGHT_NAME =
+      Constants.VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME;
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
@@ -54,10 +58,10 @@ public class DriveToTowerCommand extends LoggingCommand {
     // get offset
     final double tX;
     final double tA;
-    if (vision.isTagInView(tagId)) {
+    if (vision.isTagInView(tagId, VISION_PRIMARY_LIMELIGHT_NAME)) {
       noDataCount = 0;
-      tX = vision.angleToTarget(tagId);
-      tA = vision.areaOfTarget(tagId);
+      tX = vision.angleToTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
+      tA = vision.areaOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
     } else {
       noDataCount++;
       log("Tag " + tagId + " not in view");
@@ -76,7 +80,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double vX; // forward/backward speed
     final double vY; // left/right speed
     if (Math.abs(tX + TOWER_TX_OFFSET) > 10) {
-      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
+      if (Math.abs(tA) < 0.5) {
         vX = 0.4;
       } else {
         vX = 0;
@@ -85,7 +89,7 @@ public class DriveToTowerCommand extends LoggingCommand {
       vX = 0.2;
     }
 
-    vY = -0.07 * (tX+TOWER_TX_OFFSET);
+    vY = -0.07 * (tX + TOWER_TX_OFFSET);
     log("tx: " + tX);
 
     double omega = swerve.computeOmega(theta);
@@ -102,7 +106,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     }
 
     // if ur in the spot, stop
-    final double tY = vision.heightOfTarget(tagId);
+    final double tY = vision.heightOfTarget(tagId, VISION_PRIMARY_LIMELIGHT_NAME);
     log("TY: " + tY);
     return tY < -6.5; // tY when aligned is -6.7ish
   }

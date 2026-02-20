@@ -42,7 +42,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
         NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
-    hopperMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+    hopperMegaTag = hopper.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
 
     // inputs/configs
     hopper.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
@@ -55,9 +55,15 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     TimestampedDoubleArray var = hughMegaTag.getAtomic();
     primaryLimelightPoseCache.update(var);
 
+    System.out.print("Primary Limelight: ");
+    System.out.print(angleToTarget(31, VISION_PRIMARY_LIMELIGHT_NAME));
+
     // Pull data from the limelights and update our cache
     var = hopperMegaTag.getAtomic();
     secondaryLimelightPoseCache.update(var);
+
+    System.out.print("Secondary Limelight: ");
+    System.out.println(angleToTarget(31, VISION_SECONDARY_LIMELIGHT_NAME));
 
     // Update telemetry
     updateTelemetry();
@@ -68,8 +74,14 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    *
    * @return Appropriate botPose data for Hugh
    */
-  private LimelightBotPose getBotPose() {
-    return primaryLimelightPoseCache;
+  private LimelightBotPose getBotPose(String limelightName) {
+    if (limelightName.equals(VISION_PRIMARY_LIMELIGHT_NAME)) {
+      return primaryLimelightPoseCache;
+    } else if (limelightName.equals(VISION_SECONDARY_LIMELIGHT_NAME)) {
+      return secondaryLimelightPoseCache;
+    }
+
+    return null; // Should this return null? Is there a better way to handle this case?
   }
 
   /* Public API */
@@ -79,8 +91,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    *
    * @return the tag ID of the closest visible target to the limelight handling left or right branch
    */
-  public double getVisibleTargetTagId() {
-    return getBotPose().getTagId(0);
+  public double getVisibleTargetTagId(String limelightName) {
+    return getBotPose(limelightName).getTagId(0);
   }
 
   /**
@@ -99,7 +111,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the distance to robot centre to the nearest or targeted tag
    */
   public double distanceTagToRobot() {
-    return distanceTagToRobot(0);
+    return distanceTagToRobot(0, VISION_PRIMARY_LIMELIGHT_NAME);
   }
 
   /**
@@ -109,8 +121,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param tagId Tag to use, or 0 if looking for nearest tag
    * @return the distance to robot centre to the nearest or targeted tag
    */
-  public double distanceTagToRobot(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double distanceTagToRobot(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -126,7 +138,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the distance to camera to the nearest or targeted tag
    */
   public double distanceTagToCamera() {
-    return distanceTagToCamera(0, true);
+    return distanceTagToCamera(0, VISION_PRIMARY_LIMELIGHT_NAME, true);
   }
 
   /**
@@ -137,8 +149,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param leftBranch Left or Right branch?
    * @return the distance to camera to the nearest or targeted tag
    */
-  public double distanceTagToCamera(int tagId, boolean leftBranch) {
-    LimelightBotPose botPose = getBotPose();
+  public double distanceTagToCamera(int tagId, String limelightName, boolean leftBranch) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -154,7 +166,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @return the angle to the nearest or targeted tag
    */
   public double angleToTarget() {
-    return angleToTarget(0);
+    return angleToTarget(0, VISION_PRIMARY_LIMELIGHT_NAME);
   }
 
   /**
@@ -164,8 +176,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param tagId Tag to use, or 0 if looking for nearest tag
    * @return the angle to the nearest or targeted tag
    */
-  public double angleToTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double angleToTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -174,8 +186,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return -botPose.getTagTxnc(index);
   }
 
-  public double heightOfTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double heightOfTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -184,8 +196,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return -botPose.getTagTync(index);
   }
 
-  public double areaOfTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double areaOfTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -209,8 +221,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param tagId The ID of the tag to check
    * @return If tagId is visible or not
    */
-  public boolean isTagInView(int tagId) {
-    return isTagInView(tagId, true);
+  public boolean isTagInView(int tagId, String limelightName) {
+    return isTagInView(tagId, limelightName, true);
   }
 
   public boolean isSecondaryTagInView(int tagId) {
@@ -224,8 +236,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param tagId The ID of the tag to check
    * @return If tagId is visible or not
    */
-  public boolean isTagInView(int tagId, boolean leftBranch) {
-    LimelightBotPose botPose = getBotPose();
+  public boolean isTagInView(int tagId, String limelightName, boolean leftBranch) {
+    LimelightBotPose botPose = getBotPose(limelightName);
     return botPose.getTagIndex(tagId) != -1;
   }
 
