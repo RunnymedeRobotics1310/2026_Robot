@@ -24,7 +24,7 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
-  private GameController driverController =
+  private final GameController driverController =
       new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
@@ -56,10 +56,10 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::getShooterActive)
         .whileTrue(new ShooterCommand(shooterSubsystem, vision, this, swerve));
 
-    new Trigger(() -> driverController.getXButton())
+    new Trigger(driverController::getXButton)
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
-    new Trigger(() -> driverController.getAButton())
+    new Trigger(driverController::getAButton)
         .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
@@ -94,24 +94,17 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
-    switch (stick) {
-      case LEFT:
-        switch (axis) {
-          case X:
-            return driverController.getLeftX();
-          case Y:
-            return driverController.getLeftY();
-        }
-        break;
-      case RIGHT:
-        switch (axis) {
-          case X:
-            return driverController.getRightX();
-        }
-        break;
-    }
+      return switch (stick) {
+          case LEFT -> switch (axis) {
+              case X -> driverController.getLeftX();
+              case Y -> driverController.getLeftY();
+          };
+          case RIGHT -> switch (axis) {
+              case X -> driverController.getRightX();
+              case Y -> driverController.getRightY();
+          };
+      };
 
-    return 0;
   }
 
   public enum Stick {
