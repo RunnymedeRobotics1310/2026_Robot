@@ -102,9 +102,9 @@ public class DriveToTowerCommand extends LoggingCommand {
     }
 
     // if ur in the spot, stop
-    final double tA = vision.areaOfTarget(tagId);
-    log("TA: " + tA);
-    return tA > 1; // use ty and use -6
+    final double tY = vision.heightOfTarget(tagId);
+    log("TY: " + tY);
+    return tY < -6.5; // tY when aligned is -6.7ish
   }
 
   @Override
