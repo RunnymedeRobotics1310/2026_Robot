@@ -33,8 +33,8 @@ public class IntakeCommand extends LoggingCommand{
 
         if(intakeCheck) {
             intakeSubsystem.setRollerSpeeds(0.8,0.6);
-            intakeSubsystem.setArmSpeed(0.2);
-            intakeSubsystem.moveArmToAngle(10); //is this doing anything??
+//            intakeSubsystem.setArmSpeed(0.2);
+//            intakeSubsystem.moveArmToAngle(10); //is this doing anything??
         } else {
             intakeSubsystem.stop();
         }

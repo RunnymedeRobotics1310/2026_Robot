@@ -19,16 +19,16 @@ import frc.robot.telemetry.Telemetry;
 public class IntakeSubsystem extends SubsystemBase {
 
     //subsystem motors
-    private final SparkMax bottomRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+    private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(1);
+//    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+//    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
     //TODO: fixme: the arm motor will likely be controlled through pwm. this is how they are declared.
 //    private final PWMSparkMax armMotor = new PWMSparkMax(ARM_MOTOR_PWM_PORT);
 
     private double armSetpoint = 0;
 
     //TODO: fixme: we won't be using this. there will instead be 2 limit switches
-    private final RelativeEncoder armEncoder = armMotor.getEncoder();
+//    private final RelativeEncoder armEncoder = armMotor.getEncoder();
 
 
     /**
@@ -48,12 +48,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
-        topRollerMotor.set(topRollerSpeed);
+//        topRollerMotor.set(topRollerSpeed);
         bottomRollerMotor.set(bottomRollerSpeed);
     }
 
     public void setArmSpeed(double armSpeed) {
-        armMotor.set(armSpeed);
+//        armMotor.set(armSpeed);
         armSetpoint = armSpeed;
     }
 
