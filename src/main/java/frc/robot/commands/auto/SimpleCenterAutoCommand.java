@@ -15,11 +15,9 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
     public SimpleCenterAutoCommand(SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
 
         addCommands(new SetAllianceGyroCommand(swerve, 0));
-//        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0)
-//                .withTimeout(1));
 
-//    addCommands(new LazyShooterCommand(shooter, 3000, 10)
-//            .deadlineFor(new NullDriveCommand(swerve)));
+    addCommands(new LazyShooterCommand(shooter, 2800, 10)
+            .deadlineFor(new NullDriveCommand(swerve)));
 
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -2, 0.7, 0)
                 .withTimeout(1));

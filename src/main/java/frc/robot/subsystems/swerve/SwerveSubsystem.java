@@ -36,7 +36,7 @@ public class SwerveSubsystem extends SubsystemBase {
         config.rotationConfig().headingI(),
         config.rotationConfig().headingD());
     headingPIDController.enableContinuousInput(-180, 180);
-    headingPIDController.setTolerance(2);
+    headingPIDController.setTolerance(1);
     Telemetry.drive.enabled = config.telemetryEnabled();
   }
 
