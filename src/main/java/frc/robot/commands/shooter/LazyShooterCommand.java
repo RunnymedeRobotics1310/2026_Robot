@@ -10,6 +10,7 @@ public class LazyShooterCommand extends LoggingCommand {
     private final ShooterSubsystem shooterSubsystem;
 
     private final int speed;
+    private final double duration;
 
     private final Timer timer = new Timer();
 
@@ -18,12 +19,12 @@ public class LazyShooterCommand extends LoggingCommand {
      *
      * @param shooterSubsystem The subsystem used by this command.
      */
-    public LazyShooterCommand(ShooterSubsystem shooterSubsystem,
-            int speed) {
+    public LazyShooterCommand(ShooterSubsystem shooterSubsystem, int speed, double duration) {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSubsystem);
         this.shooterSubsystem = shooterSubsystem;
         this.speed = speed;
+        this.duration = duration;
 
     }
 
@@ -38,18 +39,20 @@ public class LazyShooterCommand extends LoggingCommand {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        lazyShoot(speed);
-        log("Speed: " + shooterSubsystem.getShooterVelocity());
+
+        shooterSubsystem.setShooterVelocity(speed);
+        if (timer.hasElapsed(2.0)) {
+            shooterSubsystem.setKickerSpeed(-0.7);
+        } else {
+            shooterSubsystem.setKickerSpeed(0);
+        }
 
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (timer.get() > 4.0) {
-            return true;
-        }
-        return false;
+        return timer.hasElapsed(duration);
     }
 
     // Called once the command ends or is interrupted.
@@ -59,15 +62,5 @@ public class LazyShooterCommand extends LoggingCommand {
         shooterSubsystem.stop();
         timer.stop();
         timer.reset();
-    }
-
-    public void lazyShoot(double shootRpm) {
-        shooterSubsystem.setShooterVelocity(shootRpm);
-        if (timer.hasElapsed(2.0)) {
-            shooterSubsystem.setKickerSpeed(-0.7);
-        } else {
-            shooterSubsystem.setKickerSpeed(0);
-        }
-
     }
 }
