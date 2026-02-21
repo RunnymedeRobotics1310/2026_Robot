@@ -64,11 +64,7 @@ public class ShooterCommand extends LoggingCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (timer.hasElapsed(2.0)) {
-      return true;
-    } else {
-      return false;
-    }
+
   }
 
   // Called once the command ends or is interrupted.
@@ -100,7 +96,7 @@ public class ShooterCommand extends LoggingCommand {
     double shooterSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(shooterSpeed);
     SmartDashboard.putNumber("1310/shooter/targetspeed", shooterSpeed);
-    if (swerveSubsystem.distanceToHub() > 2.5) {
+    if (swerveSubsystem.distanceToHub() > 2.2) {
       shooterSubsystem.setHood(1.0);
     } else if (swerveSubsystem.distanceToHub() > 1.5) {
       shooterSubsystem.setHood(0.6);
