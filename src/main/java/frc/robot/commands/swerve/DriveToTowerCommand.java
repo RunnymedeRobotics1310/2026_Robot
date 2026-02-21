@@ -107,7 +107,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
 //      log("TY: " + tY);
-      return tY > 9; // tY when aligned is 6.7ish
+      return tY > 12; // tY when aligned is 6.7ish
 //      return false;
       // will eventually end based on a sensor in the climb
   }
