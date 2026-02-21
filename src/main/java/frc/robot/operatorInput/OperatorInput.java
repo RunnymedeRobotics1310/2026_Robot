@@ -60,7 +60,7 @@ public class OperatorInput extends SubsystemBase {
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
     new Trigger(driverController::getAButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, !false));
+        .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
   }
@@ -166,7 +166,7 @@ public class OperatorInput extends SubsystemBase {
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
-      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, vision);
+      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
 
       default -> new InstantCommand();
     };

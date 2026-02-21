@@ -11,6 +11,7 @@ public class LazyShooterCommand extends LoggingCommand {
 
     private final int speed;
     private final double duration;
+    private final double hoodAngle;
 
     private final Timer timer = new Timer();
 
@@ -19,12 +20,13 @@ public class LazyShooterCommand extends LoggingCommand {
      *
      * @param shooterSubsystem The subsystem used by this command.
      */
-    public LazyShooterCommand(ShooterSubsystem shooterSubsystem, int speed, double duration) {
+    public LazyShooterCommand(ShooterSubsystem shooterSubsystem, int speed, double hoodAngle, double duration) {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(shooterSubsystem);
         this.shooterSubsystem = shooterSubsystem;
         this.speed = speed;
         this.duration = duration;
+        this.hoodAngle = hoodAngle;
 
     }
 
@@ -40,6 +42,7 @@ public class LazyShooterCommand extends LoggingCommand {
     @Override
     public void execute() {
 
+        shooterSubsystem.setHood(hoodAngle);
         shooterSubsystem.setShooterVelocity(speed);
         if (timer.hasElapsed(2.0)) {
             shooterSubsystem.setKickerSpeed(-0.7);
@@ -60,6 +63,7 @@ public class LazyShooterCommand extends LoggingCommand {
     public void end(boolean interrupted) {
         logCommandEnd(interrupted);
         shooterSubsystem.stop();
+        shooterSubsystem.setHood(0);
         timer.stop();
         timer.reset();
     }

@@ -13,7 +13,7 @@ import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAM
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = -10;
+  private static final int LEFT_TOWER_TX_OFFSET = -8;
   private static final int RIGHT_TOWER_TX_OFFSET = 29;
 
   private final SwerveSubsystem swerve;
@@ -82,14 +82,14 @@ public class DriveToTowerCommand extends LoggingCommand {
       //      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
 //      vX = 0.4;
       // } else {
-              vX = 0;
+        vX = 0;
       // }
     } else {
       vX = 0.2;
     }
 
     // align to tag
-    vY = -0.07 * (tX + tXOffset);
+    vY = -0.055 * (tX + tXOffset);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
