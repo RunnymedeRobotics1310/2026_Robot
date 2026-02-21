@@ -30,8 +30,6 @@ public class IntakeSubsystem extends SubsystemBase {
     //TODO: fixme: we won't be using this. there will instead be 2 limit switches
     private final RelativeEncoder armEncoder = armMotor.getEncoder();
 
-    //Beam Break Sensor (if it looks weird im sorry im new to programming lol)
-    private final DigitalInput beamBreak = new DigitalInput(0);
 
     /**
      * Creates a new IntakeSubsystem.
@@ -42,7 +40,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // TODO Update telemetry
-        Telemetry.intake.isHopperFull = isHopperFull();
     }
 
     @Override
@@ -100,8 +97,42 @@ public class IntakeSubsystem extends SubsystemBase {
         setArmSpeed(desiredArmSpeed);
         return false;
     }//
+//
+//    private final DigitalInput beamBreak = new DigitalInput(0); //DIO port for the beam break sensor number 0
+//    private final AddressableLED led = new AddressableLED(0); //PWM port for the LED strip number 9
+//    private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(60); //Buffer for the LED strip with 60 LEDs
+//
+//        led.setLength(60); // Set the length of the LED strip to match the buffer
+//        led.start();
+//    // telemetry
+//    private final NetworkTableInstance nt = NetworkTableInstance.getDefault();
+//    private final NetworkTable telemetryTable = nt.getTable("telemetry");
+//    private final NetworkTableEntry beamEntry = telemetryTable.getEntry("beamBroken");
+//    private final NetworkTableEntry armAngleEntry = telemetryTable.getEntry("ledMode");
+//
+//    //Set colour for LED
+//    public void setAllLEDs(int r, int g, int b) {
+//        for (int i = 0; i < 60; i++) {
+//            ledBuffer.setLED(i, r, g, b);
+//        }
+//        led.setData(ledBuffer);
+//    }
+//
+//    //Robot periodic
+//    public void robotPeriodic() {
+//        // Update telemetry
+//        beamEntry.setBoolean(isBeamBroken());
+//
+//        if (isBeamBroken()) {
+//            setAllLEDs(255, 80, 0); // Orange if the beam is broken
+//        } else {
+//            setAllLEDs(20, 20, 20); // White if the beam is intact
+//        }
+//    }
+//
+//
+//    public boolean isBeamBroken() {
+//        return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
+//    }
 
-    public boolean isHopperFull() {
-        return !beamBreak.get();
-    }
 }

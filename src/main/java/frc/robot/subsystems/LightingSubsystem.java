@@ -87,9 +87,6 @@ public class LightingSubsystem extends SubsystemBase {
       else if (/*Telemetry.swerve.distanceToHub <= Constants.Swerve.MAX_SHOOTER_DIST*/ false) {
         orangeLedPattern.applyTo(ledBuffer);
       }
-      else if (Telemetry.intake.isHopperFull) { // theo's thingy
-        orangeLedPattern.applyTo(ledBuffer);
-      }
       else if (/*Telemetry.intake.intakeSpeed > 0*/ false) {
         blink(yellowLEDPatern, 0.5);
       }
