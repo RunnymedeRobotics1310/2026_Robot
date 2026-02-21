@@ -1,10 +1,8 @@
 package frc.robot.commands.shooter;
 
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE;
-import static frc.robot.Constants.ShooterConstants.Y_INT;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -23,6 +21,13 @@ public class ShooterCommand extends LoggingCommand {
   private final OperatorInput operatorInput;
 
   private final Timer timer = new Timer();
+
+  private final double SLOPE_VALUE_FAR = ShooterConstants.SLOPE_VALUE_FAR;
+  private final double Y_INT_FAR = ShooterConstants.Y_INT_FAR;
+  private final double SLOPE_VALUE_MID = ShooterConstants.SLOPE_VALUE_MID;
+  private final double Y_INT_MID = ShooterConstants.Y_INT_MID;
+  private final double SLOPE_VALUE_CLOSE = ShooterConstants.SLOPE_VALUE_CLOSE;
+  private final double Y_INT_CLOSE = ShooterConstants.Y_INT_CLOSE;
 
   /**
    * Creates a new ExampleCommand.
@@ -53,20 +58,24 @@ public class ShooterCommand extends LoggingCommand {
     double distance = swerveSubsystem.distanceToHub();
     SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
     log("Speed: " + shooterSubsystem.getShooterVelocity());
-
     shooting(distance);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (timer.hasElapsed(2.0)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
+    shooterSubsystem.setHood(0);
     shooterSubsystem.stop();
     timer.stop();
     timer.reset();
@@ -75,8 +84,14 @@ public class ShooterCommand extends LoggingCommand {
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
     if (distanceMeters < 10.0) {
-      shooterSpeed = (distanceMeters * SLOPE_VALUE) + Y_INT;
-      // log("Target speed: " + shooterSpeed);
+      if (distanceMeters > 2.2) {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_FAR) + Y_INT_FAR;
+        // log("Target speed: " + shooterSpeed);
+      } else if (distanceMeters > 1.5) {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
+      } else {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_CLOSE) + Y_INT_CLOSE;
+      }
     }
     return shooterSpeed;
   }
@@ -85,18 +100,20 @@ public class ShooterCommand extends LoggingCommand {
     double shooterSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(shooterSpeed);
     SmartDashboard.putNumber("1310/shooter/targetspeed", shooterSpeed);
-    if (swerveSubsystem.distanceToHub() > 2.2) {
+    if (swerveSubsystem.distanceToHub() > 2.5) {
       shooterSubsystem.setHood(1.0);
-    } else {
+    } else if (swerveSubsystem.distanceToHub() > 1.5) {
       shooterSubsystem.setHood(0.6);
     }
-
+    // else {
+    // shooterSubsystem.setHood(0.0);
+    // }
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
 
-    if (timer.hasElapsed(2.0)) {
+    if (timer.hasElapsed(1.75)) {
       shooterSubsystem.setKickerSpeed(-0.7);
     }
-    if (timer.hasElapsed(2.3)) {
+    if (timer.hasElapsed(2.0)) {
       shooterSubsystem.setKickerSpeed(0.0);
       timer.reset();
       timer.stop();
