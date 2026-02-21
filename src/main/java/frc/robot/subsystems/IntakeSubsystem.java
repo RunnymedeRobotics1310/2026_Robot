@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.telemetry.Telemetry;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -20,6 +21,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax bottomRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
     private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
     private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+    // TODO: fixme: the arm motor will likely be controlled through pwm. this is how
+    // they are declared.
+    // private final PWMSparkMax armMotor = new PWMSparkMax(ARM_MOTOR_PWM_PORT);
 
     private double armSetpoint = 0;
 
