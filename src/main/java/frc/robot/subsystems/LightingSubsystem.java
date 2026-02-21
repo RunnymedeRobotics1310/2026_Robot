@@ -1,11 +1,28 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.wpilibj.util.Color.kBlack;
+import static edu.wpi.first.wpilibj.util.Color.kBlue;
+import static edu.wpi.first.wpilibj.util.Color.kDarkViolet;
+import static edu.wpi.first.wpilibj.util.Color.kFirstBlue;
+import static edu.wpi.first.wpilibj.util.Color.kFirstRed;
+import static edu.wpi.first.wpilibj.util.Color.kGreen;
+import static edu.wpi.first.wpilibj.util.Color.kGreenYellow;
+import static edu.wpi.first.wpilibj.util.Color.kOrangeRed;
+import static edu.wpi.first.wpilibj.util.Color.kPink;
+import static edu.wpi.first.wpilibj.util.Color.kRed;
+import static edu.wpi.first.wpilibj.util.Color.kViolet;
+import static edu.wpi.first.wpilibj.util.Color.kWhite;
+import static edu.wpi.first.wpilibj.util.Color.kYellow;
 
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.*;
-import static edu.wpi.first.wpilibj.util.Color.*;
-
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
@@ -14,18 +31,16 @@ import frc.robot.telemetry.Telemetry;
 public class LightingSubsystem extends SubsystemBase {
 
   // The LED strip is plugged into a DIO port on the RoboRIO
-  private final AddressableLED ledStrip =
-      new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
+  private final AddressableLED ledStrip = new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
 
   // Buffer of data to write to the LED strip
-  private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH);
-
+  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(
+      Constants.LightingConstants.LED_STRING_LENGTH);
 
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
   public static final Distance kLedSpacing = Meters.of(1 / 120.0);
-  public final LEDPattern scrollingRainbowLedPattern =
-      rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing);
+  public final LEDPattern scrollingRainbowLedPattern = rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5),
+      kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(kYellow);
   public static final LEDPattern greenLedPattern = LEDPattern.solid(kGreen);
   public static final LEDPattern whiteLedPattern = LEDPattern.solid(kWhite);
@@ -33,6 +48,8 @@ public class LightingSubsystem extends SubsystemBase {
   public static final LEDPattern redLedPattern = LEDPattern.solid(kRed);
   public static final LEDPattern blueLedPattern = LEDPattern.solid(kBlue);
   public static final LEDPattern orangeLedPattern = LEDPattern.solid(kOrangeRed);
+  public static final LEDPattern pinkLedPattern = LEDPattern.solid(kPink);
+
   private LEDPattern alliancePattern;
 
   // Blink Constants
@@ -52,7 +69,8 @@ public class LightingSubsystem extends SubsystemBase {
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       alliancePattern = LEDPattern.solid(kFirstRed);
-      } else alliancePattern = LEDPattern.solid(kFirstBlue);
+    } else
+      alliancePattern = LEDPattern.solid(kFirstBlue);
 
     if (DriverStation.isEnabled()) {
       // if climbing
@@ -62,39 +80,34 @@ public class LightingSubsystem extends SubsystemBase {
       // if in range
       // if intake running
       // else DEFAULT PATTERN (based on alliance?)
-      if (/*Telemetry.climb.level == 3*/ false) {
+      if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.climb.level == 2*/ false) {
+      } else if (/* Telemetry.climb.level == 2 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kViolet)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
-                .applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.climb.level == 1*/ false) {
+            .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
+            .applyTo(ledBuffer);
+      } else if (/* Telemetry.climb.level == 1 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kDarkViolet)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
-                .applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.climb.alignedToTower*/ false) {
+            .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
+            .applyTo(ledBuffer);
+      } else if (/* Telemetry.climb.alignedToTower */ false) {
         greenLedPattern.applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.climb.climbEncoder > 0*/ false) {
+      } else if (/* Telemetry.climb.climbEncoder > 0 */ false) {
         blink(LEDPattern.solid(kViolet), 0.25);
-      }
-      else if (/*Telemetry.shooter.atSpeed*/ false) {
+      } else if (/* Telemetry.shooter.atSpeed */ false) {
         yellowLEDPatern.applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.swerve.distanceToHub <= Constants.Swerve.MAX_SHOOTER_DIST*/ false) {
+      } else if (/* Telemetry.swerve.distanceToHub <= Constants.Swerve.MAX_SHOOTER_DIST */ false) {
         orangeLedPattern.applyTo(ledBuffer);
-      }
-      else if (/*Telemetry.intake.intakeSpeed > 0*/ false) {
+
+      } else if (Telemetry.intake.isHopperFull) {
+        pinkLedPattern.applyTo(ledBuffer);
+      } else if (/* Telemetry.intake.intakeSpeed > 0 */ false) {
         blink(yellowLEDPatern, 0.5);
-      }
-      else {
+      } else {
         alliancePattern.applyTo(ledBuffer);
       }
     } else {
-      if (/*Telemetry.climb.level == 3*/ false) {
+      if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
       } else if (Telemetry.healthyRobot == Telemetry.AlertLevel.ERROR) {
         orangeLedPattern.blink(Second.of(0.1)).applyTo(ledBuffer);
@@ -104,8 +117,8 @@ public class LightingSubsystem extends SubsystemBase {
         greenLedPattern.applyTo(ledBuffer);
       } else {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, kBlack)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
-                .applyTo(ledBuffer);
+            .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
+            .applyTo(ledBuffer);
       }
     }
 
