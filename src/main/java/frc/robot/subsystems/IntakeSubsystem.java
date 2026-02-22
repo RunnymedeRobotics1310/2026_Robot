@@ -19,11 +19,10 @@ import frc.robot.telemetry.Telemetry;
 public class IntakeSubsystem extends SubsystemBase {
 
     //subsystem motors
+    //TODO: fixme: the motor will all be controlled through pwm. this is how they are declared.
     private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(1);
 //    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
 //    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-    //TODO: fixme: the arm motor will likely be controlled through pwm. this is how they are declared.
-//    private final PWMSparkMax armMotor = new PWMSparkMax(ARM_MOTOR_PWM_PORT);
 
     private double armSetpoint = 0;
 
