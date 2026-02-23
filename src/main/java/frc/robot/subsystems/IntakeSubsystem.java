@@ -8,15 +8,20 @@ package frc.robot.subsystems;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
     //subsystem motors
-    private final SparkMax bottomRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+    //TODO: fixme: the motor will all be controlled through pwm. this is how they are declared.
+    private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(1);
+//    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+//    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
 
     private final double armPosition = 1;
     private final double armStart = 0;
@@ -24,7 +29,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private double armSetpoint = 0; //no?
 
     //TODO: fixme: we won't be using this. there will instead be 2 limit switches
-    private final RelativeEncoder armEncoder = armMotor.getEncoder();
+//    private final RelativeEncoder armEncoder = armMotor.getEncoder();
+
+    private final DigitalInput beamBreak = new DigitalInput(0); //DIO port for the beam break sensor number 0
+
 
     /**
      * Creates a new IntakeSubsystem.
@@ -35,6 +43,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         // TODO Update telemetry
+        Telemetry.intake.isHopperFull = isBeamBroken();
     }
 
     @Override
@@ -43,12 +52,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
-        topRollerMotor.set(topRollerSpeed);
+//        topRollerMotor.set(topRollerSpeed);
         bottomRollerMotor.set(bottomRollerSpeed);
     }
 
     public void setArmSpeed(double armSpeed) {
-        armMotor.set(armSpeed);
+//        armMotor.set(armSpeed);
     }
 
     public void stop() {
@@ -95,4 +104,8 @@ return true;
 }
 
 
+    public boolean isBeamBroken() {
+        return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
+    }
 
+}
