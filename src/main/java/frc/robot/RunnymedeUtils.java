@@ -4,7 +4,6 @@ import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -91,5 +90,14 @@ public class RunnymedeUtils {
         Constants.FieldConstants.FIELD_EXTENT_METRES_Y - -blueAlliancePose.getY(),
         Rotation2d.fromDegrees(
             SwerveUtils.normalizeDegrees(blueAlliancePose.getRotation().getDegrees() + 180)));
+  }
+
+  /**
+   * Rounds a number to 2 decimal places
+   * @param num the number you want to round
+   * @return the rounded number
+   */
+  public static double round(double num) {
+    return ((int) (num * 100) + 0.5) / 100.0;
   }
 }
