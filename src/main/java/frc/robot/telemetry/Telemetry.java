@@ -17,7 +17,7 @@ public class Telemetry {
   public static SwerveTelemetry swerve = null;
   public static DriveTelemetry drive = new DriveTelemetry();
   public static VisionTelemetry vision = new VisionTelemetry();
-  public static IntakeTelemetry intake = new IntakeTelemetry();
+  public static ShooterTelemetry shooter = new ShooterTelemetry();
 
   public static AlertLevel healthyRobot = AlertLevel.NONE;
 
@@ -27,7 +27,7 @@ public class Telemetry {
     test.post();
     drive.post();
     vision.post();
-    intake.post();
+    shooter.post();
 
     SmartDashboard.putBoolean(PREFIX + "RobotHealth", healthyRobot == AlertLevel.NONE);
   }

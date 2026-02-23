@@ -9,7 +9,7 @@ import frc.robot.RunnymedeUtils;
  * @author Tony Field
  * @since 2025-02-16 10:45
  */
-public class IntakeTelemetry {
+public class ShooterTelemetry {
 
   public boolean enabled = true;
 
