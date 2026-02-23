@@ -4,16 +4,10 @@
 
 package frc.robot.subsystems;
 
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.telemetry.Telemetry;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -101,7 +95,7 @@ return true;
     //check if the motor is at position
     //move motor backwards
     //if the motor retracts too far, stop
-}
+//}
 
 
     public boolean isBeamBroken() {
