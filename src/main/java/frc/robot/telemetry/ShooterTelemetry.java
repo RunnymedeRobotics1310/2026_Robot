@@ -25,6 +25,9 @@ public class ShooterTelemetry {
   /** Whether the hopper is full or not */
   public boolean isHopperFull = false;
 
+  /// Whether the shooter is shooting or now */
+  public static boolean isShooting = false;
+
   void post() {
 
     if (enabled) {

@@ -8,6 +8,7 @@ import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
+import frc.robot.telemetry.ShooterTelemetry;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -109,9 +110,11 @@ public class ShooterCommand extends LoggingCommand {
 
     if (timer.hasElapsed(1.75)) {
       shooterSubsystem.setKickerSpeed(-0.7);
+      ShooterTelemetry.isShooting = true;
     }
     if (timer.hasElapsed(2.0)) {
       shooterSubsystem.setKickerSpeed(0.0);
+      ShooterTelemetry.isShooting = false;
       timer.reset();
       timer.stop();
     }
