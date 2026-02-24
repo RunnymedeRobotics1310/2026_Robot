@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
+
 import ca.team1310.swerve.core.config.*;
 import ca.team1310.swerve.gyro.config.GyroConfig;
 import ca.team1310.swerve.utils.Coordinates;
@@ -14,10 +18,6 @@ import frc.robot.subsystems.swerve.SwerveRotationConfig;
 import frc.robot.subsystems.swerve.SwerveTranslationConfig;
 import frc.robot.subsystems.vision.VisionConfig;
 import frc.robot.subsystems.vision.VisionTelemetryLevel;
-
-import static edu.wpi.first.math.util.Units.inchesToMeters;
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -74,26 +74,26 @@ public final class Constants {
 
   public static final class AutoConstants {
 
-      public enum AutoPattern {
-        DO_NOTHING,
-        EXIT_ZONE,
-        EXAMPLE_AUTO,
-        LEIA_AUTO,
-      }
+    public enum AutoPattern {
+      DO_NOTHING,
+      EXIT_ZONE,
+      EXAMPLE_AUTO,
+      LEIA_AUTO,
+    }
 
-      public enum Delay {
-        NO_DELAY,
-        WAIT_0_5_SECOND,
-        WAIT_1_SECOND,
-        WAIT_1_5_SECONDS,
-        WAIT_2_SECONDS,
-        WAIT_2_5_SECONDS,
-        WAIT_3_SECONDS,
-        WAIT_5_SECONDS
-      }
+    public enum Delay {
+      NO_DELAY,
+      WAIT_0_5_SECOND,
+      WAIT_1_SECOND,
+      WAIT_1_5_SECONDS,
+      WAIT_2_SECONDS,
+      WAIT_2_5_SECONDS,
+      WAIT_3_SECONDS,
+      WAIT_5_SECONDS
+    }
   }
 
-// Constants for 2026 comp robot
+  // Constants for 2026 comp robot
   public static final class Swerve {
 
     /** Front to back from the middle of the wheels */
@@ -107,149 +107,150 @@ public final class Constants {
     public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG =
-            new SwerveTranslationConfig(
-                    /* tolerance (m) */ 0.02,
-                    /* min speed (m/s) */ 1.0,
-                    /* max speed (m/s) */ 4.8,
-                    /* max module speed (m/s) */ 5.36,
-                    /* max acceleration (m/s/s) */ 10.0,
-                    /* velocity PID p */ 1.2,
-                    /* velocity PID i */ 0,
-                    /* velocity PID d */ 0);
+        new SwerveTranslationConfig(
+            /* tolerance (m) */ 0.02,
+            /* min speed (m/s) */ 1.0,
+            /* max speed (m/s) */ 4.8,
+            /* max module speed (m/s) */ 5.36,
+            /* max acceleration (m/s/s) */ 10.0,
+            /* velocity PID p */ 1.2,
+            /* velocity PID i */ 0,
+            /* velocity PID d */ 0);
 
     public static final SwerveRotationConfig ROTATION_CONFIG =
-            new SwerveRotationConfig(
-                    /* max rot vel (rad/s) */ Rotation2d.fromRotations(1.5).getRadians(),
-                    /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.75).getRadians(),
-                    /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(2).getRadians(),
-                    /* heading PID p */ 0.033, // Rads/Deg
-                    /* heading PID i */ 0,
-                    /* heading PID d */ 0);
+        new SwerveRotationConfig(
+            /* max rot vel (rad/s) */ Rotation2d.fromRotations(1.5).getRadians(),
+            /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.75).getRadians(),
+            /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(2).getRadians(),
+            /* heading PID p */ 0.033, // Rads/Deg
+            /* heading PID i */ 0,
+            /* heading PID d */ 0);
 
     private static final MotorConfig ANGLE_MOTOR_CONFIG =
-            new MotorConfig(
-                    /* motor hardware type */ MotorType.NEO_SPARK_MAX,
-                    /* inverted? */ true,
-                    /* current limit (A) */ 20,
-                    /* nominal voltage (V) */ 12,
-                    /* ramp rate 0 to full power (s)*/ 0.02,
-                    /* angle motor gear ratio */ 150.0 / 7 /* SDS MK4i 150/7:1 */,
-                    /* angle motor PID p */ 0.009,
-                    /* angle motor PID i */ 0,
-                    /* angle motor PID d */ 0,
-                    /* angle motor PID ff */ 0,
-                    /* angle motor PID izone */ 0);
+        new MotorConfig(
+            /* motor hardware type */ MotorType.NEO_SPARK_MAX,
+            /* inverted? */ true,
+            /* current limit (A) */ 20,
+            /* nominal voltage (V) */ 12,
+            /* ramp rate 0 to full power (s)*/ 0.02,
+            /* angle motor gear ratio */ 150.0 / 7 /* SDS MK4i 150/7:1 */,
+            /* angle motor PID p */ 0.009,
+            /* angle motor PID i */ 0,
+            /* angle motor PID d */ 0,
+            /* angle motor PID ff */ 0,
+            /* angle motor PID izone */ 0);
 
     private static final MotorConfig DRIVE_MOTOR_CONFIG =
-            new MotorConfig(
-                    /* motor hardware type */ MotorType.NEO_SPARK_MAX,
-                    /* inverted? */ false,
-                    /* current limit (A) */ 40,
-                    /* nominal voltage (V) */ 12,
-                    /* ramp rate 0 to full power (s)*/ 0.02,
-                    /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
-                    /* drive motor PID p */ 0.075,
-                    /* drive motor PID i */ 0,
-                    /* drive motor PID d */ 0,
-                    /* drive motor PID ff */ 1 / TRANSLATION_CONFIG.maxModuleSpeedMPS(),
-                    /* drive motor PID izone */ 0);
+        new MotorConfig(
+            /* motor hardware type */ MotorType.NEO_SPARK_MAX,
+            /* inverted? */ false,
+            /* current limit (A) */ 40,
+            /* nominal voltage (V) */ 12,
+            /* ramp rate 0 to full power (s)*/ 0.02,
+            /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
+            /* drive motor PID p */ 0.075,
+            /* drive motor PID i */ 0,
+            /* drive motor PID d */ 0,
+            /* drive motor PID ff */ 1 / TRANSLATION_CONFIG.maxModuleSpeedMPS(),
+            /* drive motor PID izone */ 0);
 
     private static final EncoderConfig ANGLE_ENCODER_CONFIG = new EncoderConfig(false, 0.005, 5);
 
     public static final ModuleConfig FRONT_LEFT =
-            new ModuleConfig(
-                    "frontleft",
-                    new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
-                    SDS_MK4I_WHEEL_RADIUS_M,
-                    10,
-                    DRIVE_MOTOR_CONFIG,
-                    11,
-                    ANGLE_MOTOR_CONFIG,
-                    12,
-                    Rotation2d.fromRotations(0.619385).getDegrees(),
-                    ANGLE_ENCODER_CONFIG);
+        new ModuleConfig(
+            "frontleft",
+            new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+            SDS_MK4I_WHEEL_RADIUS_M,
+            10,
+            DRIVE_MOTOR_CONFIG,
+            11,
+            ANGLE_MOTOR_CONFIG,
+            12,
+            Rotation2d.fromRotations(0.724365).getDegrees(),
+            ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig FRONT_RIGHT =
-            new ModuleConfig(
-                    "frontright",
-                    new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
-                    SDS_MK4I_WHEEL_RADIUS_M,
-                    15,
-                    DRIVE_MOTOR_CONFIG,
-                    16,
-                    ANGLE_MOTOR_CONFIG,
-                    17,
-                    Rotation2d.fromRotations(0.033691).getDegrees(),
-                    ANGLE_ENCODER_CONFIG);
+        new ModuleConfig(
+            "frontright",
+            new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+            SDS_MK4I_WHEEL_RADIUS_M,
+            15,
+            DRIVE_MOTOR_CONFIG,
+            16,
+            ANGLE_MOTOR_CONFIG,
+            17,
+            Rotation2d.fromRotations(0.239990).getDegrees(),
+            ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_RIGHT =
-            new ModuleConfig(
-                    "backright",
-                    new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
-                    SDS_MK4I_WHEEL_RADIUS_M,
-                    20,
-                    DRIVE_MOTOR_CONFIG,
-                    21,
-                    ANGLE_MOTOR_CONFIG,
-                    22,
-                    Rotation2d.fromRotations(0.564941).getDegrees(),
-                    ANGLE_ENCODER_CONFIG);
+        new ModuleConfig(
+            "backright",
+            new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+            SDS_MK4I_WHEEL_RADIUS_M,
+            20,
+            DRIVE_MOTOR_CONFIG,
+            21,
+            ANGLE_MOTOR_CONFIG,
+            22,
+            Rotation2d.fromRotations(0.765137).getDegrees(),
+            ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_LEFT =
-            new ModuleConfig(
-                    "backleft",
-                    new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
-                    SDS_MK4I_WHEEL_RADIUS_M,
-                    25,
-                    DRIVE_MOTOR_CONFIG,
-                    26,
-                    ANGLE_MOTOR_CONFIG,
-                    27,
-                    Rotation2d.fromRotations(0.928467).getDegrees(),
-                    ANGLE_ENCODER_CONFIG);
+        new ModuleConfig(
+            "backleft",
+            new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+            SDS_MK4I_WHEEL_RADIUS_M,
+            25,
+            DRIVE_MOTOR_CONFIG,
+            26,
+            ANGLE_MOTOR_CONFIG,
+            27,
+            Rotation2d.fromRotations(0.632812).getDegrees(),
+            ANGLE_ENCODER_CONFIG);
 
     public static final CoreSwerveConfig CORE_SWERVE_CONFIG =
-            new CoreSwerveConfig(
-                    WHEEL_BASE_METRES,
-                    TRACK_WIDTH_METRES,
-                    SDS_MK4I_WHEEL_RADIUS_M,
-                    Robot.kDefaultPeriod,
-                    TRANSLATION_CONFIG.maxModuleSpeedMPS(),
-                    TRANSLATION_CONFIG.maxSpeedMPS(),
-                    ROTATION_CONFIG.maxRotVelocityRadPS(),
-                    0.55,
-                    0.85,
-                    0.65,
-                    FRONT_LEFT,
-                    FRONT_RIGHT,
-                    BACK_LEFT,
-                    BACK_RIGHT,
-                    TelemetryConfig.swerve);
+        new CoreSwerveConfig(
+            WHEEL_BASE_METRES,
+            TRACK_WIDTH_METRES,
+            SDS_MK4I_WHEEL_RADIUS_M,
+            Robot.kDefaultPeriod,
+            TRANSLATION_CONFIG.maxModuleSpeedMPS(),
+            TRANSLATION_CONFIG.maxSpeedMPS(),
+            ROTATION_CONFIG.maxRotVelocityRadPS(),
+            0.55,
+            0.85,
+            0.65,
+            FRONT_LEFT,
+            FRONT_RIGHT,
+            BACK_LEFT,
+            BACK_RIGHT,
+            TelemetryConfig.swerve);
 
     private static final LimelightConfig LIMELIGHT_CONFIG =
-            new LimelightConfig(
-                    VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME, FIELD_EXTENT_METRES_X, FIELD_EXTENT_METRES_Y);
+        new LimelightConfig(
+            VisionConstants.VISION_PRIMARY_LIMELIGHT_NAME,
+            FIELD_EXTENT_METRES_X,
+            FIELD_EXTENT_METRES_Y);
 
     public static final SwerveDriveSubsystemConfig SUBSYSTEM_CONFIG =
-            new SwerveDriveSubsystemConfig(
-                    true,
-                    CORE_SWERVE_CONFIG,
-                    GYRO_CONFIG,
-                    LIMELIGHT_CONFIG,
-                    TRANSLATION_CONFIG,
-                    ROTATION_CONFIG,
-                    TelemetryConfig.drive);
+        new SwerveDriveSubsystemConfig(
+            true,
+            CORE_SWERVE_CONFIG,
+            GYRO_CONFIG,
+            LIMELIGHT_CONFIG,
+            TRANSLATION_CONFIG,
+            ROTATION_CONFIG,
+            TelemetryConfig.drive);
   }
 
   public static final class VisionConstants {
     public static final VisionConfig VISION_CONFIG =
-            new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
+        new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
 
     public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
   }
-  public static final class  IntakeConstants{
+
+  public static final class IntakeConstants {
     public static final double ARM_FAST_SPEED = 0.436;
-
-
   }
 }
