@@ -1,0 +1,81 @@
+{
+  "name": "opportunistic_outpost_configurable",
+  "description": "Config-driven equivalent of OpportunisticOutpostAutoCommand",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "drive",
+      "mode": "to_pose",
+      "speedMPS": 2.0,
+      "xMetres": 0.8,
+      "yMetres": 0.6,
+      "headingDegrees": 0,
+      "positionToleranceMetres": 0.05,
+      "headingToleranceDegrees": 2.0,
+      "timeoutSeconds": 8.0
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "robot",
+      "vxMPS": -0.5,
+      "vyMPS": 0.0,
+      "headingDegrees": 0,
+      "durationSeconds": 1.0
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 3.0
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "robot",
+      "vxMPS": 1.0,
+      "vyMPS": 1.6,
+      "headingDegrees": 0,
+      "durationSeconds": 2.0
+    },
+    {
+      "type": "face_target",
+      "target": "hub",
+      "headingToleranceDegrees": 3.0,
+      "timeoutSeconds": 4.0
+    },
+    {
+      "type": "parallel",
+      "endCondition": "deadline",
+      "deadlineIndex": 0,
+      "commands": [
+        {
+          "type": "shooter",
+          "action": "on_with_duration",
+          "rpm": 1500,
+          "hoodPosition": 0.0,
+          "kickerSpeed": -0.7,
+          "kickerDelaySeconds": 2.0,
+          "durationSeconds": 10.0
+        },
+        {
+          "type": "hold",
+          "durationSeconds": 0
+        }
+      ]
+    },
+    {
+      "type": "drive",
+      "mode": "to_pose",
+      "speedMPS": 2.0,
+      "xMetres": 2.4,
+      "yMetres": 4.0,
+      "headingDegrees": 180,
+      "positionToleranceMetres": 0.05,
+      "headingToleranceDegrees": 2.0,
+      "timeoutSeconds": 8.0
+    },
+    {
+      "type": "vision_approach_tag",
+      "rightSide": false,
+      "timeoutSeconds": 12.0
+    }
+  ]
+}

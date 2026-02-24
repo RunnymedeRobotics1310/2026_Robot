@@ -4,6 +4,6 @@
   "description": "FRC Team 1310 Auto Configuration Dashboard",
   "private": true,
   "scripts": {
-    "serve": "python3 -m http.server 8080"
+    "serve": "python3 -m http.server 8080 --directory .."
   }
 }

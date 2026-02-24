@@ -205,10 +205,15 @@ window.DragDrop = (function () {
 
     var header = document.createElement('div');
     header.className = 'parallel-header';
+    var endConditionText = step.endCondition === 'all'
+      ? 'Wait All'
+      : (step.endCondition === 'first'
+        ? 'Race (First)'
+        : ('Deadline #' + (step.deadlineIndex || 0)));
     header.innerHTML =
       '<span class="parallel-label">' +
       '<span class="step-number">' + (index + 1) + '</span> Parallel Group ' +
-      '<span class="parallel-end-condition">' + (step.endCondition === 'all' ? 'Wait All' : 'Race (First)') + '</span>' +
+      '<span class="parallel-end-condition">' + endConditionText + '</span>' +
       '</span>' +
       '<span class="step-actions" style="opacity:1;">' +
       '<button class="step-action-btn duplicate-step" title="Duplicate">&#x29C9;</button>' +

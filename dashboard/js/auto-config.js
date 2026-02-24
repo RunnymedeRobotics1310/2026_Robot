@@ -19,6 +19,7 @@
 
   var state = {
     autoNames: [],
+    deployAutoNames: [],
     runtimeAutoNames: [],
     currentConfig: null,
     steps: [],
@@ -37,6 +38,7 @@
   var robotSyncedHashesByName = {};
   var repoSyncedHashesByName = {};
   var pendingRobotSync = null;
+  var repoAutosDirHandle = null;
 
   // ===== DOM References =====
 
@@ -50,9 +52,11 @@
       connectBtn: document.getElementById('connect-btn'),
       saveBtn: document.getElementById('save-btn'),
       saveRepoBtn: document.getElementById('save-repo-btn'),
+      localFolderBtn: document.getElementById('local-folder-btn'),
       exportBtn: document.getElementById('export-btn'),
       importBtn: document.getElementById('import-btn'),
       importFile: document.getElementById('import-file'),
+      localFolderInput: document.getElementById('local-folder-input'),
       editStatus: document.getElementById('edit-status'),
       writeStatus: document.getElementById('write-status'),
       autoList: document.getElementById('auto-list'),
@@ -261,6 +265,27 @@
     return hashConfig(config);
   }
 
+  function isValidConfigShape(configJson) {
+    return !!(configJson && typeof configJson === 'object' && Array.isArray(configJson.steps));
+  }
+
+  function addLocalConfig(configJson) {
+    if (!isValidConfigShape(configJson)) return false;
+    var safeName = sanitizeAutoName(configJson.name || '');
+    if (!safeName) return false;
+
+    var normalized = deepClone(configJson);
+    normalized.name = safeName;
+
+    configCache[safeName] = normalized;
+    repoSyncedHashesByName[safeName] = hashConfig(normalized);
+
+    if (state.autoNames.indexOf(safeName) === -1 && localAutoNames.indexOf(safeName) === -1) {
+      localAutoNames.push(safeName);
+    }
+    return true;
+  }
+
   // ===== Initialization =====
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -279,6 +304,7 @@
     NT.init({
       onConnectionChange: handleConnectionChange,
       onAutoListUpdate: handleAutoListUpdate,
+      onDeployAutoListUpdate: handleDeployAutoListUpdate,
       onRuntimeAutoListUpdate: handleRuntimeAutoListUpdate,
       onConfigReceived: handleConfigReceived,
       onWriteStatus: handleWriteStatus,
@@ -317,9 +343,11 @@
 
     dom.saveBtn.addEventListener('click', saveToRobot);
     dom.saveRepoBtn.addEventListener('click', saveToRepoFile);
+    dom.localFolderBtn.addEventListener('click', function () { dom.localFolderInput.click(); });
     dom.exportBtn.addEventListener('click', exportToFile);
     dom.importBtn.addEventListener('click', function () { dom.importFile.click(); });
     dom.importFile.addEventListener('change', importFromFile);
+    dom.localFolderInput.addEventListener('change', importLocalFolderFiles);
     dom.newAutoBtn.addEventListener('click', createNewAuto);
     dom.newAutoName.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') createNewAuto();
@@ -478,6 +506,11 @@
     renderAutoList();
   }
 
+  function handleDeployAutoListUpdate(names) {
+    state.deployAutoNames = Array.isArray(names) ? names.slice() : [];
+    renderAutoList();
+  }
+
   // Name of the config the user explicitly asked to load (via click)
   var pendingLoadName = null;
 
@@ -538,7 +571,7 @@
     var runtimeSet = {};
     var localSet = {};
     state.autoNames.forEach(function (n) { if (!nameSet[n]) { nameSet[n] = true; allNames.push(n); } });
-    state.autoNames.forEach(function (n) { deploySet[n] = true; });
+    state.deployAutoNames.forEach(function (n) { deploySet[n] = true; });
     state.runtimeAutoNames.forEach(function (n) { runtimeSet[n] = true; });
     localAutoNames.forEach(function (n) { if (!nameSet[n]) { nameSet[n] = true; allNames.push(n); } });
     localAutoNames.forEach(function (n) { localSet[n] = true; });
@@ -575,7 +608,11 @@
         item.appendChild(nameSpan);
 
         var sourceBadge = document.createElement('span');
-        if (runtimeSet[name]) {
+        if (runtimeSet[name] && deploySet[name]) {
+          sourceBadge.className = 'auto-source-badge runtime-override';
+          sourceBadge.textContent = 'runtime+deploy';
+          sourceBadge.title = 'Runtime override active (deploy baseline also exists)';
+        } else if (runtimeSet[name]) {
           sourceBadge.className = 'auto-source-badge runtime';
           sourceBadge.textContent = 'runtime';
           sourceBadge.title = 'Runtime-only config from NetworkTables';
@@ -777,6 +814,9 @@
         var t = Math.max(0, step.durationSeconds || 0);
         return { min: t, max: t, unbounded: false };
       }
+      if (step.mode === 'to_pose') {
+        return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
+      }
       var expected = 0;
       if (step.speedMPS > 0) {
         expected = Math.max(0, (step.distanceMetres || 0) / step.speedMPS);
@@ -787,9 +827,26 @@
     if (step.type === 'rotate') {
       return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
     }
+    if (step.type === 'drive_velocity') {
+      var dv = Math.max(0, step.durationSeconds || 0);
+      return { min: dv, max: dv, unbounded: false };
+    }
+    if (step.type === 'face_target') {
+      return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
+    }
+    if (step.type === 'vision_approach_tag') {
+      return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
+    }
     if (step.type === 'delay') {
       var d = Math.max(0, step.durationSeconds || 0);
       return { min: d, max: d, unbounded: false };
+    }
+    if (step.type === 'hold') {
+      if (!step.durationSeconds || step.durationSeconds <= 0) {
+        return { min: 0, max: Infinity, unbounded: true };
+      }
+      var h = Math.max(0, step.durationSeconds || 0);
+      return { min: h, max: h, unbounded: false };
     }
     if (step.type === 'shooter') {
       if (step.action === 'on_with_duration') {
@@ -830,6 +887,15 @@
           min: isFinite(minFirst) ? minFirst : 0,
           max: boundedCount > 0 && isFinite(maxFirst) ? maxFirst : Infinity,
           unbounded: boundedCount === 0,
+        };
+      }
+      if (step.endCondition === 'deadline') {
+        var idx = Math.max(0, Math.min((step.deadlineIndex || 0), childDurations.length - 1));
+        var deadlineDuration = childDurations[idx];
+        return {
+          min: deadlineDuration.min,
+          max: deadlineDuration.max,
+          unbounded: deadlineDuration.unbounded,
         };
       }
       var minAll = 0;
@@ -970,26 +1036,28 @@
 
     var json = JSON.stringify(config, null, 2);
     var fileName = safeName + '.json';
-    var savedDirectly = false;
+    var savedToRepoDir = false;
 
-    if (window.showSaveFilePicker) {
+    if (window.showDirectoryPicker) {
       try {
-        var handle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
-        });
-        var writable = await handle.createWritable();
-        await writable.write(json);
-        await writable.close();
-        savedDirectly = true;
+        if (!repoAutosDirHandle) {
+          showToast('Select your repo autos folder (src/main/deploy/autos)', 'info');
+          repoAutosDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        }
+        var repoFileHandle = await repoAutosDirHandle.getFileHandle(fileName, { create: true });
+        var repoWritable = await repoFileHandle.createWritable();
+        await repoWritable.write(json);
+        await repoWritable.close();
+        savedToRepoDir = true;
       } catch (err) {
         if (err && err.name === 'AbortError') {
           return;
         }
+        showToast('Could not write to selected repo folder; falling back to download', 'error');
       }
     }
 
-    if (!savedDirectly) {
+    if (!savedToRepoDir) {
       var blob = new Blob([json], { type: 'application/json' });
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
@@ -997,12 +1065,12 @@
       a.download = fileName;
       a.click();
       URL.revokeObjectURL(url);
-      showToast('Downloaded "' + fileName + '". Move it to src/main/deploy/autos/', 'info');
+      showToast('Downloaded "' + fileName + '". Move it to src/main/deploy/autos/ (not repo-synced yet)', 'info');
     } else {
-      showToast('Saved "' + fileName + '" for repo deploy', 'success');
+      showToast('Saved "' + fileName + '" to repo autos folder', 'success');
+      repoSyncedHashesByName[safeName] = hashConfig(config);
     }
 
-    repoSyncedHashesByName[safeName] = hashConfig(config);
     pushHistory();
     savedHistoryIndex = historyIndex;
     setDirty(false);
@@ -1048,6 +1116,35 @@
       }
     };
     reader.readAsText(file);
+    e.target.value = '';
+  }
+
+  async function importLocalFolderFiles(e) {
+    var files = Array.prototype.slice.call((e && e.target && e.target.files) || []);
+    if (!files.length) return;
+
+    var loaded = 0;
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (!file || !file.name || !file.name.toLowerCase().endsWith('.json')) continue;
+      try {
+        var text = await file.text();
+        var config = JSON.parse(text);
+        if (addLocalConfig(config)) {
+          loaded++;
+        }
+      } catch (err) {
+        // Ignore invalid files in folder.
+      }
+    }
+
+    if (loaded > 0) {
+      renderAutoList();
+      updateEditStatus();
+      showToast('Loaded ' + loaded + ' local auto config(s)', 'success');
+    } else {
+      showToast('No valid .json auto configs found in selected folder', 'error');
+    }
     e.target.value = '';
   }
 

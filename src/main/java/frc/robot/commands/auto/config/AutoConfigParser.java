@@ -29,6 +29,9 @@ public class AutoConfigParser {
     private static final double MAX_DRIVE_DISTANCE_METRES = 20.0;
     private static final double MAX_STEP_DURATION_SECONDS = 15.0;
     private static final double MAX_TIMEOUT_SECONDS = 15.0;
+    private static final double MAX_FIELD_COORD_METRES = 20.0;
+    private static final double MAX_HEADING_TOLERANCE_DEGREES = 20.0;
+    private static final double MAX_POSITION_TOLERANCE_METRES = 2.0;
 
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(AutoStep.class, new AutoStepDeserializer())
@@ -56,6 +59,12 @@ public class AutoConfigParser {
 
     public static List<String> listRuntimeAutoConfigs() {
         return new ArrayList<>(runtimeConfigs.keySet());
+    }
+
+    public static List<String> listDeployAutoConfigs() {
+        java.util.Set<String> set = new LinkedHashSet<>();
+        addConfigsFromDirectory(set, getDeployAutosDirectory());
+        return new ArrayList<>(set);
     }
 
     private static void addConfigsFromDirectory(java.util.Set<String> names, File dir) {
@@ -272,25 +281,52 @@ public class AutoConfigParser {
                 if (step.mode == null) {
                     return path + ": drive.mode is required";
                 }
-                if (!isFinite(step.direction)) {
-                    return path + ": drive.direction must be finite";
-                }
-                if (!isFinite(step.headingDegrees)) {
-                    return path + ": drive.headingDegrees must be finite";
-                }
                 if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
                     return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
                 }
                 if (step.mode == AutoStep.DriveMode.distance) {
+                    if (!isFinite(step.direction)) {
+                        return path + ": drive.direction must be finite";
+                    }
+                    if (!isFinite(step.headingDegrees)) {
+                        return path + ": drive.headingDegrees must be finite";
+                    }
                     if (step.distanceMetres <= 0 || step.distanceMetres > MAX_DRIVE_DISTANCE_METRES) {
                         return path + ": drive.distanceMetres must be > 0 and <= " + MAX_DRIVE_DISTANCE_METRES;
                     }
                     if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
                         return path + ": drive.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
                     }
-                } else {
+                } else if (step.mode == AutoStep.DriveMode.time) {
+                    if (!isFinite(step.direction)) {
+                        return path + ": drive.direction must be finite";
+                    }
+                    if (!isFinite(step.headingDegrees)) {
+                        return path + ": drive.headingDegrees must be finite";
+                    }
                     if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
                         return path + ": drive.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
+                    }
+                } else {
+                    if (!isFinite(step.xMetres) || Math.abs(step.xMetres) > MAX_FIELD_COORD_METRES) {
+                        return path + ": drive.xMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
+                    }
+                    if (!isFinite(step.yMetres) || Math.abs(step.yMetres) > MAX_FIELD_COORD_METRES) {
+                        return path + ": drive.yMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
+                    }
+                    if (!isFinite(step.headingDegrees)) {
+                        return path + ": drive.headingDegrees must be finite";
+                    }
+                    if (step.positionToleranceMetres <= 0 || step.positionToleranceMetres > MAX_POSITION_TOLERANCE_METRES) {
+                        return path + ": drive.positionToleranceMetres must be > 0 and <= "
+                                + MAX_POSITION_TOLERANCE_METRES;
+                    }
+                    if (step.headingToleranceDegrees <= 0 || step.headingToleranceDegrees > MAX_HEADING_TOLERANCE_DEGREES) {
+                        return path + ": drive.headingToleranceDegrees must be > 0 and <= "
+                                + MAX_HEADING_TOLERANCE_DEGREES;
+                    }
+                    if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
+                        return path + ": drive.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
                     }
                 }
                 return null;
@@ -364,12 +400,69 @@ public class AutoConfigParser {
                 if (step.commands.size() > MAX_PARALLEL_CHILDREN) {
                     return path + ": parallel.commands exceeds max " + MAX_PARALLEL_CHILDREN;
                 }
+                if (step.endCondition == AutoStep.ParallelEndCondition.deadline
+                        && (step.deadlineIndex < 0 || step.deadlineIndex >= step.commands.size())) {
+                    return path + ": parallel.deadlineIndex must be between 0 and " + (step.commands.size() - 1);
+                }
                 for (int i = 0; i < step.commands.size(); i++) {
                     String childError = validateStep(
                             step.commands.get(i), path + ".commands[" + i + "]", false, totalStepCount);
                     if (childError != null) {
                         return childError;
                     }
+                }
+                return null;
+
+            case drive_velocity:
+                if (step.frame == null) {
+                    return path + ": drive_velocity.frame is required";
+                }
+                if (!isFinite(step.vxMPS) || Math.abs(step.vxMPS) > MAX_DRIVE_SPEED_MPS) {
+                    return path + ": drive_velocity.vxMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
+                }
+                if (!isFinite(step.vyMPS) || Math.abs(step.vyMPS) > MAX_DRIVE_SPEED_MPS) {
+                    return path + ": drive_velocity.vyMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
+                }
+                if (!isFinite(step.headingDegrees)) {
+                    return path + ": drive_velocity.headingDegrees must be finite";
+                }
+                if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
+                    return path + ": drive_velocity.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
+                }
+                return null;
+
+            case face_target:
+                if (step.target == null) {
+                    return path + ": face_target.target is required";
+                }
+                if (step.target == AutoStep.FaceTargetType.point) {
+                    if (!isFinite(step.targetXMetres) || Math.abs(step.targetXMetres) > MAX_FIELD_COORD_METRES) {
+                        return path + ": face_target.targetXMetres must be finite and <= " + MAX_FIELD_COORD_METRES
+                                + " magnitude";
+                    }
+                    if (!isFinite(step.targetYMetres) || Math.abs(step.targetYMetres) > MAX_FIELD_COORD_METRES) {
+                        return path + ": face_target.targetYMetres must be finite and <= " + MAX_FIELD_COORD_METRES
+                                + " magnitude";
+                    }
+                }
+                if (step.headingToleranceDegrees <= 0 || step.headingToleranceDegrees > MAX_HEADING_TOLERANCE_DEGREES) {
+                    return path + ": face_target.headingToleranceDegrees must be > 0 and <= "
+                            + MAX_HEADING_TOLERANCE_DEGREES;
+                }
+                if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
+                    return path + ": face_target.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
+                }
+                return null;
+
+            case vision_approach_tag:
+                if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
+                    return path + ": vision_approach_tag.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
+                }
+                return null;
+
+            case hold:
+                if (step.durationSeconds < 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
+                    return path + ": hold.durationSeconds must be >= 0 and <= " + MAX_STEP_DURATION_SECONDS;
                 }
                 return null;
 
@@ -414,6 +507,10 @@ public class AutoConfigParser {
                     step.durationSeconds = getDouble(obj, "durationSeconds");
                     step.headingDegrees = getDouble(obj, "headingDegrees");
                     step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
+                    step.xMetres = getDouble(obj, "xMetres");
+                    step.yMetres = getDouble(obj, "yMetres");
+                    step.positionToleranceMetres = getDouble(obj, "positionToleranceMetres");
+                    step.headingToleranceDegrees = getDouble(obj, "headingToleranceDegrees");
                     break;
 
                 case rotate:
@@ -457,12 +554,48 @@ public class AutoConfigParser {
                                 AutoStep.ParallelEndCondition.class,
                                 "endCondition");
                     }
+                    step.deadlineIndex = getInt(obj, "deadlineIndex");
                     if (obj.has("commands")) {
                         step.commands = new ArrayList<>();
                         for (JsonElement elem : obj.getAsJsonArray("commands")) {
                             step.commands.add(context.deserialize(elem, AutoStep.class));
                         }
                     }
+                    break;
+
+                case drive_velocity:
+                    if (obj.has("frame")) {
+                        step.frame = parseEnum(
+                                obj.get("frame").getAsString(),
+                                AutoStep.VelocityFrame.class,
+                                "frame");
+                    }
+                    step.vxMPS = getDouble(obj, "vxMPS");
+                    step.vyMPS = getDouble(obj, "vyMPS");
+                    step.headingDegrees = getDouble(obj, "headingDegrees");
+                    step.durationSeconds = getDouble(obj, "durationSeconds");
+                    break;
+
+                case face_target:
+                    if (obj.has("target")) {
+                        step.target = parseEnum(
+                                obj.get("target").getAsString(),
+                                AutoStep.FaceTargetType.class,
+                                "target");
+                    }
+                    step.targetXMetres = getDouble(obj, "targetXMetres");
+                    step.targetYMetres = getDouble(obj, "targetYMetres");
+                    step.headingToleranceDegrees = getDouble(obj, "headingToleranceDegrees");
+                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
+                    break;
+
+                case vision_approach_tag:
+                    step.rightSide = getBoolean(obj, "rightSide");
+                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
+                    break;
+
+                case hold:
+                    step.durationSeconds = getDouble(obj, "durationSeconds");
                     break;
             }
 
@@ -479,6 +612,14 @@ public class AutoConfigParser {
 
         private double getDouble(JsonObject obj, String field) {
             return obj.has(field) ? obj.get(field).getAsDouble() : 0;
+        }
+
+        private int getInt(JsonObject obj, String field) {
+            return obj.has(field) ? obj.get(field).getAsInt() : 0;
+        }
+
+        private boolean getBoolean(JsonObject obj, String field) {
+            return obj.has(field) && obj.get(field).getAsBoolean();
         }
     }
 }

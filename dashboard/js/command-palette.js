@@ -29,19 +29,30 @@ window.CommandPalette = (function () {
         durationSeconds: 2.0,
         headingDegrees: 0,
         timeoutSeconds: 5.0,
+        xMetres: 1.0,
+        yMetres: 1.0,
+        positionToleranceMetres: 0.05,
+        headingToleranceDegrees: 2.0,
       },
       fields: [
-        { key: 'direction', label: 'Direction (deg)', type: 'number', min: 0, max: 360, step: 1, hint: 'Field-oriented direction of travel (blue alliance)' },
-        { key: 'speedMPS', label: 'Speed (m/s)', type: 'number', min: 0, max: 5.36, step: 0.1, hint: 'Translation speed' },
-        { key: 'mode', label: 'Mode', type: 'select', options: [{ value: 'distance', label: 'Distance (odometry)' }, { value: 'time', label: 'Time-based' }] },
+        { key: 'mode', label: 'Mode', type: 'select', options: [{ value: 'distance', label: 'Distance (odometry)' }, { value: 'time', label: 'Time-based' }, { value: 'to_pose', label: 'To Pose (odometry)' }] },
+        { key: 'direction', label: 'Direction (deg)', type: 'number', min: 0, max: 360, step: 1, hint: 'Field-oriented direction of travel (blue alliance)', showIf: function (v) { return v.mode !== 'to_pose'; } },
+        { key: 'speedMPS', label: 'Speed (m/s)', type: 'number', min: 0, max: 5.36, step: 0.1, hint: 'Translation speed / max approach speed' },
         { key: 'distanceMetres', label: 'Distance (m)', type: 'number', min: 0, max: 20, step: 0.1, hint: 'Only used in distance mode', showIf: function (v) { return v.mode === 'distance'; } },
         { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0, max: 15, step: 0.1, hint: 'Only used in time mode', showIf: function (v) { return v.mode === 'time'; } },
-        { key: 'headingDegrees', label: 'Heading (deg)', type: 'number', min: -180, max: 360, step: 1, hint: 'Robot facing direction (heading hold)' },
-        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0, max: 15, step: 0.5, hint: 'Safety timeout for distance mode', showIf: function (v) { return v.mode === 'distance'; } },
+        { key: 'xMetres', label: 'Target X (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Only used in to-pose mode (blue alliance field)', showIf: function (v) { return v.mode === 'to_pose'; } },
+        { key: 'yMetres', label: 'Target Y (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Only used in to-pose mode (blue alliance field)', showIf: function (v) { return v.mode === 'to_pose'; } },
+        { key: 'headingDegrees', label: 'Heading (deg)', type: 'number', min: -180, max: 360, step: 1, hint: 'Robot facing direction (heading hold / target heading)' },
+        { key: 'positionToleranceMetres', label: 'Position Tol (m)', type: 'number', min: 0.01, max: 2.0, step: 0.01, showIf: function (v) { return v.mode === 'to_pose'; } },
+        { key: 'headingToleranceDegrees', label: 'Heading Tol (deg)', type: 'number', min: 0.5, max: 20, step: 0.5, showIf: function (v) { return v.mode === 'to_pose'; } },
+        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0, max: 15, step: 0.5, hint: 'Safety timeout', showIf: function (v) { return v.mode === 'distance' || v.mode === 'to_pose'; } },
       ],
       summarize: function (v) {
         if (v.mode === 'distance') {
           return v.direction + '\u00b0 @ ' + v.speedMPS + ' m/s, ' + v.distanceMetres + 'm, hdg ' + v.headingDegrees + '\u00b0';
+        }
+        if (v.mode === 'to_pose') {
+          return 'to (' + v.xMetres + ', ' + v.yMetres + '), ' + v.speedMPS + ' m/s max, hdg ' + v.headingDegrees + '\u00b0';
         }
         return v.direction + '\u00b0 @ ' + v.speedMPS + ' m/s, ' + v.durationSeconds + 's, hdg ' + v.headingDegrees + '\u00b0';
       },
@@ -50,13 +61,69 @@ window.CommandPalette = (function () {
         if (v.speedMPS <= 0) errors.push('Speed must be > 0');
         if (v.mode === 'distance' && v.distanceMetres <= 0) errors.push('Distance must be > 0');
         if (v.mode === 'time' && v.durationSeconds <= 0) errors.push('Duration must be > 0');
+        if (v.mode === 'to_pose') {
+          if (v.positionToleranceMetres <= 0) errors.push('Position tolerance must be > 0');
+          if (v.headingToleranceDegrees <= 0) errors.push('Heading tolerance must be > 0');
+          if (v.timeoutSeconds <= 0) errors.push('Timeout must be > 0');
+        }
         return errors;
       },
       serialize: function (v) {
-        var out = { type: 'drive', direction: v.direction, speedMPS: v.speedMPS, mode: v.mode, headingDegrees: v.headingDegrees };
-        if (v.mode === 'distance') { out.distanceMetres = v.distanceMetres; out.timeoutSeconds = v.timeoutSeconds; }
-        else { out.durationSeconds = v.durationSeconds; }
+        var out = { type: 'drive', speedMPS: v.speedMPS, mode: v.mode, headingDegrees: v.headingDegrees };
+        if (v.mode === 'distance') {
+          out.direction = v.direction;
+          out.distanceMetres = v.distanceMetres;
+          out.timeoutSeconds = v.timeoutSeconds;
+        } else if (v.mode === 'time') {
+          out.direction = v.direction;
+          out.durationSeconds = v.durationSeconds;
+        } else {
+          out.xMetres = v.xMetres;
+          out.yMetres = v.yMetres;
+          out.positionToleranceMetres = v.positionToleranceMetres;
+          out.headingToleranceDegrees = v.headingToleranceDegrees;
+          out.timeoutSeconds = v.timeoutSeconds;
+        }
         return out;
+      },
+    },
+
+    drive_velocity: {
+      label: 'Drive Velocity',
+      icon: 'V',
+      colorClass: 'drive_velocity',
+      defaultValues: {
+        type: 'drive_velocity',
+        frame: 'field',
+        vxMPS: 1.0,
+        vyMPS: 0.0,
+        headingDegrees: 0,
+        durationSeconds: 1.0,
+      },
+      fields: [
+        { key: 'frame', label: 'Frame', type: 'select', options: [{ value: 'field', label: 'Field Oriented' }, { value: 'robot', label: 'Robot Oriented' }] },
+        { key: 'vxMPS', label: 'Vx (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Forward velocity in selected frame' },
+        { key: 'vyMPS', label: 'Vy (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Left/right velocity in selected frame' },
+        { key: 'headingDegrees', label: 'Heading Hold (deg)', type: 'number', min: -180, max: 360, step: 1 },
+        { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0.1, max: 15, step: 0.1 },
+      ],
+      summarize: function (v) {
+        return v.frame + ' vx ' + v.vxMPS + ', vy ' + v.vyMPS + ', ' + v.durationSeconds + 's';
+      },
+      validate: function (v) {
+        var e = [];
+        if (v.durationSeconds <= 0) e.push('Duration must be > 0');
+        return e;
+      },
+      serialize: function (v) {
+        return {
+          type: 'drive_velocity',
+          frame: v.frame,
+          vxMPS: v.vxMPS,
+          vyMPS: v.vyMPS,
+          headingDegrees: v.headingDegrees,
+          durationSeconds: v.durationSeconds,
+        };
       },
     },
 
@@ -158,28 +225,139 @@ window.CommandPalette = (function () {
       serialize: function (v) { return { type: 'delay', durationSeconds: v.durationSeconds }; },
     },
 
-    parallel: {
-      label: 'Parallel',
-      icon: 'P',
-      colorClass: 'parallel',
-      defaultValues: { type: 'parallel', endCondition: 'all', commands: [] },
+    hold: {
+      label: 'Hold Drive',
+      icon: 'H',
+      colorClass: 'hold',
+      defaultValues: { type: 'hold', durationSeconds: 1.0 },
       fields: [
-        { key: 'endCondition', label: 'End Condition', type: 'select', options: [
-          { value: 'all', label: 'All finish (ParallelCommandGroup)' },
-          { value: 'first', label: 'First finishes (ParallelRaceGroup)' },
-        ]},
+        { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0, max: 15, step: 0.1, hint: '0 = hold until interrupted (useful with parallel deadline)' },
       ],
       summarize: function (v) {
-        var n = (v.commands || []).length;
-        return (v.endCondition === 'all' ? 'All' : 'Race') + ', ' + n + ' cmd' + (n !== 1 ? 's' : '');
+        if (!v.durationSeconds || v.durationSeconds <= 0) return 'until interrupted';
+        return v.durationSeconds + 's';
       },
       validate: function (v) {
         var e = [];
-        if (!v.commands || v.commands.length < 2) e.push('Parallel group needs at least 2 commands');
+        if (v.durationSeconds < 0) e.push('Duration must be >= 0');
+        return e;
+      },
+      serialize: function (v) {
+        return { type: 'hold', durationSeconds: v.durationSeconds };
+      },
+    },
+
+    face_target: {
+      label: 'Face Target',
+      icon: 'F',
+      colorClass: 'face_target',
+      defaultValues: {
+        type: 'face_target',
+        target: 'hub',
+        targetXMetres: 2.0,
+        targetYMetres: 2.0,
+        headingToleranceDegrees: 3.0,
+        timeoutSeconds: 3.0,
+      },
+      fields: [
+        { key: 'target', label: 'Target', type: 'select', options: [{ value: 'hub', label: 'Hub' }, { value: 'point', label: 'Field Point' }] },
+        { key: 'targetXMetres', label: 'Target X (m)', type: 'number', min: -20, max: 20, step: 0.1, showIf: function (v) { return v.target === 'point'; } },
+        { key: 'targetYMetres', label: 'Target Y (m)', type: 'number', min: -20, max: 20, step: 0.1, showIf: function (v) { return v.target === 'point'; } },
+        { key: 'headingToleranceDegrees', label: 'Heading Tol (deg)', type: 'number', min: 0.5, max: 20, step: 0.5 },
+        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0.1, max: 15, step: 0.5 },
+      ],
+      summarize: function (v) {
+        if (v.target === 'point') return 'point (' + v.targetXMetres + ', ' + v.targetYMetres + ')';
+        return 'hub';
+      },
+      validate: function (v) {
+        var e = [];
+        if (v.timeoutSeconds <= 0) e.push('Timeout must be > 0');
+        if (v.headingToleranceDegrees <= 0) e.push('Heading tolerance must be > 0');
         return e;
       },
       serialize: function (v) {
         return {
+          type: 'face_target',
+          target: v.target,
+          targetXMetres: v.targetXMetres,
+          targetYMetres: v.targetYMetres,
+          headingToleranceDegrees: v.headingToleranceDegrees,
+          timeoutSeconds: v.timeoutSeconds,
+        };
+      },
+    },
+
+    vision_approach_tag: {
+      label: 'Vision Approach',
+      icon: 'T',
+      colorClass: 'vision_approach_tag',
+      defaultValues: {
+        type: 'vision_approach_tag',
+        rightSide: false,
+        timeoutSeconds: 5.0,
+      },
+      fields: [
+        {
+          key: 'rightSide',
+          label: 'Tower Side',
+          type: 'select',
+          coerce: 'boolean',
+          options: [
+            { value: 'false', label: 'Left Side' },
+            { value: 'true', label: 'Right Side' },
+          ],
+        },
+        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0.1, max: 15, step: 0.5 },
+      ],
+      summarize: function (v) {
+        return (v.rightSide ? 'right' : 'left') + ', timeout ' + v.timeoutSeconds + 's';
+      },
+      validate: function (v) {
+        var e = [];
+        if (v.timeoutSeconds <= 0) e.push('Timeout must be > 0');
+        return e;
+      },
+      serialize: function (v) {
+        return {
+          type: 'vision_approach_tag',
+          rightSide: !!v.rightSide,
+          timeoutSeconds: v.timeoutSeconds,
+        };
+      },
+    },
+
+    parallel: {
+      label: 'Parallel',
+      icon: 'P',
+      colorClass: 'parallel',
+      defaultValues: { type: 'parallel', endCondition: 'all', deadlineIndex: 0, commands: [] },
+      fields: [
+        { key: 'endCondition', label: 'End Condition', type: 'select', options: [
+          { value: 'all', label: 'All finish (ParallelCommandGroup)' },
+          { value: 'first', label: 'First finishes (ParallelRaceGroup)' },
+          { value: 'deadline', label: 'Deadline child finishes (ParallelDeadlineGroup)' },
+        ]},
+        { key: 'deadlineIndex', label: 'Deadline Child Index', type: 'number', min: 0, max: 10, step: 1, showIf: function (v) { return v.endCondition === 'deadline'; } },
+      ],
+      summarize: function (v) {
+        var n = (v.commands || []).length;
+        var mode = v.endCondition === 'all' ? 'All' : (v.endCondition === 'first' ? 'Race' : ('Deadline #' + v.deadlineIndex));
+        return mode + ', ' + n + ' cmd' + (n !== 1 ? 's' : '');
+      },
+      validate: function (v) {
+        var e = [];
+        if (!v.commands || v.commands.length < 2) e.push('Parallel group needs at least 2 commands');
+        if (v.endCondition === 'deadline') {
+          var maxIndex = (v.commands ? v.commands.length : 0) - 1;
+          if (v.deadlineIndex < 0 || v.deadlineIndex > maxIndex) {
+            e.push('Deadline index must be between 0 and ' + maxIndex);
+          }
+        }
+        return e;
+      },
+      serialize: function (v) {
+        var out = {
           type: 'parallel',
           endCondition: v.endCondition,
           commands: (v.commands || []).map(function (child) {
@@ -187,6 +365,10 @@ window.CommandPalette = (function () {
             return childDef ? childDef.serialize(child) : child;
           }),
         };
+        if (v.endCondition === 'deadline') {
+          out.deadlineIndex = Math.max(0, Math.floor(v.deadlineIndex || 0));
+        }
+        return out;
       },
     },
   };
@@ -276,7 +458,15 @@ window.CommandPalette = (function () {
         input.appendChild(option);
       }
       input.value = value;
-      input.addEventListener('change', function () { onChange(input.value); });
+      input.addEventListener('change', function () {
+        if (field.coerce === 'boolean') {
+          onChange(input.value === 'true');
+        } else if (field.coerce === 'number') {
+          onChange(parseFloat(input.value) || 0);
+        } else {
+          onChange(input.value);
+        }
+      });
     } else if (field.type === 'number') {
       input = document.createElement('input');
       input.type = 'number';

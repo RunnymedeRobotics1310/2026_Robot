@@ -5,11 +5,20 @@ import java.util.List;
 public class AutoStep {
 
     public enum StepType {
-        drive, rotate, shooter, intake, delay, parallel
+        drive, rotate, shooter, intake, delay, parallel,
+        drive_velocity, face_target, vision_approach_tag, hold
     }
 
     public enum DriveMode {
-        distance, time
+        distance, time, to_pose
+    }
+
+    public enum VelocityFrame {
+        field, robot
+    }
+
+    public enum FaceTargetType {
+        hub, point
     }
 
     public enum ShooterAction {
@@ -21,7 +30,7 @@ public class AutoStep {
     }
 
     public enum ParallelEndCondition {
-        all, first
+        all, first, deadline
     }
 
     // Common
@@ -51,5 +60,25 @@ public class AutoStep {
 
     // Parallel fields
     public ParallelEndCondition endCondition;
+    public int deadlineIndex;
     public List<AutoStep> commands;
+
+    // Drive-to-pose fields
+    public double xMetres;
+    public double yMetres;
+    public double positionToleranceMetres;
+    public double headingToleranceDegrees;
+
+    // Velocity drive fields
+    public VelocityFrame frame;
+    public double vxMPS;
+    public double vyMPS;
+
+    // Face target fields
+    public FaceTargetType target;
+    public double targetXMetres;
+    public double targetYMetres;
+
+    // Vision approach fields
+    public boolean rightSide;
 }

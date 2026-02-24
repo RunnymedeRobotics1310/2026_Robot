@@ -53,7 +53,7 @@ public class OperatorInput extends SubsystemBase {
     this.shooter = shooter;
     this.vision = vision;
     this.intake = intake;
-    this.autoCommandFactory = new AutoCommandFactory(swerve, shooter, intake);
+    this.autoCommandFactory = new AutoCommandFactory(swerve, shooter, intake, vision);
   }
 
   /** Use this method to define your trigger->command mappings. */

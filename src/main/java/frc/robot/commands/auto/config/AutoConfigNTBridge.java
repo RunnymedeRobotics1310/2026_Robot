@@ -17,6 +17,7 @@ public class AutoConfigNTBridge {
 
     private final NetworkTable table;
     private final StringArrayPublisher availableAutosPub;
+    private final StringArrayPublisher deployAutosPub;
     private final StringArrayPublisher runtimeAutosPub;
     private final StringPublisher lastWriteStatusPub;
     private final StringSubscriber writeConfigSub;
@@ -32,6 +33,7 @@ public class AutoConfigNTBridge {
                 .getSubTable("autoconfig");
 
         availableAutosPub = table.getStringArrayTopic("availableAutos").publish();
+        deployAutosPub = table.getStringArrayTopic("deployAutos").publish();
         runtimeAutosPub = table.getStringArrayTopic("runtimeAutos").publish();
         lastWriteStatusPub = table.getStringTopic("lastWriteStatus").publish();
         writeConfigSub = table.getStringTopic("writeConfig").subscribe("");
@@ -133,6 +135,7 @@ public class AutoConfigNTBridge {
 
     private void refreshAvailableAutos() {
         List<String> configs = AutoConfigParser.listAutoConfigs();
+        List<String> deployConfigs = AutoConfigParser.listDeployAutoConfigs();
         List<String> runtimeConfigs = AutoConfigParser.listRuntimeAutoConfigs();
         Set<String> configSet = new HashSet<>(configs);
 
@@ -146,6 +149,7 @@ public class AutoConfigNTBridge {
         });
 
         availableAutosPub.set(configs.toArray(new String[0]));
+        deployAutosPub.set(deployConfigs.toArray(new String[0]));
         runtimeAutosPub.set(runtimeConfigs.toArray(new String[0]));
 
         // Publish each config's JSON

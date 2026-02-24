@@ -13,6 +13,7 @@ window.NTBridge = (function () {
 
   var onConnectionChange = function () {};
   var onAutoListUpdate = function () {};
+  var onDeployAutoListUpdate = function () {};
   var onRuntimeAutoListUpdate = function () {};
   var onConfigReceived = function () {};
   var onWriteStatus = function () {};
@@ -22,6 +23,7 @@ window.NTBridge = (function () {
   function init(callbacks) {
     onConnectionChange = callbacks.onConnectionChange || function () {};
     onAutoListUpdate = callbacks.onAutoListUpdate || function () {};
+    onDeployAutoListUpdate = callbacks.onDeployAutoListUpdate || function () {};
     onRuntimeAutoListUpdate = callbacks.onRuntimeAutoListUpdate || function () {};
     onConfigReceived = callbacks.onConfigReceived || function () {};
     onWriteStatus = callbacks.onWriteStatus || function () {};
@@ -45,6 +47,7 @@ window.NTBridge = (function () {
         onConnectionChange(connected, connected ? 'Connected' : 'Disconnected');
         if (connected) {
           subscribeToAvailableAutos();
+          subscribeToDeployAutos();
           subscribeToRuntimeAutos();
           subscribeToWriteStatus();
         }
@@ -157,6 +160,20 @@ window.NTBridge = (function () {
       });
     } catch (e) {
       console.error('Error subscribing to runtimeAutos:', e);
+    }
+  }
+
+  function subscribeToDeployAutos() {
+    if (!ntClient) return;
+    try {
+      var topic = ntClient.createTopic(NT_PREFIX + 'deployAutos', 'string[]');
+      ntClient.subscribe(topic, function (value) {
+        if (Array.isArray(value)) {
+          onDeployAutoListUpdate(value);
+        }
+      });
+    } catch (e) {
+      console.error('Error subscribing to deployAutos:', e);
     }
   }
 

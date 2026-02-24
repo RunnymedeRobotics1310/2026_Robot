@@ -1,0 +1,30 @@
+{
+  "name": "jeff_fun",
+  "description": "",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "drive",
+      "direction": 0,
+      "speedMPS": 2,
+      "mode": "distance",
+      "headingDegrees": 0,
+      "distanceMetres": 1,
+      "timeoutSeconds": 5
+    },
+    {
+      "type": "rotate",
+      "headingDegrees": 90,
+      "timeoutSeconds": 3
+    },
+    {
+      "type": "shooter",
+      "action": "on",
+      "rpm": 6000,
+      "hoodPosition": 0,
+      "kickerSpeed": -0.7,
+      "kickerDelaySeconds": 0.25
+    }
+  ]
+}

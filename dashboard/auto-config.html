@@ -25,11 +25,13 @@
     <div class="action-group">
       <span id="edit-status" class="status-message">No auto loaded</span>
       <span id="write-status" class="status-message"></span>
+      <button id="local-folder-btn" class="btn btn-secondary">Load Local Folder</button>
       <button id="save-btn" class="btn btn-success">Save to Robot</button>
-      <button id="save-repo-btn" class="btn btn-secondary">Save to Repo File</button>
+      <button id="save-repo-btn" class="btn btn-secondary">Save to Repo</button>
       <button id="export-btn" class="btn btn-secondary">Export JSON</button>
       <button id="import-btn" class="btn btn-secondary">Import JSON</button>
       <input type="file" id="import-file" accept=".json" style="display:none">
+      <input type="file" id="local-folder-input" multiple webkitdirectory directory accept=".json" style="display:none">
     </div>
   </div>
 
