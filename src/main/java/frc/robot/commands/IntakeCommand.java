@@ -32,11 +32,12 @@ public class IntakeCommand extends LoggingCommand{
 
 
         if(intakeCheck) {
-            intakeSubsystem.setRollerSpeeds(0.8,0.6);
-//            intakeSubsystem.setArmSpeed(0.2);
-//            intakeSubsystem.moveArmToAngle(10); //is this doing anything??
+            intakeSubsystem.setRollers(true);
+            intakeSubsystem.setArmState(true);
+//
         } else {
-            intakeSubsystem.stop();
+            intakeSubsystem.rollerStop();
+            intakeSubsystem.setArmState(false);
         }
     }
 
@@ -50,6 +51,7 @@ public class IntakeCommand extends LoggingCommand{
     @Override
     public void end(boolean interrupted) {
         logCommandEnd(interrupted);
+        intakeSubsystem.rollerStop();
     }
 }
 

@@ -19,15 +19,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final double armPosition = 1;
     private final double armStart = 0;
-
-    private double armSetpoint = 0; //no?
+    private boolean armState = false;
 
     //TODO: fixme: we won't be using this. there will instead be 2 limit switches
-//    private final RelativeEncoder armEncoder = armMotor.getEncoder();
 
     private final DigitalInput beamBreak = new DigitalInput(0); //DIO port for the beam break sensor number 0
-
-
+    private final DigitalInput armExtended = new DigitalInput(0);
+    private final DigitalInput armRetracted = new DigitalInput(0);
     /**
      * Creates a new IntakeSubsystem.
      */
@@ -38,7 +36,24 @@ public class IntakeSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
         // TODO Update telemetry
         Telemetry.intake.isHopperFull = isBeamBroken();
+
+
+        if (armState) {
+            setArmToExtended(); //move motors forward
+        } else {
+            setArmToRetracted(); //move motors back
+        }
+
+        if (isArmExtended() && armState) {
+            armStop(); //stop if arm reaches extension
+        }
+        if (isArmRetracted() && !armState) {
+            armStop(); //stop if arm reaches retraction
+        }
+
     }
+
+
 
     @Override
     public void simulationPeriodic() {
@@ -54,48 +69,62 @@ public class IntakeSubsystem extends SubsystemBase {
 //        armMotor.set(armSpeed);
     }
 
-    public void stop() {
+    public void rollerStop() {
         setRollerSpeeds(0, 0);
-        setArmSpeed(0);
-        setArmState(false);
     }
 
-    public double getArmAngle() {
-        return 0;
-    } //prob remove
+    public void armStop() {
+        setArmSpeed(0);
+    }
 
-    public void armExtend (){
-        setArmSpeed(0.5);
-    }//extends arm
 
-    public void armRetract (){
-        setArmSpeed(-0.5);
-    }//retracts arm
+    public boolean isArmExtended() {
+        return armExtended.get(); //return true if arm extended
+    }
 
-    public boolean setArmState(boolean extended) {
+    public boolean isArmRetracted(){
+        return armRetracted.get(); //return true if arm retracted
+
+    }
+
+    public boolean getArmState(){
+    return !isArmRetracted(); //return opposite of armRetracted
+    }
+
+    public void setArmToExtended(){
+        setArmSpeed(0.05); //move to extended
+    }
+
+    public void setArmToRetracted(){
+        setArmSpeed(-0.05); //move to retracted
+    }
+
+
+    public void setArmState(boolean extended) {
+
+        armState = extended;
+
+//        extended = getArmState();
+//        if(!extended){
+//            setArmToExtended();
+//        }
+//        else{
+//            setArmToRetracted();
+//        }
+
         /*
          * this method should be replaced with a setArmState(boolean extended) method.
          * we will only ever be moving the arm to 2 states, extended, or retracted.
          * there will be 2 limit switches, 1 for extended and 1 for retracted.
          */
-        if (extended) {
-            armExtend();
-        } else {
-            armRetract();
-        }
-return true;
+
     }
+public void setRollers(boolean roll){
 
-    //set arm extended movement
-    //check if the motor is at position
-    //move motor
-    //if the motor extends too far, stop
-
-    //set arm retracted movement
-    //check if the motor is at position
-    //move motor backwards
-    //if the motor retracts too far, stop
-//}
+        if(roll){
+            setRollerSpeeds(1,-1);
+        }
+}
 
 
     public boolean isBeamBroken() {
