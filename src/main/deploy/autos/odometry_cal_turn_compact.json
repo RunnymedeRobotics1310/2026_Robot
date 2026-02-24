@@ -1,0 +1,144 @@
+{
+  "name": "odometry_cal_turn_compact",
+  "description": "Compact mixed translation+rotation loop in both directions for odometry geometry tuning.",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "hold",
+      "durationSeconds": 0.25
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.6,
+      "vyMPS": 0.0,
+      "headingDegrees": 0,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.42,
+      "vyMPS": 0.42,
+      "headingDegrees": 45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.0,
+      "vyMPS": 0.6,
+      "headingDegrees": 90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.42,
+      "vyMPS": 0.42,
+      "headingDegrees": 135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.6,
+      "vyMPS": 0.0,
+      "headingDegrees": 180,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.42,
+      "vyMPS": -0.42,
+      "headingDegrees": -135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.0,
+      "vyMPS": -0.6,
+      "headingDegrees": -90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.42,
+      "vyMPS": -0.42,
+      "headingDegrees": -45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.6,
+      "vyMPS": 0.0,
+      "headingDegrees": 0,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.42,
+      "vyMPS": -0.42,
+      "headingDegrees": -45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.0,
+      "vyMPS": -0.6,
+      "headingDegrees": -90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.42,
+      "vyMPS": -0.42,
+      "headingDegrees": -135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.6,
+      "vyMPS": 0.0,
+      "headingDegrees": 180,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": -0.42,
+      "vyMPS": 0.42,
+      "headingDegrees": 135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.0,
+      "vyMPS": 0.6,
+      "headingDegrees": 90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_velocity",
+      "frame": "field",
+      "vxMPS": 0.42,
+      "vyMPS": 0.42,
+      "headingDegrees": 45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.5
+    }
+  ]
+}

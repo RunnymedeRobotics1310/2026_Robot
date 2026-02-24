@@ -1,0 +1,25 @@
+{
+  "name": "odometry_cal_straight_compact",
+  "description": "Compact one-way straight calibration for wheel distance scale.",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "hold",
+      "durationSeconds": 0.25
+    },
+    {
+      "type": "drive",
+      "mode": "distance",
+      "direction": 0,
+      "speedMPS": 0.8,
+      "distanceMetres": 2.0,
+      "headingDegrees": 0,
+      "timeoutSeconds": 6.0
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.5
+    }
+  ]
+}

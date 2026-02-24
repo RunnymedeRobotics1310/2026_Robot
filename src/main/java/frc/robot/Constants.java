@@ -119,30 +119,53 @@ public final class Constants {
 
   public static final class Swerve {
 
-    /** Front to back from the middle of the wheels */
-    public static final double WHEEL_BASE_METRES = inchesToMeters(16.75);
+    /** Front to back from the middle of the wheels (measured, physical robot). */
+    public static final double MEASURED_WHEEL_BASE_METRES = inchesToMeters(16.75);
 
-    /** Side to side from the middle of the wheels */
-    public static final double TRACK_WIDTH_METRES = inchesToMeters(16.75);
+    /** Side to side from the middle of the wheels (measured, physical robot). */
+    public static final double MEASURED_TRACK_WIDTH_METRES = inchesToMeters(16.75);
 
-    public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.051;
+    /**
+     * Effective odometry geometry scales.
+     *
+     * <p>Increase/decrease these based on calibration runs (especially rotate-in-place tests) to
+     * account for scrub/compliance under load.
+     */
+    public static final double ODOMETRY_WHEEL_BASE_SCALE = 1.0;
+    public static final double ODOMETRY_TRACK_WIDTH_SCALE = 1.0;
+
+    /** Effective dimensions used by both kinematics and odometry. */
+    public static final double WHEEL_BASE_METRES = MEASURED_WHEEL_BASE_METRES * ODOMETRY_WHEEL_BASE_SCALE;
+    public static final double TRACK_WIDTH_METRES = MEASURED_TRACK_WIDTH_METRES * ODOMETRY_TRACK_WIDTH_SCALE;
+
+    /** Nominal MK4i wheel radius (2.0 in). */
+    public static final double NOMINAL_WHEEL_RADIUS_M = inchesToMeters(2.0);
+
+    /**
+     * Effective wheel distance scale.
+     *
+     * <p>Set this from straight-line calibration. Example: if odometry reports 9.8m for a measured
+     * 10.0m run, use 10.0 / 9.8 ~= 1.0204.
+     */
+    public static final double WHEEL_DISTANCE_SCALE = 1.0;
+    public static final double SDS_MK4I_WHEEL_RADIUS_M = NOMINAL_WHEEL_RADIUS_M * WHEEL_DISTANCE_SCALE;
 
     public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG = new SwerveTranslationConfig(
         /* tolerance (m) */ 0.02,
-        /* min speed (m/s) */ 1.0,
+        /* min speed (m/s) */ 0.25,
         /* max speed (m/s) */ 2, // set to 1 for testing
         /* max module speed (m/s) */ 5.36,
-        /* max acceleration (m/s/s) */ 10.0,
+        /* max acceleration (m/s/s) */ 4.0,
         /* velocity PID p */ 1.2,
         /* velocity PID i */ 0,
         /* velocity PID d */ 0);
 
     public static final SwerveRotationConfig ROTATION_CONFIG = new SwerveRotationConfig(
-        /* max rot vel (rad/s) */ Rotation2d.fromRotations(0.75).getRadians(),
-        /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.25).getRadians(),
-        /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(2).getRadians(),
+        /* max rot vel (rad/s) */ Rotation2d.fromRotations(0.5).getRadians(),
+        /* defaultRotVelocityRadPS (rad/s) */ Rotation2d.fromRotations(0.2).getRadians(),
+        /* max rotation accel (rad/s/s) */ Rotation2d.fromRotations(1).getRadians(),
         /* heading PID p */ 0.027, // Rads/Deg
         /* heading PID i */ 0,
         /* heading PID d */ 0);
@@ -165,7 +188,7 @@ public final class Constants {
         /* inverted? */ false,
         /* current limit (A) */ 40,
         /* nominal voltage (V) */ 12,
-        /* ramp rate 0 to full power (s) */ 0.02, // TODO: FIXME: TRY LOWERING THIS A LOT
+        /* ramp rate 0 to full power (s) */ 0.08,
         /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
         /* drive motor PID p */ 0.075,
         /* drive motor PID i */ 0,
@@ -177,7 +200,7 @@ public final class Constants {
 
     public static final ModuleConfig FRONT_LEFT = new ModuleConfig(
         "frontleft",
-        new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+        new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         20,
         DRIVE_MOTOR_CONFIG,
@@ -189,7 +212,7 @@ public final class Constants {
 
     public static final ModuleConfig FRONT_RIGHT = new ModuleConfig(
         "frontright",
-        new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+        new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         25,
         DRIVE_MOTOR_CONFIG,
@@ -201,7 +224,7 @@ public final class Constants {
 
     public static final ModuleConfig BACK_RIGHT = new ModuleConfig(
         "backright",
-        new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+        new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         10,
         DRIVE_MOTOR_CONFIG,
@@ -213,7 +236,7 @@ public final class Constants {
 
     public static final ModuleConfig BACK_LEFT = new ModuleConfig(
         "backleft",
-        new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+        new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         15,
         DRIVE_MOTOR_CONFIG,

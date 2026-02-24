@@ -36,10 +36,10 @@
   </div>
 
   <!-- ===== Main Three-Panel Layout ===== -->
-  <div class="main-layout">
+  <div id="main-layout" class="main-layout">
 
     <!-- Left Panel: Auto List + Palette -->
-    <div class="panel panel-left">
+    <div id="panel-left" class="panel panel-left">
       <div class="panel-header">Autos & Commands</div>
       <div class="panel-body">
 
@@ -63,8 +63,10 @@
       </div>
     </div>
 
+    <div id="splitter-left" class="panel-splitter" title="Drag to resize panels"></div>
+
     <!-- Center Panel: Sequence Editor -->
-    <div class="panel panel-center">
+    <div id="panel-center" class="panel panel-center">
       <div class="panel-header">
         <span>Sequence</span>
         <div id="wrap-toolbar" class="wrap-toolbar" style="display:none;">
@@ -88,8 +90,10 @@
       </div>
     </div>
 
+    <div id="splitter-right" class="panel-splitter" title="Drag to resize panels"></div>
+
     <!-- Right Panel: Properties -->
-    <div class="panel panel-right">
+    <div id="panel-right" class="panel panel-right">
       <div class="panel-header">Properties</div>
 
       <!-- Config-level properties -->

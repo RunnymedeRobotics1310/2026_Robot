@@ -39,6 +39,10 @@
   var repoSyncedHashesByName = {};
   var pendingRobotSync = null;
   var repoAutosDirHandle = null;
+  var PANEL_LAYOUT_KEY = '1310-autoconfig-panel-layout-v1';
+  var PANEL_LEFT_MIN_PX = 200;
+  var PANEL_RIGHT_MIN_PX = 240;
+  var PANEL_CENTER_MIN_PX = 320;
 
   // ===== DOM References =====
 
@@ -49,6 +53,12 @@
       statusDot: document.getElementById('status-dot'),
       statusText: document.getElementById('status-text'),
       teamNumber: document.getElementById('team-number'),
+      mainLayout: document.getElementById('main-layout'),
+      panelLeft: document.getElementById('panel-left'),
+      panelCenter: document.getElementById('panel-center'),
+      panelRight: document.getElementById('panel-right'),
+      splitterLeft: document.getElementById('splitter-left'),
+      splitterRight: document.getElementById('splitter-right'),
       connectBtn: document.getElementById('connect-btn'),
       saveBtn: document.getElementById('save-btn'),
       saveRepoBtn: document.getElementById('save-repo-btn'),
@@ -116,6 +126,147 @@
 
   function deepClone(value) {
     return JSON.parse(JSON.stringify(value));
+  }
+
+  function clampNumber(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function isStackedLayout() {
+    return window.matchMedia('(max-width: 900px)').matches;
+  }
+
+  function getPanelWidth(panelEl) {
+    return panelEl ? panelEl.getBoundingClientRect().width : 0;
+  }
+
+  function setPanelWidth(side, widthPx) {
+    if (!dom.mainLayout) return;
+    var varName = side === 'left' ? '--panel-left-width' : '--panel-right-width';
+    dom.mainLayout.style.setProperty(varName, Math.round(widthPx) + 'px');
+  }
+
+  function readSavedPanelLayout() {
+    try {
+      var raw = localStorage.getItem(PANEL_LAYOUT_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function savePanelLayout() {
+    if (!dom.mainLayout || isStackedLayout()) return;
+    var payload = {
+      left: Math.round(getPanelWidth(dom.panelLeft)),
+      right: Math.round(getPanelWidth(dom.panelRight)),
+    };
+    try {
+      localStorage.setItem(PANEL_LAYOUT_KEY, JSON.stringify(payload));
+    } catch (err) {
+      // Ignore storage errors.
+    }
+  }
+
+  function normalizePanelLayout() {
+    if (!dom.mainLayout || !dom.panelLeft || !dom.panelRight || !dom.panelCenter) return;
+    if (isStackedLayout()) return;
+
+    var leftWidth = Math.max(PANEL_LEFT_MIN_PX, getPanelWidth(dom.panelLeft));
+    var rightWidth = Math.max(PANEL_RIGHT_MIN_PX, getPanelWidth(dom.panelRight));
+    setPanelWidth('left', leftWidth);
+    setPanelWidth('right', rightWidth);
+
+    var centerWidth = getPanelWidth(dom.panelCenter);
+    if (centerWidth >= PANEL_CENTER_MIN_PX) return;
+
+    var deficit = PANEL_CENTER_MIN_PX - centerWidth;
+    var leftHeadroom = Math.max(0, leftWidth - PANEL_LEFT_MIN_PX);
+    var rightHeadroom = Math.max(0, rightWidth - PANEL_RIGHT_MIN_PX);
+
+    var takeLeft = Math.min(leftHeadroom, Math.ceil(deficit / 2));
+    leftWidth -= takeLeft;
+    deficit -= takeLeft;
+
+    var takeRight = Math.min(rightHeadroom, deficit);
+    rightWidth -= takeRight;
+    deficit -= takeRight;
+
+    if (deficit > 0) {
+      var extraLeft = Math.min(Math.max(0, leftWidth - PANEL_LEFT_MIN_PX), deficit);
+      leftWidth -= extraLeft;
+      deficit -= extraLeft;
+    }
+    if (deficit > 0) {
+      var extraRight = Math.min(Math.max(0, rightWidth - PANEL_RIGHT_MIN_PX), deficit);
+      rightWidth -= extraRight;
+    }
+
+    setPanelWidth('left', leftWidth);
+    setPanelWidth('right', rightWidth);
+  }
+
+  function startPanelResize(side, event) {
+    if (isStackedLayout()) return;
+    event.preventDefault();
+
+    var startX = event.clientX;
+    var startWidth = side === 'left' ? getPanelWidth(dom.panelLeft) : getPanelWidth(dom.panelRight);
+    var startCenterWidth = getPanelWidth(dom.panelCenter);
+    var minWidth = side === 'left' ? PANEL_LEFT_MIN_PX : PANEL_RIGHT_MIN_PX;
+    var maxWidth = startWidth + Math.max(0, startCenterWidth - PANEL_CENTER_MIN_PX);
+    var splitter = side === 'left' ? dom.splitterLeft : dom.splitterRight;
+
+    splitter.classList.add('dragging');
+    document.body.classList.add('resizing-panels');
+
+    function onMouseMove(moveEvent) {
+      var delta = moveEvent.clientX - startX;
+      var proposed = side === 'left' ? startWidth + delta : startWidth - delta;
+      var nextWidth = clampNumber(proposed, minWidth, maxWidth);
+      setPanelWidth(side, nextWidth);
+    }
+
+    function onMouseUp() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      splitter.classList.remove('dragging');
+      document.body.classList.remove('resizing-panels');
+      normalizePanelLayout();
+      savePanelLayout();
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+
+  function initPanelResizers() {
+    if (!dom.mainLayout || !dom.splitterLeft || !dom.splitterRight) return;
+
+    var saved = readSavedPanelLayout();
+    if (saved) {
+      if (typeof saved.left === 'number' && isFinite(saved.left)) {
+        setPanelWidth('left', saved.left);
+      }
+      if (typeof saved.right === 'number' && isFinite(saved.right)) {
+        setPanelWidth('right', saved.right);
+      }
+    }
+    normalizePanelLayout();
+
+    dom.splitterLeft.addEventListener('mousedown', function (e) {
+      startPanelResize('left', e);
+    });
+    dom.splitterRight.addEventListener('mousedown', function (e) {
+      startPanelResize('right', e);
+    });
+
+    window.addEventListener('resize', function () {
+      normalizePanelLayout();
+    });
   }
 
   function snapshotState() {
@@ -296,6 +447,7 @@
     if (saved) dom.teamNumber.value = saved;
 
     initEventListeners();
+    initPanelResizers();
 
     CP.createPaletteItems(dom.palette);
     DD.setupPaletteDrag(dom.palette);
@@ -601,10 +753,8 @@
           (state.currentConfig && state.currentConfig.name === name ? ' active' : '');
 
         var nameSpan = document.createElement('span');
+        nameSpan.className = 'auto-list-name';
         nameSpan.textContent = name;
-        nameSpan.style.overflow = 'hidden';
-        nameSpan.style.textOverflow = 'ellipsis';
-        nameSpan.style.whiteSpace = 'nowrap';
         item.appendChild(nameSpan);
 
         var sourceBadge = document.createElement('span');

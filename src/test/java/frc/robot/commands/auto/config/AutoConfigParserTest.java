@@ -257,6 +257,42 @@ class AutoConfigParserTest {
         assertTrue(finalStep.rightSide);
     }
 
+    @Test
+    void odometryStraightCompactTemplateParsesAndValidates() throws IOException {
+        Path template = Path.of("src/main/deploy/autos/odometry_cal_straight_compact.json");
+        String json = Files.readString(template);
+
+        AutoConfig config = AutoConfigParser.parseJson(json);
+        assertNotNull(config);
+        assertEquals("odometry_cal_straight_compact", config.name);
+        assertEquals(3, config.steps.size());
+        assertNull(AutoConfigParser.validateAutoConfig(config));
+    }
+
+    @Test
+    void odometrySpinCompactTemplateParsesAndValidates() throws IOException {
+        Path template = Path.of("src/main/deploy/autos/odometry_cal_spin_compact.json");
+        String json = Files.readString(template);
+
+        AutoConfig config = AutoConfigParser.parseJson(json);
+        assertNotNull(config);
+        assertEquals("odometry_cal_spin_compact", config.name);
+        assertEquals(18, config.steps.size());
+        assertNull(AutoConfigParser.validateAutoConfig(config));
+    }
+
+    @Test
+    void odometryTurnCompactTemplateParsesAndValidates() throws IOException {
+        Path template = Path.of("src/main/deploy/autos/odometry_cal_turn_compact.json");
+        String json = Files.readString(template);
+
+        AutoConfig config = AutoConfigParser.parseJson(json);
+        assertNotNull(config);
+        assertEquals("odometry_cal_turn_compact", config.name);
+        assertEquals(18, config.steps.size());
+        assertNull(AutoConfigParser.validateAutoConfig(config));
+    }
+
     private AutoStep buildDelayStep(double durationSeconds) {
         AutoStep step = new AutoStep();
         step.type = AutoStep.StepType.delay;
