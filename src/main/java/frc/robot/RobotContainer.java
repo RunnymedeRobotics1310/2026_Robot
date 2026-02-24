@@ -9,9 +9,11 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.auto.config.AutoConfigNTBridge;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -34,8 +36,12 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem = new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem);
+  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem,
+      intakeSubsystem);
+
+  private final AutoConfigNTBridge autoConfigNTBridge = new AutoConfigNTBridge();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,6 +62,8 @@ public class RobotContainer {
     operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem,
         visionSubsystem);
     operatorInput.initAutoSelectors();
+
+    autoConfigNTBridge.setOnConfigsChanged(() -> operatorInput.refreshCustomAutoChooser());
   }
 
   /**
@@ -65,5 +73,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return operatorInput.getAutonomousCommand();
+  }
+
+  public AutoConfigNTBridge getAutoConfigNTBridge() {
+    return autoConfigNTBridge;
   }
 }

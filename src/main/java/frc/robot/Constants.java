@@ -88,6 +88,7 @@ public final class Constants {
       EXIT_ZONE,
       SIMPLE_CENTER,
       OPPORTUNISTIC_OUTPOST,
+      CUSTOM,
     }
 
     public enum Delay {

@@ -90,6 +90,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    // Process auto config dashboard bridge
+    m_robotContainer.getAutoConfigNTBridge().periodic();
+
     // Update telemetry every 150ms
     double currentTime = Timer.getFPGATimestamp();
     if (currentTime - lastDashUpdate > 0.150) {

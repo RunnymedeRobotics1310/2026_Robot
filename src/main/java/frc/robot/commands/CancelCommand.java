@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -10,6 +11,7 @@ public class CancelCommand extends LoggingCommand {
 
     private final SwerveSubsystem driveSubsystem;
     private final ShooterSubsystem shooterSubsystem;
+    private final IntakeSubsystem intakeSubsystem;
 
     /**
      * Cancel the commands running on all subsystems.
@@ -18,13 +20,15 @@ public class CancelCommand extends LoggingCommand {
      * that safely stops the robot from moving.
      */
     public CancelCommand(
-            OperatorInput operatorInput, SwerveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem) {
+            OperatorInput operatorInput, SwerveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem,
+            IntakeSubsystem intakeSubsystem) {
 
         this.operatorInput = operatorInput;
         this.driveSubsystem = driveSubsystem;
         this.shooterSubsystem = shooterSubsystem;
+        this.intakeSubsystem = intakeSubsystem;
 
-        addRequirements(driveSubsystem, shooterSubsystem);
+        addRequirements(driveSubsystem, shooterSubsystem, intakeSubsystem);
     }
 
     @Override
@@ -75,5 +79,6 @@ public class CancelCommand extends LoggingCommand {
         // Stop all of the robot movement
         driveSubsystem.stop();
         shooterSubsystem.stop();
+        intakeSubsystem.stop();
     }
 }

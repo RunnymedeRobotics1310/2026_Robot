@@ -12,15 +12,20 @@ import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
+import frc.robot.commands.auto.config.AutoCommandFactory;
+import frc.robot.commands.auto.config.AutoConfig;
+import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
+import java.util.List;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -30,17 +35,25 @@ public class OperatorInput extends SubsystemBase {
   private final SwerveSubsystem swerve;
   private final ShooterSubsystem shooter;
   private final LimelightVisionSubsystem vision;
+  private final IntakeSubsystem intake;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
       new SendableChooser<>();
   private final SendableChooser<Constants.AutoConstants.Delay> delayChooser =
       new SendableChooser<>();
+  private SendableChooser<String> customAutoChooser =
+      new SendableChooser<>();
+
+  private final AutoCommandFactory autoCommandFactory;
 
   public OperatorInput(
-      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision,
+      IntakeSubsystem intake) {
     this.swerve = swerve;
     this.shooter = shooter;
     this.vision = vision;
+    this.intake = intake;
+    this.autoCommandFactory = new AutoCommandFactory(swerve, shooter, intake);
   }
 
   /** Use this method to define your trigger->command mappings. */
@@ -62,7 +75,7 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(driverController::getAButton)
         .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
-    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem, intake));
   }
 
   public boolean isCancel() {
@@ -137,6 +150,10 @@ public class OperatorInput extends SubsystemBase {
         "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
+    autoPatternChooser.addOption("Custom Auto", Constants.AutoConstants.AutoPattern.CUSTOM);
+
+    SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
+    refreshCustomAutoChooser();
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -167,8 +184,46 @@ public class OperatorInput extends SubsystemBase {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
-
+      case CUSTOM -> buildCustomAutoCommand(delay);
       default -> new InstantCommand();
     };
+  }
+
+  private Command buildCustomAutoCommand(double delay) {
+    String selectedConfig = customAutoChooser.getSelected();
+    if (selectedConfig == null || selectedConfig.isEmpty()) {
+      System.out.println("OperatorInput: No custom auto selected");
+      return new InstantCommand();
+    }
+
+    AutoConfig config = AutoConfigParser.loadAutoConfig(selectedConfig);
+    if (config == null) {
+      System.out.println("OperatorInput: Failed to load custom auto: " + selectedConfig);
+      return new InstantCommand();
+    }
+
+    System.out.println("OperatorInput: Building custom auto: " + config.name);
+    return autoCommandFactory.buildAutoCommand(config, delay);
+  }
+
+  public void refreshCustomAutoChooser() {
+    List<String> configs = AutoConfigParser.listAutoConfigs();
+
+    // SendableChooser has no removeOption/clear, so rebuild from scratch
+    customAutoChooser.close();
+    customAutoChooser = new SendableChooser<>();
+
+    boolean first = true;
+    for (String name : configs) {
+      if (first) {
+        customAutoChooser.setDefaultOption(name, name);
+        first = false;
+      } else {
+        customAutoChooser.addOption(name, name);
+      }
+    }
+
+    SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
+    System.out.println("OperatorInput: Custom auto chooser refreshed with " + configs.size() + " configs: " + configs);
   }
 }
