@@ -96,8 +96,12 @@ public class ShooterCommand extends LoggingCommand {
 
   public void shooting(double distance) {
     double shooterSpeed = calculateShootingSpeed(distance);
+    ShooterTelemetry.targetShooterRPM = shooterSpeed;
+
     shooterSubsystem.setShooterVelocity(shooterSpeed);
-    SmartDashboard.putNumber("1310/shooter/targetspeed", shooterSpeed);
+    ShooterTelemetry.currentShooterRPM = shooterSubsystem.getShooterVelocity();
+
+
     if (swerveSubsystem.distanceToHub() > 2.2) {
       shooterSubsystem.setHood(1.0);
     } else if (swerveSubsystem.distanceToHub() > 1.5) {

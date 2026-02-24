@@ -1,5 +1,6 @@
 package frc.robot.operatorInput;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +14,7 @@ import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.shooter.ShooterUnstuckyCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
@@ -56,6 +58,9 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::getShooterActive)
         .whileTrue(new ShooterCommand(shooterSubsystem, vision, this, swerve));
 
+    new Trigger(this::getUnstuckShooter)
+            .whileTrue(new ShooterUnstuckyCommand(shooterSubsystem));
+
     new Trigger(driverController::getXButton)
         .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
 
@@ -79,6 +84,10 @@ public class OperatorInput extends SubsystemBase {
 
   public boolean getShooterActive() {
     return driverController.getRightTriggerAxis() > 0.5;
+  }
+
+  public boolean getUnstuckShooter() {
+    return driverController.getLeftTriggerAxis() > 0.5;
   }
 
   public boolean getFaceHub() {
