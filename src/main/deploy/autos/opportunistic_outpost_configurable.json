@@ -16,7 +16,8 @@
       "timeoutSeconds": 8.0
     },
     {
-      "type": "drive_velocity",
+      "type": "drive",
+      "mode": "velocity",
       "frame": "robot",
       "vxMPS": -0.5,
       "vyMPS": 0.0,
@@ -28,7 +29,8 @@
       "durationSeconds": 3.0
     },
     {
-      "type": "drive_velocity",
+      "type": "drive",
+      "mode": "velocity",
       "frame": "robot",
       "vxMPS": 1.0,
       "vyMPS": 1.6,

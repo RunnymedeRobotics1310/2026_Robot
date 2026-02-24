@@ -82,14 +82,6 @@ public class AutoCommandFactory {
                 return new WaitCommand(step.durationSeconds);
             case parallel:
                 return buildParallelGroup(step);
-            case drive_velocity:
-                return new ConfigDriveVelocityCommand(
-                        swerve,
-                        step.frame,
-                        step.vxMPS,
-                        step.vyMPS,
-                        step.headingDegrees,
-                        step.durationSeconds);
             case face_target:
                 return buildFaceTargetCommand(step);
             case vision_approach_tag:
@@ -133,6 +125,14 @@ public class AutoCommandFactory {
                     step.speedMPS,
                     step.durationSeconds,
                     step.headingDegrees);
+        } else if (step.mode == AutoStep.DriveMode.velocity) {
+            return new ConfigDriveVelocityCommand(
+                    swerve,
+                    step.frame,
+                    step.vxMPS,
+                    step.vyMPS,
+                    step.headingDegrees,
+                    step.durationSeconds);
         } else {
             return new ConfigDriveToPoseCommand(
                     swerve,

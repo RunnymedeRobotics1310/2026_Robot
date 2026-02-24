@@ -17,8 +17,12 @@ window.NTBridge = (function () {
   var onRuntimeAutoListUpdate = function () {};
   var onConfigReceived = function () {};
   var onWriteStatus = function () {};
+  var onFeatureSupportChange = function () {};
 
   var NT_PREFIX = '/SmartDashboard/1310/autoconfig/';
+  var FEATURE_DETECT_TIMEOUT_MS = 2500;
+  var featureSupportState = null; // null=unknown, true=supported, false=unsupported
+  var featureDetectTimer = null;
 
   function init(callbacks) {
     onConnectionChange = callbacks.onConnectionChange || function () {};
@@ -27,6 +31,35 @@ window.NTBridge = (function () {
     onRuntimeAutoListUpdate = callbacks.onRuntimeAutoListUpdate || function () {};
     onConfigReceived = callbacks.onConfigReceived || function () {};
     onWriteStatus = callbacks.onWriteStatus || function () {};
+    onFeatureSupportChange = callbacks.onFeatureSupportChange || function () {};
+  }
+
+  function clearFeatureDetectTimer() {
+    if (featureDetectTimer) {
+      clearTimeout(featureDetectTimer);
+      featureDetectTimer = null;
+    }
+  }
+
+  function setFeatureSupport(state, message) {
+    if (featureSupportState === state) return;
+    featureSupportState = state;
+    onFeatureSupportChange(state, message || '');
+  }
+
+  function markFeatureSupported() {
+    clearFeatureDetectTimer();
+    setFeatureSupport(true, 'Auto-config bridge detected');
+  }
+
+  function startFeatureSupportDetection() {
+    clearFeatureDetectTimer();
+    setFeatureSupport(null, 'Connected (checking auto-config support...)');
+    featureDetectTimer = setTimeout(function () {
+      if (ntConnected && featureSupportState !== true) {
+        setFeatureSupport(false, 'Connected, but robot does not support 1310 auto-config topics');
+      }
+    }, FEATURE_DETECT_TIMEOUT_MS);
   }
 
   function connect(robotAddress) {
@@ -46,10 +79,15 @@ window.NTBridge = (function () {
         ntConnected = connected;
         onConnectionChange(connected, connected ? 'Connected' : 'Disconnected');
         if (connected) {
+          startFeatureSupportDetection();
+          subscribeToBridgeVersion();
           subscribeToAvailableAutos();
           subscribeToDeployAutos();
           subscribeToRuntimeAutos();
           subscribeToWriteStatus();
+        } else {
+          clearFeatureDetectTimer();
+          setFeatureSupport(null, '');
         }
       }, true);
     } catch (e) {
@@ -66,7 +104,9 @@ window.NTBridge = (function () {
       ntClient = null;
     }
 
+    clearFeatureDetectTimer();
     ntConnected = false;
+    setFeatureSupport(null, '');
     onConnectionChange(false, 'Disconnected');
   }
 
@@ -85,6 +125,9 @@ window.NTBridge = (function () {
         if (value !== null && value !== undefined) {
           try {
             var config = JSON.parse(value);
+            if (config && config.steps && Array.isArray(config.steps)) {
+              markFeatureSupported();
+            }
             onConfigReceived(name, config);
           } catch (e) {
             console.error('Failed to parse config JSON for', name, ':', e);
@@ -141,6 +184,9 @@ window.NTBridge = (function () {
       var topic = ntClient.createTopic(NT_PREFIX + 'availableAutos', 'string[]');
       ntClient.subscribe(topic, function (value) {
         if (Array.isArray(value)) {
+          if (value.length > 0) {
+            markFeatureSupported();
+          }
           onAutoListUpdate(value);
         }
       });
@@ -155,6 +201,9 @@ window.NTBridge = (function () {
       var topic = ntClient.createTopic(NT_PREFIX + 'runtimeAutos', 'string[]');
       ntClient.subscribe(topic, function (value) {
         if (Array.isArray(value)) {
+          if (value.length > 0) {
+            markFeatureSupported();
+          }
           onRuntimeAutoListUpdate(value);
         }
       });
@@ -169,6 +218,9 @@ window.NTBridge = (function () {
       var topic = ntClient.createTopic(NT_PREFIX + 'deployAutos', 'string[]');
       ntClient.subscribe(topic, function (value) {
         if (Array.isArray(value)) {
+          if (value.length > 0) {
+            markFeatureSupported();
+          }
           onDeployAutoListUpdate(value);
         }
       });
@@ -183,11 +235,28 @@ window.NTBridge = (function () {
       var topic = ntClient.createTopic(NT_PREFIX + 'lastWriteStatus', 'string');
       ntClient.subscribe(topic, function (value) {
         if (value !== null && value !== undefined) {
+          if (String(value)) {
+            markFeatureSupported();
+          }
           onWriteStatus(String(value));
         }
       });
     } catch (e) {
       console.error('Error subscribing to lastWriteStatus:', e);
+    }
+  }
+
+  function subscribeToBridgeVersion() {
+    if (!ntClient) return;
+    try {
+      var topic = ntClient.createTopic(NT_PREFIX + 'bridgeVersion', 'string');
+      ntClient.subscribe(topic, function (value) {
+        if (typeof value === 'string' && value.trim().length > 0) {
+          markFeatureSupported();
+        }
+      });
+    } catch (e) {
+      console.error('Error subscribing to bridgeVersion:', e);
     }
   }
 

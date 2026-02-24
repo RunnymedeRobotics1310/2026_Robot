@@ -147,7 +147,8 @@ class AutoConfigParserTest {
                   "startingHeadingDegrees": 0,
                   "steps": [
                     {
-                      "type": "drive_velocity",
+                      "type": "drive",
+                      "mode": "velocity",
                       "frame": "robot",
                       "vxMPS": 1.0,
                       "vyMPS": 0.5,
@@ -171,11 +172,40 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals(3, config.steps.size());
-        assertEquals(AutoStep.StepType.drive_velocity, config.steps.get(0).type);
+        assertEquals(AutoStep.StepType.drive, config.steps.get(0).type);
+        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(0).mode);
         assertEquals(AutoStep.VelocityFrame.robot, config.steps.get(0).frame);
         assertEquals(AutoStep.StepType.face_target, config.steps.get(1).type);
         assertEquals(AutoStep.FaceTargetType.hub, config.steps.get(1).target);
         assertEquals(AutoStep.StepType.vision_approach_tag, config.steps.get(2).type);
+    }
+
+    @Test
+    void parseJsonMapsLegacyDriveVelocityToDriveVelocityMode() {
+        String json = """
+                {
+                  "name": "legacy_velocity_alias",
+                  "version": 1,
+                  "startingHeadingDegrees": 0,
+                  "steps": [
+                    {
+                      "type": "drive_velocity",
+                      "frame": "field",
+                      "vxMPS": 0.8,
+                      "vyMPS": 0.2,
+                      "headingDegrees": 15,
+                      "durationSeconds": 1.2
+                    }
+                  ]
+                }
+                """;
+
+        AutoConfig config = AutoConfigParser.parseJson(json);
+        assertNotNull(config);
+        assertEquals(1, config.steps.size());
+        assertEquals(AutoStep.StepType.drive, config.steps.get(0).type);
+        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(0).mode);
+        assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
     @Test

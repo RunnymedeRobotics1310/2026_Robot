@@ -281,10 +281,10 @@ public class AutoConfigParser {
                 if (step.mode == null) {
                     return path + ": drive.mode is required";
                 }
-                if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
-                    return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
-                }
                 if (step.mode == AutoStep.DriveMode.distance) {
+                    if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
+                        return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
+                    }
                     if (!isFinite(step.direction)) {
                         return path + ": drive.direction must be finite";
                     }
@@ -307,7 +307,10 @@ public class AutoConfigParser {
                     if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
                         return path + ": drive.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
                     }
-                } else {
+                } else if (step.mode == AutoStep.DriveMode.to_pose) {
+                    if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
+                        return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
+                    }
                     if (!isFinite(step.xMetres) || Math.abs(step.xMetres) > MAX_FIELD_COORD_METRES) {
                         return path + ": drive.xMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
                     }
@@ -328,6 +331,24 @@ public class AutoConfigParser {
                     if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
                         return path + ": drive.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
                     }
+                } else if (step.mode == AutoStep.DriveMode.velocity) {
+                    if (step.frame == null) {
+                        return path + ": drive.frame is required in velocity mode";
+                    }
+                    if (!isFinite(step.vxMPS) || Math.abs(step.vxMPS) > MAX_DRIVE_SPEED_MPS) {
+                        return path + ": drive.vxMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
+                    }
+                    if (!isFinite(step.vyMPS) || Math.abs(step.vyMPS) > MAX_DRIVE_SPEED_MPS) {
+                        return path + ": drive.vyMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
+                    }
+                    if (!isFinite(step.headingDegrees)) {
+                        return path + ": drive.headingDegrees must be finite";
+                    }
+                    if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
+                        return path + ": drive.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
+                    }
+                } else {
+                    return path + ": unsupported drive.mode: " + step.mode;
                 }
                 return null;
 
@@ -413,24 +434,6 @@ public class AutoConfigParser {
                 }
                 return null;
 
-            case drive_velocity:
-                if (step.frame == null) {
-                    return path + ": drive_velocity.frame is required";
-                }
-                if (!isFinite(step.vxMPS) || Math.abs(step.vxMPS) > MAX_DRIVE_SPEED_MPS) {
-                    return path + ": drive_velocity.vxMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
-                }
-                if (!isFinite(step.vyMPS) || Math.abs(step.vyMPS) > MAX_DRIVE_SPEED_MPS) {
-                    return path + ": drive_velocity.vyMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
-                }
-                if (!isFinite(step.headingDegrees)) {
-                    return path + ": drive_velocity.headingDegrees must be finite";
-                }
-                if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
-                    return path + ": drive_velocity.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                }
-                return null;
-
             case face_target:
                 if (step.target == null) {
                     return path + ": face_target.target is required";
@@ -491,10 +494,17 @@ public class AutoConfigParser {
             if (!obj.has("type")) {
                 throw new JsonParseException("Step is missing required field 'type'");
             }
-            step.type = parseEnum(
-                    obj.get("type").getAsString(),
-                    AutoStep.StepType.class,
-                    "type");
+            String typeString = obj.get("type").getAsString();
+            // Backward-compatible alias: legacy drive_velocity maps to drive mode=velocity.
+            if ("drive_velocity".equals(typeString)) {
+                step.type = AutoStep.StepType.drive;
+                step.mode = AutoStep.DriveMode.velocity;
+            } else {
+                step.type = parseEnum(
+                        typeString,
+                        AutoStep.StepType.class,
+                        "type");
+            }
 
             switch (step.type) {
                 case drive:
@@ -511,6 +521,14 @@ public class AutoConfigParser {
                     step.yMetres = getDouble(obj, "yMetres");
                     step.positionToleranceMetres = getDouble(obj, "positionToleranceMetres");
                     step.headingToleranceDegrees = getDouble(obj, "headingToleranceDegrees");
+                    if (obj.has("frame")) {
+                        step.frame = parseEnum(
+                                obj.get("frame").getAsString(),
+                                AutoStep.VelocityFrame.class,
+                                "frame");
+                    }
+                    step.vxMPS = getDouble(obj, "vxMPS");
+                    step.vyMPS = getDouble(obj, "vyMPS");
                     break;
 
                 case rotate:
@@ -561,19 +579,6 @@ public class AutoConfigParser {
                             step.commands.add(context.deserialize(elem, AutoStep.class));
                         }
                     }
-                    break;
-
-                case drive_velocity:
-                    if (obj.has("frame")) {
-                        step.frame = parseEnum(
-                                obj.get("frame").getAsString(),
-                                AutoStep.VelocityFrame.class,
-                                "frame");
-                    }
-                    step.vxMPS = getDouble(obj, "vxMPS");
-                    step.vyMPS = getDouble(obj, "vyMPS");
-                    step.headingDegrees = getDouble(obj, "headingDegrees");
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
                     break;
 
                 case face_target:

@@ -25,7 +25,8 @@
       ]
     },
     {
-      "type": "drive_velocity",
+      "type": "drive",
+      "mode": "velocity",
       "frame": "robot",
       "vxMPS": -2.0,
       "vyMPS": 0.7,
@@ -33,7 +34,8 @@
       "durationSeconds": 1.0
     },
     {
-      "type": "drive_velocity",
+      "type": "drive",
+      "mode": "velocity",
       "frame": "robot",
       "vxMPS": 0.0,
       "vyMPS": 0.0,

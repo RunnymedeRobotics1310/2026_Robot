@@ -25,6 +25,9 @@ window.CommandPalette = (function () {
         direction: 0,
         speedMPS: 1.0,
         mode: 'distance',
+        frame: 'field',
+        vxMPS: 1.0,
+        vyMPS: 0.0,
         distanceMetres: 1.0,
         durationSeconds: 2.0,
         headingDegrees: 0,
@@ -35,11 +38,14 @@ window.CommandPalette = (function () {
         headingToleranceDegrees: 2.0,
       },
       fields: [
-        { key: 'mode', label: 'Mode', type: 'select', options: [{ value: 'distance', label: 'Distance (odometry)' }, { value: 'time', label: 'Time-based' }, { value: 'to_pose', label: 'To Pose (odometry)' }] },
-        { key: 'direction', label: 'Direction (deg)', type: 'number', min: 0, max: 360, step: 1, hint: 'Field-oriented direction of travel (blue alliance)', showIf: function (v) { return v.mode !== 'to_pose'; } },
-        { key: 'speedMPS', label: 'Speed (m/s)', type: 'number', min: 0, max: 5.36, step: 0.1, hint: 'Translation speed / max approach speed' },
+        { key: 'mode', label: 'Mode', type: 'select', options: [{ value: 'distance', label: 'Distance (odometry)' }, { value: 'time', label: 'Time-based' }, { value: 'to_pose', label: 'To Pose (odometry)' }, { value: 'velocity', label: 'Velocity (vx/vy + duration)' }] },
+        { key: 'direction', label: 'Direction (deg)', type: 'number', min: 0, max: 360, step: 1, hint: 'Field-oriented direction of travel (blue alliance)', showIf: function (v) { return v.mode === 'distance' || v.mode === 'time'; } },
+        { key: 'speedMPS', label: 'Speed (m/s)', type: 'number', min: 0, max: 5.36, step: 0.1, hint: 'Translation speed / max approach speed', showIf: function (v) { return v.mode !== 'velocity'; } },
+        { key: 'frame', label: 'Frame', type: 'select', options: [{ value: 'field', label: 'Field Oriented' }, { value: 'robot', label: 'Robot Oriented' }], showIf: function (v) { return v.mode === 'velocity'; } },
+        { key: 'vxMPS', label: 'Vx (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Forward velocity in selected frame', showIf: function (v) { return v.mode === 'velocity'; } },
+        { key: 'vyMPS', label: 'Vy (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Left/right velocity in selected frame', showIf: function (v) { return v.mode === 'velocity'; } },
         { key: 'distanceMetres', label: 'Distance (m)', type: 'number', min: 0, max: 20, step: 0.1, hint: 'Only used in distance mode', showIf: function (v) { return v.mode === 'distance'; } },
-        { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0, max: 15, step: 0.1, hint: 'Only used in time mode', showIf: function (v) { return v.mode === 'time'; } },
+        { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0, max: 15, step: 0.1, hint: 'Used in time and velocity modes', showIf: function (v) { return v.mode === 'time' || v.mode === 'velocity'; } },
         { key: 'xMetres', label: 'Target X (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Only used in to-pose mode (blue alliance field)', showIf: function (v) { return v.mode === 'to_pose'; } },
         { key: 'yMetres', label: 'Target Y (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Only used in to-pose mode (blue alliance field)', showIf: function (v) { return v.mode === 'to_pose'; } },
         { key: 'headingDegrees', label: 'Heading (deg)', type: 'number', min: -180, max: 360, step: 1, hint: 'Robot facing direction (heading hold / target heading)' },
@@ -54,30 +60,45 @@ window.CommandPalette = (function () {
         if (v.mode === 'to_pose') {
           return 'to (' + v.xMetres + ', ' + v.yMetres + '), ' + v.speedMPS + ' m/s max, hdg ' + v.headingDegrees + '\u00b0';
         }
+        if (v.mode === 'velocity') {
+          return v.frame + ' vx ' + v.vxMPS + ', vy ' + v.vyMPS + ', ' + v.durationSeconds + 's, hdg ' + v.headingDegrees + '\u00b0';
+        }
         return v.direction + '\u00b0 @ ' + v.speedMPS + ' m/s, ' + v.durationSeconds + 's, hdg ' + v.headingDegrees + '\u00b0';
       },
       validate: function (v) {
         var errors = [];
-        if (v.speedMPS <= 0) errors.push('Speed must be > 0');
+        if (v.mode !== 'velocity' && v.speedMPS <= 0) errors.push('Speed must be > 0');
         if (v.mode === 'distance' && v.distanceMetres <= 0) errors.push('Distance must be > 0');
         if (v.mode === 'time' && v.durationSeconds <= 0) errors.push('Duration must be > 0');
+        if (v.mode === 'velocity' && v.durationSeconds <= 0) errors.push('Duration must be > 0');
         if (v.mode === 'to_pose') {
           if (v.positionToleranceMetres <= 0) errors.push('Position tolerance must be > 0');
           if (v.headingToleranceDegrees <= 0) errors.push('Heading tolerance must be > 0');
           if (v.timeoutSeconds <= 0) errors.push('Timeout must be > 0');
         }
+        if (['distance', 'time', 'to_pose', 'velocity'].indexOf(v.mode) === -1) {
+          errors.push('Mode must be distance, time, to_pose, or velocity');
+        }
         return errors;
       },
       serialize: function (v) {
-        var out = { type: 'drive', speedMPS: v.speedMPS, mode: v.mode, headingDegrees: v.headingDegrees };
+        var out = { type: 'drive', mode: v.mode, headingDegrees: v.headingDegrees };
         if (v.mode === 'distance') {
+          out.speedMPS = v.speedMPS;
           out.direction = v.direction;
           out.distanceMetres = v.distanceMetres;
           out.timeoutSeconds = v.timeoutSeconds;
         } else if (v.mode === 'time') {
+          out.speedMPS = v.speedMPS;
           out.direction = v.direction;
           out.durationSeconds = v.durationSeconds;
+        } else if (v.mode === 'velocity') {
+          out.frame = v.frame;
+          out.vxMPS = v.vxMPS;
+          out.vyMPS = v.vyMPS;
+          out.durationSeconds = v.durationSeconds;
         } else {
+          out.speedMPS = v.speedMPS;
           out.xMetres = v.xMetres;
           out.yMetres = v.yMetres;
           out.positionToleranceMetres = v.positionToleranceMetres;
@@ -85,45 +106,6 @@ window.CommandPalette = (function () {
           out.timeoutSeconds = v.timeoutSeconds;
         }
         return out;
-      },
-    },
-
-    drive_velocity: {
-      label: 'Drive Velocity',
-      icon: 'V',
-      colorClass: 'drive_velocity',
-      defaultValues: {
-        type: 'drive_velocity',
-        frame: 'field',
-        vxMPS: 1.0,
-        vyMPS: 0.0,
-        headingDegrees: 0,
-        durationSeconds: 1.0,
-      },
-      fields: [
-        { key: 'frame', label: 'Frame', type: 'select', options: [{ value: 'field', label: 'Field Oriented' }, { value: 'robot', label: 'Robot Oriented' }] },
-        { key: 'vxMPS', label: 'Vx (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Forward velocity in selected frame' },
-        { key: 'vyMPS', label: 'Vy (m/s)', type: 'number', min: -5.36, max: 5.36, step: 0.1, hint: 'Left/right velocity in selected frame' },
-        { key: 'headingDegrees', label: 'Heading Hold (deg)', type: 'number', min: -180, max: 360, step: 1 },
-        { key: 'durationSeconds', label: 'Duration (s)', type: 'number', min: 0.1, max: 15, step: 0.1 },
-      ],
-      summarize: function (v) {
-        return v.frame + ' vx ' + v.vxMPS + ', vy ' + v.vyMPS + ', ' + v.durationSeconds + 's';
-      },
-      validate: function (v) {
-        var e = [];
-        if (v.durationSeconds <= 0) e.push('Duration must be > 0');
-        return e;
-      },
-      serialize: function (v) {
-        return {
-          type: 'drive_velocity',
-          frame: v.frame,
-          vxMPS: v.vxMPS,
-          vyMPS: v.vyMPS,
-          headingDegrees: v.headingDegrees,
-          durationSeconds: v.durationSeconds,
-        };
       },
     },
 
@@ -500,6 +482,9 @@ window.CommandPalette = (function () {
   }
 
   function deserializeStep(jsonStep) {
+    if (jsonStep && jsonStep.type === 'drive_velocity') {
+      jsonStep = Object.assign({}, jsonStep, { type: 'drive', mode: 'velocity' });
+    }
     var typeDef = COMMAND_TYPES[jsonStep.type];
     if (!typeDef) return jsonStep;
     var merged = Object.assign({}, typeDef.defaultValues, jsonStep);

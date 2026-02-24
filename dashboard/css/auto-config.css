@@ -456,7 +456,6 @@ html, body {
 .palette-icon.intake { background: #27ae60; }
 .palette-icon.delay { background: #f39c12; }
 .palette-icon.parallel { background: #e67e22; }
-.palette-icon.drive_velocity { background: #16a085; }
 .palette-icon.face_target { background: #c0392b; }
 .palette-icon.vision_approach_tag { background: #d35400; }
 .palette-icon.hold { background: #7f8c8d; }
@@ -574,7 +573,6 @@ html, body {
 .step-type-badge.intake { background: #27ae60; }
 .step-type-badge.delay { background: #f39c12; color: #333; }
 .step-type-badge.parallel { background: #e67e22; }
-.step-type-badge.drive_velocity { background: #16a085; }
 .step-type-badge.face_target { background: #c0392b; }
 .step-type-badge.vision_approach_tag { background: #d35400; }
 .step-type-badge.hold { background: #7f8c8d; }

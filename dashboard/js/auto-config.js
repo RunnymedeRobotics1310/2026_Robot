@@ -26,7 +26,10 @@
     selectedStepId: null,
     selectedParentId: null,
     connected: false,
+    autoConfigSupported: null, // null=unknown, true=supported, false=unsupported
   };
+
+  var connectionMessage = 'Disconnected';
 
   var isDirty = false;
   var history = [];
@@ -460,12 +463,14 @@
       onRuntimeAutoListUpdate: handleRuntimeAutoListUpdate,
       onConfigReceived: handleConfigReceived,
       onWriteStatus: handleWriteStatus,
+      onFeatureSupportChange: handleFeatureSupportChange,
     });
 
     renderSequence();
     renderAutoList();
     renderProperties();
     updateEditStatus();
+    updateConnectionStatus();
     updateActionButtons();
 
     window.addEventListener('beforeunload', function (event) {
@@ -635,11 +640,62 @@
 
   function handleConnectionChange(connected, message) {
     state.connected = connected;
+    connectionMessage = message || (connected ? 'Connected' : 'Disconnected');
+    if (!connected) {
+      state.autoConfigSupported = null;
+      state.autoNames = [];
+      state.deployAutoNames = [];
+      state.runtimeAutoNames = [];
+      pendingLoadName = null;
+    }
     dom.statusDot.className = 'status-dot' + (connected ? ' connected' : '');
-    dom.statusText.textContent = message || (connected ? 'Connected' : 'Disconnected');
+    updateConnectionStatus();
     dom.connectBtn.textContent = connected ? 'Disconnect' : 'Connect';
     dom.connectBtn.className = connected ? 'btn btn-secondary' : 'btn btn-primary';
+    renderAutoList();
     updateActionButtons();
+  }
+
+  function handleFeatureSupportChange(supported, message) {
+    state.autoConfigSupported = supported;
+    if (supported === false && message) {
+      connectionMessage = message;
+    } else if (supported === true) {
+      connectionMessage = 'Connected';
+    } else if (supported === null && message) {
+      connectionMessage = message;
+    }
+    updateConnectionStatus();
+    if (state.connected && supported === false) {
+      showToast('Connected robot does not support this auto-config dashboard bridge', 'error');
+    }
+    updateActionButtons();
+    renderAutoList();
+  }
+
+  function updateConnectionStatus() {
+    if (!dom.statusText) return;
+
+    if (!state.connected) {
+      dom.statusText.className = 'status-message';
+      dom.statusText.textContent = connectionMessage || 'Disconnected';
+      return;
+    }
+
+    if (state.autoConfigSupported === false) {
+      dom.statusText.className = 'status-message error';
+      dom.statusText.textContent = 'Connected - auto-config unsupported on robot';
+      return;
+    }
+
+    if (state.autoConfigSupported === null) {
+      dom.statusText.className = 'status-message';
+      dom.statusText.textContent = 'Connected - checking auto-config support...';
+      return;
+    }
+
+    dom.statusText.className = 'status-message success';
+    dom.statusText.textContent = connectionMessage || 'Connected';
   }
 
   function handleAutoListUpdate(names) {
@@ -741,7 +797,13 @@
     if (allNames.length === 0) {
       var empty = document.createElement('div');
       empty.style.cssText = 'padding:8px; font-size:12px; color:var(--text-muted); text-align:center;';
-      empty.textContent = filterText ? 'No autos match filter.' : 'No autos loaded. Create one or connect to robot.';
+      if (filterText) {
+        empty.textContent = 'No autos match filter.';
+      } else if (state.connected && state.autoConfigSupported === false) {
+        empty.textContent = 'Robot connected, but this build does not support the auto-config NT bridge.';
+      } else {
+        empty.textContent = 'No autos loaded. Create one or connect to robot.';
+      }
       dom.autoList.appendChild(empty);
       return;
     }
@@ -805,6 +867,15 @@
 
           // If connected, always fetch latest from robot.
           if (NT.isConnected()) {
+            if (state.autoConfigSupported === false) {
+              if (configCache[name]) {
+                loadConfig(configCache[name]);
+                showToast('Loaded cached "' + name + '" (robot does not support auto-config bridge)', 'info');
+              } else {
+                showToast('Connected robot does not support auto-config bridge topics', 'error');
+              }
+              return;
+            }
             pendingLoadName = name;
             NT.requestConfig(name);
             if (configCache[name]) {
@@ -867,7 +938,7 @@
     if (state.currentConfig && state.currentConfig.name === name && !confirmDiscardChanges('Delete "' + name + '"')) {
       return;
     }
-    if (NT.isConnected()) NT.deleteConfig(name);
+    if (NT.isConnected() && state.autoConfigSupported === true) NT.deleteConfig(name);
     state.autoNames = state.autoNames.filter(function (n) { return n !== name; });
     localAutoNames = localAutoNames.filter(function (n) { return n !== name; });
     delete configCache[name];
@@ -964,6 +1035,10 @@
         var t = Math.max(0, step.durationSeconds || 0);
         return { min: t, max: t, unbounded: false };
       }
+      if (step.mode === 'velocity') {
+        var dv = Math.max(0, step.durationSeconds || 0);
+        return { min: dv, max: dv, unbounded: false };
+      }
       if (step.mode === 'to_pose') {
         return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
       }
@@ -976,10 +1051,6 @@
     }
     if (step.type === 'rotate') {
       return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
-    }
-    if (step.type === 'drive_velocity') {
-      var dv = Math.max(0, step.durationSeconds || 0);
-      return { min: dv, max: dv, unbounded: false };
     }
     if (step.type === 'face_target') {
       return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
@@ -1120,7 +1191,7 @@
     dom.deleteSelectedBtn.disabled = !hasSelection;
     dom.clearSequenceBtn.disabled = !hasConfig || !hasSteps;
     dom.validateBtn.disabled = !hasConfig;
-    dom.saveBtn.disabled = !hasConfig || !state.connected;
+    dom.saveBtn.disabled = !hasConfig || !state.connected || state.autoConfigSupported !== true;
     dom.saveRepoBtn.disabled = !hasConfig;
     dom.exportBtn.disabled = !hasConfig;
   }
@@ -1144,6 +1215,10 @@
     var config = serializeConfig();
     if (!config) { showToast('No auto config to save', 'error'); return; }
     if (!NT.isConnected()) { showToast('Not connected to robot. Use Export to save locally.', 'error'); return; }
+    if (state.autoConfigSupported !== true) {
+      showToast('Connected robot does not support this auto-config NetworkTables bridge', 'error');
+      return;
+    }
 
     var originalName = config.name;
     var safeName = sanitizeAutoName(config.name);

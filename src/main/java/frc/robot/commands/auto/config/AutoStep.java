@@ -6,11 +6,11 @@ public class AutoStep {
 
     public enum StepType {
         drive, rotate, shooter, intake, delay, parallel,
-        drive_velocity, face_target, vision_approach_tag, hold
+        face_target, vision_approach_tag, hold
     }
 
     public enum DriveMode {
-        distance, time, to_pose
+        distance, time, to_pose, velocity
     }
 
     public enum VelocityFrame {

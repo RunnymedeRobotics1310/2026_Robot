@@ -19,6 +19,7 @@ public class AutoConfigNTBridge {
     private final StringArrayPublisher availableAutosPub;
     private final StringArrayPublisher deployAutosPub;
     private final StringArrayPublisher runtimeAutosPub;
+    private final StringPublisher bridgeVersionPub;
     private final StringPublisher lastWriteStatusPub;
     private final StringSubscriber writeConfigSub;
     private final StringSubscriber deleteConfigSub;
@@ -35,9 +36,12 @@ public class AutoConfigNTBridge {
         availableAutosPub = table.getStringArrayTopic("availableAutos").publish();
         deployAutosPub = table.getStringArrayTopic("deployAutos").publish();
         runtimeAutosPub = table.getStringArrayTopic("runtimeAutos").publish();
+        bridgeVersionPub = table.getStringTopic("bridgeVersion").publish();
         lastWriteStatusPub = table.getStringTopic("lastWriteStatus").publish();
         writeConfigSub = table.getStringTopic("writeConfig").subscribe("");
         deleteConfigSub = table.getStringTopic("deleteConfig").subscribe("");
+
+        bridgeVersionPub.set("1");
 
         // Initial publish of available configs
         refreshAvailableAutos();
