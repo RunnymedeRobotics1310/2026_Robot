@@ -1049,6 +1049,9 @@
       var timeout = Math.max(0, step.timeoutSeconds || 0);
       return { min: expected, max: Math.max(expected, timeout), unbounded: false };
     }
+    if (step.type === 'set_pose') {
+      return { min: 0, max: 0, unbounded: false };
+    }
     if (step.type === 'rotate') {
       return { min: 0, max: Math.max(0, step.timeoutSeconds || 0), unbounded: false };
     }

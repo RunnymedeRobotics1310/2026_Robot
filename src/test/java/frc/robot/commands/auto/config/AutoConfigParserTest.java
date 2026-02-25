@@ -109,6 +109,27 @@ class AutoConfigParserTest {
     }
 
     @Test
+    void validateAutoConfigAcceptsSetPoseStep() {
+        AutoStep setPose = new AutoStep();
+        setPose.type = AutoStep.StepType.set_pose;
+        setPose.xMetres = 1.5;
+        setPose.yMetres = 2.25;
+        setPose.headingDegrees = 90;
+
+        AutoStep delay = new AutoStep();
+        delay.type = AutoStep.StepType.delay;
+        delay.durationSeconds = 0.5;
+
+        AutoConfig config = new AutoConfig();
+        config.name = "set_pose_ok";
+        config.version = 1;
+        config.startingHeadingDegrees = 0;
+        config.steps = List.of(setPose, delay);
+
+        assertNull(AutoConfigParser.validateAutoConfig(config));
+    }
+
+    @Test
     void validateAutoConfigAcceptsDeadlineParallelWithHoldUntilInterrupted() {
         AutoStep shooter = new AutoStep();
         shooter.type = AutoStep.StepType.shooter;
@@ -147,6 +168,12 @@ class AutoConfigParserTest {
                   "startingHeadingDegrees": 0,
                   "steps": [
                     {
+                      "type": "set_pose",
+                      "xMetres": 1.0,
+                      "yMetres": 2.0,
+                      "headingDegrees": 45
+                    },
+                    {
                       "type": "drive",
                       "mode": "velocity",
                       "frame": "robot",
@@ -171,13 +198,14 @@ class AutoConfigParserTest {
                 """;
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
-        assertEquals(3, config.steps.size());
-        assertEquals(AutoStep.StepType.drive, config.steps.get(0).type);
-        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(0).mode);
-        assertEquals(AutoStep.VelocityFrame.robot, config.steps.get(0).frame);
-        assertEquals(AutoStep.StepType.face_target, config.steps.get(1).type);
-        assertEquals(AutoStep.FaceTargetType.hub, config.steps.get(1).target);
-        assertEquals(AutoStep.StepType.vision_approach_tag, config.steps.get(2).type);
+        assertEquals(4, config.steps.size());
+        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
+        assertEquals(AutoStep.StepType.drive, config.steps.get(1).type);
+        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(1).mode);
+        assertEquals(AutoStep.VelocityFrame.robot, config.steps.get(1).frame);
+        assertEquals(AutoStep.StepType.face_target, config.steps.get(2).type);
+        assertEquals(AutoStep.FaceTargetType.hub, config.steps.get(2).target);
+        assertEquals(AutoStep.StepType.vision_approach_tag, config.steps.get(3).type);
     }
 
     @Test
@@ -295,7 +323,8 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals("odometry_cal_straight_compact", config.name);
-        assertEquals(3, config.steps.size());
+        assertEquals(4, config.steps.size());
+        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
@@ -307,7 +336,8 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals("odometry_cal_spin_compact", config.name);
-        assertEquals(18, config.steps.size());
+        assertEquals(19, config.steps.size());
+        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
@@ -319,7 +349,8 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals("odometry_cal_turn_compact", config.name);
-        assertEquals(18, config.steps.size());
+        assertEquals(19, config.steps.size());
+        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 

@@ -5,7 +5,7 @@ import java.util.List;
 public class AutoStep {
 
     public enum StepType {
-        drive, rotate, shooter, intake, delay, parallel,
+        drive, set_pose, rotate, shooter, intake, delay, parallel,
         face_target, vision_approach_tag, hold
     }
 

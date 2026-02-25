@@ -5,17 +5,23 @@
   "startingHeadingDegrees": 0,
   "steps": [
     {
+      "type": "set_pose",
+      "xMetres": 0,
+      "yMetres": 0,
+      "headingDegrees": 0
+    },
+    {
       "type": "hold",
       "durationSeconds": 0.25
     },
     {
       "type": "drive",
       "mode": "distance",
-      "direction": 0,
-      "speedMPS": 0.8,
-      "distanceMetres": 2.0,
       "headingDegrees": 0,
-      "timeoutSeconds": 6.0
+      "speedMPS": 1.5,
+      "direction": 0,
+      "distanceMetres": 7,
+      "timeoutSeconds": 15
     },
     {
       "type": "hold",

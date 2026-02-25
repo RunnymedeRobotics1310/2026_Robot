@@ -352,6 +352,18 @@ public class AutoConfigParser {
                 }
                 return null;
 
+            case set_pose:
+                if (!isFinite(step.xMetres) || Math.abs(step.xMetres) > MAX_FIELD_COORD_METRES) {
+                    return path + ": set_pose.xMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
+                }
+                if (!isFinite(step.yMetres) || Math.abs(step.yMetres) > MAX_FIELD_COORD_METRES) {
+                    return path + ": set_pose.yMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
+                }
+                if (!isFinite(step.headingDegrees)) {
+                    return path + ": set_pose.headingDegrees must be finite";
+                }
+                return null;
+
             case rotate:
                 if (!isFinite(step.headingDegrees)) {
                     return path + ": rotate.headingDegrees must be finite";
@@ -534,6 +546,12 @@ public class AutoConfigParser {
                 case rotate:
                     step.headingDegrees = getDouble(obj, "headingDegrees");
                     step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
+                    break;
+
+                case set_pose:
+                    step.xMetres = getDouble(obj, "xMetres");
+                    step.yMetres = getDouble(obj, "yMetres");
+                    step.headingDegrees = getDouble(obj, "headingDegrees");
                     break;
 
                 case shooter:

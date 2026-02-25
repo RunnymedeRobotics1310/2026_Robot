@@ -451,6 +451,7 @@ html, body {
 }
 
 .palette-icon.drive { background: #2980b9; }
+.palette-icon.set_pose { background: #1abc9c; }
 .palette-icon.rotate { background: #8e44ad; }
 .palette-icon.shooter { background: #e74c3c; }
 .palette-icon.intake { background: #27ae60; }
@@ -568,6 +569,7 @@ html, body {
 }
 
 .step-type-badge.drive { background: #2980b9; }
+.step-type-badge.set_pose { background: #1abc9c; }
 .step-type-badge.rotate { background: #8e44ad; }
 .step-type-badge.shooter { background: #e74c3c; }
 .step-type-badge.intake { background: #27ae60; }

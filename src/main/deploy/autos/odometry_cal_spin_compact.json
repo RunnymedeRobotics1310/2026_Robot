@@ -5,6 +5,12 @@
   "startingHeadingDegrees": 0,
   "steps": [
     {
+      "type": "set_pose",
+      "xMetres": 0.0,
+      "yMetres": 0.0,
+      "headingDegrees": 0.0
+    },
+    {
       "type": "hold",
       "durationSeconds": 0.25
     },

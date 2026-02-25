@@ -109,6 +109,37 @@ window.CommandPalette = (function () {
       },
     },
 
+    set_pose: {
+      label: 'Set Pose',
+      icon: 'O',
+      colorClass: 'set_pose',
+      defaultValues: {
+        type: 'set_pose',
+        xMetres: 0.0,
+        yMetres: 0.0,
+        headingDegrees: 0,
+      },
+      fields: [
+        { key: 'xMetres', label: 'Pose X (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Blue-alliance field coordinate' },
+        { key: 'yMetres', label: 'Pose Y (m)', type: 'number', min: -20, max: 20, step: 0.1, hint: 'Blue-alliance field coordinate' },
+        { key: 'headingDegrees', label: 'Heading (deg)', type: 'number', min: -180, max: 360, step: 1, hint: 'Blue-alliance heading' },
+      ],
+      summarize: function (v) {
+        return '(' + v.xMetres + ', ' + v.yMetres + '), hdg ' + v.headingDegrees + '\u00b0';
+      },
+      validate: function () {
+        return [];
+      },
+      serialize: function (v) {
+        return {
+          type: 'set_pose',
+          xMetres: v.xMetres,
+          yMetres: v.yMetres,
+          headingDegrees: v.headingDegrees,
+        };
+      },
+    },
+
     rotate: {
       label: 'Rotate',
       icon: 'R',

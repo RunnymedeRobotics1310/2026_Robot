@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.*;
 import static edu.wpi.first.wpilibj.util.Color.*;
 
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
@@ -103,9 +104,9 @@ public class LightingSubsystem extends SubsystemBase {
       } else if (Telemetry.swerve.hasVisPose) {
         greenLedPattern.applyTo(ledBuffer);
       } else {
-        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, kBlack)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
-                .applyTo(ledBuffer);
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, new Color(10, 0, 0))
+            .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
+            .applyTo(ledBuffer);
       }
     }
 

@@ -184,6 +184,20 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
+   * Get the measured translational speed of the robot in metres per second from
+   * swerve kinematics.
+   *
+   * @return translational speed in m/s
+   */
+  public double getMeasuredTranslationSpeedMPS() {
+    double[] velocity = drive.getMeasuredRobotVelocity();
+    if (velocity == null || velocity.length < 2) {
+      return 0;
+    }
+    return Math.hypot(velocity[0], velocity[1]);
+  }
+
+  /**
    * Set the gyro yaw offset of the robot, in degrees.
    *
    * @param yaw the yaw offset of the robot, in degrees

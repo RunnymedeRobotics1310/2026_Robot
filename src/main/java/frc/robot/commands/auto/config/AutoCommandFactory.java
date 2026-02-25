@@ -65,6 +65,12 @@ public class AutoCommandFactory {
         switch (step.type) {
             case drive:
                 return buildDriveCommand(step);
+            case set_pose:
+                return new ConfigSetPoseCommand(
+                        swerve,
+                        step.xMetres,
+                        step.yMetres,
+                        step.headingDegrees);
             case rotate:
                 return new ConfigRotateCommand(swerve, step.headingDegrees, step.timeoutSeconds);
             case shooter:

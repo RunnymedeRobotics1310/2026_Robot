@@ -104,7 +104,7 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final boolean IS_HOPPER_ATTACHED = true;
+    public static final boolean IS_HOPPER_ATTACHED = false;
 
     public static final double MAX_SHOOTER_RPM = 6200;
     public static final double KP = 0.00005;
@@ -147,7 +147,7 @@ public final class Constants {
      * <p>Set this from straight-line calibration. Example: if odometry reports 9.8m for a measured
      * 10.0m run, use 10.0 / 9.8 ~= 1.0204.
      */
-    public static final double WHEEL_DISTANCE_SCALE = 1.0;
+    public static final double WHEEL_DISTANCE_SCALE = 0.9814;
     public static final double SDS_MK4I_WHEEL_RADIUS_M = NOMINAL_WHEEL_RADIUS_M * WHEEL_DISTANCE_SCALE;
 
     public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
@@ -155,9 +155,9 @@ public final class Constants {
     public static final SwerveTranslationConfig TRANSLATION_CONFIG = new SwerveTranslationConfig(
         /* tolerance (m) */ 0.02,
         /* min speed (m/s) */ 0.25,
-        /* max speed (m/s) */ 2, // set to 1 for testing
+        /* max speed (m/s) */ 4.8, // set to 1 for testing
         /* max module speed (m/s) */ 5.36,
-        /* max acceleration (m/s/s) */ 4.0,
+        /* max acceleration (m/s/s) */ 10,
         /* velocity PID p */ 1.2,
         /* velocity PID i */ 0,
         /* velocity PID d */ 0);
@@ -188,7 +188,7 @@ public final class Constants {
         /* inverted? */ false,
         /* current limit (A) */ 40,
         /* nominal voltage (V) */ 12,
-        /* ramp rate 0 to full power (s) */ 0.08,
+        /* ramp rate 0 to full power (s) */ 0.01,
         /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
         /* drive motor PID p */ 0.075,
         /* drive motor PID i */ 0,
@@ -200,7 +200,7 @@ public final class Constants {
 
     public static final ModuleConfig FRONT_LEFT = new ModuleConfig(
         "frontleft",
-        new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+        new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         20,
         DRIVE_MOTOR_CONFIG,
@@ -212,7 +212,7 @@ public final class Constants {
 
     public static final ModuleConfig FRONT_RIGHT = new ModuleConfig(
         "frontright",
-        new Coordinates(TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+        new Coordinates(TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         25,
         DRIVE_MOTOR_CONFIG,
@@ -224,7 +224,7 @@ public final class Constants {
 
     public static final ModuleConfig BACK_RIGHT = new ModuleConfig(
         "backright",
-        new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
+        new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         10,
         DRIVE_MOTOR_CONFIG,
@@ -236,7 +236,7 @@ public final class Constants {
 
     public static final ModuleConfig BACK_LEFT = new ModuleConfig(
         "backleft",
-        new Coordinates(-TRACK_WIDTH_METRES / 2, -WHEEL_BASE_METRES / 2),
+        new Coordinates(-TRACK_WIDTH_METRES / 2, WHEEL_BASE_METRES / 2),
         SDS_MK4I_WHEEL_RADIUS_M,
         15,
         DRIVE_MOTOR_CONFIG,
