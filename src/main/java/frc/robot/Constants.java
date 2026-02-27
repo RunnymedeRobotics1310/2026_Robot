@@ -278,5 +278,6 @@ public final class Constants {
 
     public static final int INTAKE_SPEED = 1;
     public static final double DOOR_SPEED = 0.05;
+    public static final double DOOR_MOVE_TIME = 10/9.9899898999899;
   }
 }
