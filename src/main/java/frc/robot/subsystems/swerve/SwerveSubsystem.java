@@ -23,6 +23,8 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SlewRateLimiter omegaLimiter;
   private final PIDController headingPIDController;
 
+  private double distanceToHub = 0;
+
   public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
     this.drive =
             new LimelightAwareSwerveDrive(
@@ -43,6 +45,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    distanceToHub = calculateDistanceToHub();
+    Telemetry.drive.distanceToHub = distanceToHub;
   }
 
   /*
@@ -331,15 +335,17 @@ public class SwerveSubsystem extends SubsystemBase {
     return new Rotation2d(dx, dy);
   }
 
-  public double distanceToHub() {
+  public double calculateDistanceToHub() {
     Pose2d pose = getPose();
     Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
     }
 
-    double distance = hubPose.getDistance(pose.getTranslation());
+    return hubPose.getDistance(pose.getTranslation());
+  }
 
-    return distance;
+  public double distanceToHub() {
+    return distanceToHub;
   }
 }

@@ -8,11 +8,6 @@ import static edu.wpi.first.math.util.Units.inchesToMeters;
 import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
 import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
 
-import ca.team1310.swerve.core.config.*;
-import static edu.wpi.first.math.util.Units.inchesToMeters;
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
-
 import ca.team1310.swerve.core.config.CoreSwerveConfig;
 import ca.team1310.swerve.core.config.EncoderConfig;
 import ca.team1310.swerve.core.config.ModuleConfig;
@@ -97,11 +92,18 @@ public final class Constants {
   }
 
   public static final class ShooterConstants {
-    public static final boolean IS_HOPPER_ATTACHED = true;
+
+    public static final int SHOOTER_PRIMARY_MOTOR_CAN_ID = 30;
+    public static final int SHOOTER_SECONDARY_MOTOR_CAN_ID = 31;
+    public static final int KICKER_MOTOR_PWM_PORT = -1;
+    public static final int HOOD_PWM_PORT = 2;
+
+
 
     public static final double MAX_SHOOTER_RPM = 6200;
     public static final double KP = 0.00005;
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
+
     public static final double SLOPE_VALUE_FAR = 487.97;
     public static final double Y_INT_FAR = 2216.94;
     public static final double SLOPE_VALUE_MID = 487.97;

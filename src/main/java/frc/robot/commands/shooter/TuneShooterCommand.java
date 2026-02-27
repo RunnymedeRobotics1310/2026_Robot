@@ -48,7 +48,6 @@ public class TuneShooterCommand extends LoggingCommand {
     boolean YButton = operatorInput.getDriverController().getYButton();
     int currentPOV = operatorInput.getDriverController().getPOV();
     double distance = swerveSubsystem.distanceToHub();
-    SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
 
     if (currentPOV == 0 && lastPov == -1) {
       testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
@@ -62,9 +61,7 @@ public class TuneShooterCommand extends LoggingCommand {
 
     if (YButton) {
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
-      // shooterSubsystem.setShooterSpeed(testShooterSpeed);
-      SmartDashboard.putNumber("1310/shooter/currentspeed",
-          shooterSubsystem.getShooterVelocity());
+
     } else if (operatorInput.getDriverController().getBButton()) {
       shooterSubsystem.setShooterSpeed(1);
     } else {
