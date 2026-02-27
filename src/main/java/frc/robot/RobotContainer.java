@@ -15,13 +15,17 @@ import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -33,6 +37,7 @@ public class RobotContainer {
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, visionSubsystem);
 
@@ -48,12 +53,12 @@ public class RobotContainer {
 
     exampleSubsystem.setDefaultCommand(new ExampleCommand(exampleSubsystem));
 
-    // this is a placeholder command. it doesn't do anything
     intakeSubsystem.setDefaultCommand(new IntakeCommand(intakeSubsystem, operatorInput));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(exampleSubsystem);
+    operatorInput.configureButtonBindings(swerveSubsystem, lightingSubsystem, exampleSubsystem, shooterSubsystem,
+        visionSubsystem);
     operatorInput.initAutoSelectors();
   }
 

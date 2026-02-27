@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import ca.team1310.swerve.RunnymedeSwerveDrive;
+import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -31,16 +32,16 @@ public class SwerveSubsystem extends SubsystemBase {
     this.xLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.yLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.omegaLimiter = new SlewRateLimiter(config.rotationConfig().maxAccelerationRadPS2());
-    headingPIDController =
-            new PIDController(
-                    config.rotationConfig().headingP(),
-                    config.rotationConfig().headingI(),
-                    config.rotationConfig().headingD());
+    headingPIDController = new PIDController(
+        config.rotationConfig().headingP(),
+        config.rotationConfig().headingI(),
+        config.rotationConfig().headingD());
     headingPIDController.enableContinuousInput(-180, 180);
-    headingPIDController.setTolerance(2);
+    headingPIDController.setTolerance(1);
     Telemetry.drive.enabled = config.telemetryEnabled();
   }
 
+  @Override
   public void periodic() {
   }
 
@@ -60,6 +61,10 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafely(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
+    omega = SwerveUtils.clamp(
+        -config.rotationConfig().maxRotVelocityRadPS(),
+        omega,
+        config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -78,6 +83,10 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafelyFieldOriented(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
+    omega = SwerveUtils.clamp(
+        -config.rotationConfig().maxRotVelocityRadPS(),
+        omega,
+        config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -211,12 +220,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     StringBuilder sb = new StringBuilder();
     sb.append(this.getClass().getSimpleName())
-            .append(": Pose: ")
-            .append(Math.round(x * 100d) / 100d)
-            .append(",")
-            .append(Math.round(y * 100d) / 100d)
-            .append(",")
-            .append(Math.round(theta * 10d) / 10d);
+        .append(": Pose: ")
+        .append(Math.round(x * 100d) / 100d)
+        .append(",")
+        .append(Math.round(y * 100d) / 100d)
+        .append(",")
+        .append(Math.round(theta * 10d) / 10d);
 
     return sb.toString();
   }
@@ -247,7 +256,7 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public double computeOmega(double desiredHeadingDegrees, double maxOmegaRadPerSec) {
     double omega = headingPIDController.calculate(drive.getYaw(), desiredHeadingDegrees);
-    return Math.min(omega, maxOmegaRadPerSec);
+    return SwerveUtils.clamp(-maxOmegaRadPerSec, omega, maxOmegaRadPerSec);
   }
 
   public double oldComputeTranslateVelocity(double distance, double maxSpeedMPS, double tolerance) {
@@ -305,7 +314,7 @@ public class SwerveSubsystem extends SubsystemBase {
     double xSign = Math.signum(translationToTravel.getX());
     double ySign = Math.signum(translationToTravel.getY());
     return new Translation2d(
-            xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
+        xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
 
   public Rotation2d angleToHub() {

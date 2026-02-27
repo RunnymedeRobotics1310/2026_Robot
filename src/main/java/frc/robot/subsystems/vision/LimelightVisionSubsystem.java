@@ -1,22 +1,25 @@
 package frc.robot.subsystems.vision;
 
+import static frc.robot.Constants.VisionConstants.*;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.telemetry.Telemetry;
 
-import static frc.robot.Constants.VisionConstants.*;
-
 public class LimelightVisionSubsystem extends SubsystemBase {
 
   // MegaTags
-  private final DoubleArraySubscriber hughMegaTag;
+  private final DoubleArraySubscriber primaryMegaTag;
+  private final DoubleArraySubscriber secondaryMegaTag;
 
   // These hold the data from the limelights, updated every periodic()
-  private final LimelightBotPose hughBotPoseCache = new LimelightBotPose();
+  private final LimelightBotPose primaryLimelightPoseCache = new LimelightBotPose();
+  private final LimelightBotPose secondaryLimelightPoseCache = new LimelightBotPose();
 
   private final SwerveSubsystem swerve;
 
@@ -25,34 +28,45 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
     Telemetry.vision.telemetryLevel = visionConfig.telemetryLevel();
 
-    final NetworkTable hugh =
+    final NetworkTable primary =
         NetworkTableInstance.getDefault().getTable("limelight-" + VISION_PRIMARY_LIMELIGHT_NAME);
+    final NetworkTable secondary =
+        NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
-    hughMegaTag = hugh.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+    primaryMegaTag = primary.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+    secondaryMegaTag = secondary.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
 
     // inputs/configs
-    hugh.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
-    hugh.getEntry("camMode").setNumber(visionConfig.camModeVision());
+    primary.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
+    primary.getEntry("camMode").setNumber(visionConfig.camModeVision());
+
+    secondary.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
+    secondary.getEntry("camMode").setNumber(visionConfig.camModeVision());
   }
 
   @Override
   public void periodic() {
     // Pull data from the limelights and update our cache
-    hughBotPoseCache.update(hughMegaTag.getAtomic());
+    primaryLimelightPoseCache.update(primaryMegaTag.getAtomic());
+    secondaryLimelightPoseCache.update(secondaryMegaTag.getAtomic());
 
     // Update telemetry
     updateTelemetry();
   }
 
-
   /**
-   * If targeting the left reef, use the left reef pose, otherwise use the right reef pose
+   * Get the botpose of the corresponding limelight
    *
-   * @return Appropriate botPose data for Hugh
+   * @return Appropriate botPose data
    */
-  private LimelightBotPose getBotPose() {
-    return hughBotPoseCache;
+  private LimelightBotPose getBotPose(String limelightName) {
+    if (limelightName.equals(VISION_PRIMARY_LIMELIGHT_NAME)) {
+      return primaryLimelightPoseCache;
+    } else if (limelightName.equals(VISION_SECONDARY_LIMELIGHT_NAME)) {
+      return secondaryLimelightPoseCache;
+    }
+    return null; // Should this return null? Is there a better way to handle this case?
   }
 
   /* Public API */
@@ -62,27 +76,17 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    *
    * @return the tag ID of the closest visible target to the limelight handling left or right branch
    */
-  public double getVisibleTargetTagId() {
-    return getBotPose().getTagId(0);
+  public double getVisibleTargetTagId(String limelightName) {
+    return getBotPose(limelightName).getTagId(0);
   }
 
   /**
-   * Get the number of tags visible to the default limelight (hugh)
+   * Get the number of tags visible to the default limelight
    *
-   * @return the number of tags visible to the default limelight (hugh)
+   * @return the number of tags visible to the default limelight
    */
   public int getNumTagsVisible() {
-    return (int) hughBotPoseCache.getTagCount();
-  }
-
-  /**
-   * Obtain the distance to robot centre to the tag either nearest to, or targeted if one has been
-   * set by setTargetTag(), to the default limelight (hugh)
-   *
-   * @return the distance to robot centre to the nearest or targeted tag
-   */
-  public double distanceTagToRobot() {
-    return distanceTagToRobot(0);
+    return (int) primaryLimelightPoseCache.getTagCount();
   }
 
   /**
@@ -92,8 +96,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param tagId Tag to use, or 0 if looking for nearest tag
    * @return the distance to robot centre to the nearest or targeted tag
    */
-  public double distanceTagToRobot(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double distanceTagToRobot(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -103,25 +107,14 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   }
 
   /**
-   * Obtain the distance to the camera for tag either nearest to, or targeted if one has been set by
-   * setTargetTag(), to the default limelight (hugh)
-   *
-   * @return the distance to camera to the nearest or targeted tag
-   */
-  public double distanceTagToCamera() {
-    return distanceTagToCamera(0, true);
-  }
-
-  /**
    * Obtain the distance to camera to the tag either nearest to, or targeted if one has been set by
    * setTargetTag(), to the limelight handling left or right branch.
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
-   * @param leftBranch Left or Right branch?
    * @return the distance to camera to the nearest or targeted tag
    */
-  public double distanceTagToCamera(int tagId, boolean leftBranch) {
-    LimelightBotPose botPose = getBotPose();
+  public double distanceTagToCamera(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -132,23 +125,13 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   /**
    * Obtain the angle to the tag either nearest to, or targeted if one has been set by
-   * setTargetTag(), to the default limelight (hugh)
-   *
-   * @return the angle to the nearest or targeted tag
-   */
-  public double angleToTarget() {
-    return angleToTarget(0);
-  }
-
-  /**
-   * Obtain the angle to the tag either nearest to, or targeted if one has been set by
-   * setTargetTag(), to the limelight handling left or right branch.
+   * setTargetTag()
    *
    * @param tagId Tag to use, or 0 if looking for nearest tag
    * @return the angle to the nearest or targeted tag
    */
-  public double angleToTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double angleToTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -157,8 +140,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return -botPose.getTagTxnc(index);
   }
 
-  public double heightOfTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double heightOfTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -167,8 +150,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     return -botPose.getTagTync(index);
   }
 
-  public double areaOfTarget(int tagId) {
-    LimelightBotPose botPose = getBotPose();
+  public double areaOfTarget(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
 
     int index = 0;
     if (tagId > 0) {
@@ -178,32 +161,24 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   }
 
   /**
-   * Get the number of tags visible to the default limelight (hugh)
+   * Get the number of tags visible to the default limelight
    *
-   * @return the number of tags visible to the default limelight (hugh)
+   * @return the number of tags visible to the default limelight
    */
   public double getTagCount() {
-    return hughBotPoseCache.getTagCount();
+    return primaryLimelightPoseCache.getTagCount();
   }
 
   /**
-   * Checks if a specific tag is visible to the default limelight (hugh)
+   * Checks if a specific tag is visible
    *
    * @param tagId The ID of the tag to check
+   * @param limelightName the limelight you want to check
    * @return If tagId is visible or not
    */
-  public boolean isTagInView(int tagId) {
-    return isTagInView(tagId, true);
-  }
 
-  /**
-   * Checks if a specific tag is visible to the limelight handling left or right branches.
-   *
-   * @param tagId The ID of the tag to check
-   * @return If tagId is visible or not
-   */
-  public boolean isTagInView(int tagId, boolean leftBranch) {
-    LimelightBotPose botPose = getBotPose();
+  public boolean isTagInView(int tagId, String limelightName) {
+    LimelightBotPose botPose = getBotPose(limelightName);
     return botPose.getTagIndex(tagId) != -1;
   }
 
@@ -216,9 +191,12 @@ public class LimelightVisionSubsystem extends SubsystemBase {
       double yaw = swerve.getYaw();
 
       double compareDistance =
-          hughBotPoseCache.getPose().getTranslation().getDistance(odometryPose.getTranslation());
+          primaryLimelightPoseCache
+              .getPose()
+              .getTranslation()
+              .getDistance(odometryPose.getTranslation());
       double compareHeading =
-          hughBotPoseCache.getPose().getRotation().getDegrees()
+          primaryLimelightPoseCache.getPose().getRotation().getDegrees()
               - odometryPose.getRotation().getDegrees();
 
       Telemetry.vision.poseDeltaMetres = compareDistance;
@@ -226,28 +204,32 @@ public class LimelightVisionSubsystem extends SubsystemBase {
       Telemetry.vision.poseMetresX = odometryPose.getX();
       Telemetry.vision.poseMetresY = odometryPose.getY();
       Telemetry.vision.poseHeadingDegrees = odometryPose.getRotation().getDegrees();
-      Telemetry.vision.visionPoseX = hughBotPoseCache.getPoseX();
-      Telemetry.vision.visionPoseY = hughBotPoseCache.getPoseY();
-      Telemetry.vision.visionPoseHeading = hughBotPoseCache.getPoseRotationYaw();
+      Telemetry.vision.visionPoseX = primaryLimelightPoseCache.getPoseX();
+      Telemetry.vision.visionPoseY = primaryLimelightPoseCache.getPoseY();
+      Telemetry.vision.visionPoseHeading = primaryLimelightPoseCache.getPoseRotationYaw();
       Telemetry.vision.navxYaw = yaw;
       Telemetry.vision.navxYawDelta = odometryPose.getRotation().getDegrees() - yaw;
     }
 
     if (Telemetry.vision.telemetryLevel == VisionTelemetryLevel.VERBOSE) {
-      Telemetry.vision.poseXSeries.add(hughBotPoseCache.getPoseX());
-      Telemetry.vision.poseYSeries.add(hughBotPoseCache.getPoseY());
-      Telemetry.vision.poseDegSeries.add(hughBotPoseCache.getPoseRotationYaw());
+      Telemetry.vision.poseXSeries.add(primaryLimelightPoseCache.getPoseX());
+      Telemetry.vision.poseYSeries.add(primaryLimelightPoseCache.getPoseY());
+      Telemetry.vision.poseDegSeries.add(primaryLimelightPoseCache.getPoseRotationYaw());
 
-      Telemetry.vision.nikVisibleTags = hughBotPoseCache.getVisibleTags();
-      Telemetry.vision.nikTx = hughBotPoseCache.getTagTxnc(0);
-      Telemetry.vision.nikDistanceToRobot = hughBotPoseCache.getTagDistToRobot(0);
-      Telemetry.vision.nikDistanceToCam = hughBotPoseCache.getTagDistToCamera(0);
+      Telemetry.vision.nikVisibleTags = primaryLimelightPoseCache.getVisibleTags();
+      Telemetry.vision.nikTx = primaryLimelightPoseCache.getTagTxnc(0);
+      Telemetry.vision.nikDistanceToRobot = primaryLimelightPoseCache.getTagDistToRobot(0);
+      Telemetry.vision.nikDistanceToCam = primaryLimelightPoseCache.getTagDistToCamera(0);
 
+      Telemetry.vision.tomVisibleTags = secondaryLimelightPoseCache.getVisibleTags();
+      Telemetry.vision.tomTx = secondaryLimelightPoseCache.getTagTxnc(0);
+      Telemetry.vision.tomDistanceToRobot = secondaryLimelightPoseCache.getTagDistToRobot(0);
+      Telemetry.vision.tomDistanceToCam = secondaryLimelightPoseCache.getTagDistToCamera(0);
     }
   }
 
   @Override
   public String toString() {
-    return "AC/DeepSea Vision Subsystem";
+    return "Swervy Vision Subsystem";
   }
 }

@@ -17,7 +17,12 @@ import static edu.wpi.first.wpilibj.util.Color.kViolet;
 import static edu.wpi.first.wpilibj.util.Color.kWhite;
 import static edu.wpi.first.wpilibj.util.Color.kYellow;
 
+import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.wpilibj.util.Color.*;
+
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;

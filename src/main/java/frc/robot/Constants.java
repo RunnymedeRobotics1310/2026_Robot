@@ -9,6 +9,16 @@ import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
 import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
 
 import ca.team1310.swerve.core.config.*;
+import static edu.wpi.first.math.util.Units.inchesToMeters;
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_X;
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
+
+import ca.team1310.swerve.core.config.CoreSwerveConfig;
+import ca.team1310.swerve.core.config.EncoderConfig;
+import ca.team1310.swerve.core.config.ModuleConfig;
+import ca.team1310.swerve.core.config.MotorConfig;
+import ca.team1310.swerve.core.config.MotorType;
+import ca.team1310.swerve.core.config.TelemetryLevel;
 import ca.team1310.swerve.gyro.config.GyroConfig;
 import ca.team1310.swerve.utils.Coordinates;
 import ca.team1310.swerve.vision.config.LimelightConfig;
@@ -20,11 +30,15 @@ import frc.robot.subsystems.vision.VisionConfig;
 import frc.robot.subsystems.vision.VisionTelemetryLevel;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -77,8 +91,8 @@ public final class Constants {
     public enum AutoPattern {
       DO_NOTHING,
       EXIT_ZONE,
-      EXAMPLE_AUTO,
-      LEIA_AUTO,
+      SIMPLE_CENTER,
+      OPPORTUNISTIC_OUTPOST,
     }
 
     public enum Delay {
@@ -93,7 +107,20 @@ public final class Constants {
     }
   }
 
-  // Constants for 2026 comp robot
+  public static final class ShooterConstants {
+    public static final boolean IS_HOPPER_ATTACHED = true;
+
+    public static final double MAX_SHOOTER_RPM = 6200;
+    public static final double KP = 0.00005;
+    public static final double KFF = 1 / MAX_SHOOTER_RPM;
+    public static final double SLOPE_VALUE_FAR = 487.97;
+    public static final double Y_INT_FAR = 2216.94;
+    public static final double SLOPE_VALUE_MID = 487.97;
+    public static final double Y_INT_MID = 2216.94;
+    public static final double SLOPE_VALUE_CLOSE = 318.1;
+    public static final double Y_INT_CLOSE = 2571.9;
+  }
+
   public static final class Swerve {
 
     /** Front to back from the middle of the wheels */
@@ -146,7 +173,7 @@ public final class Constants {
             /* inverted? */ false,
             /* current limit (A) */ 40,
             /* nominal voltage (V) */ 12,
-            /* ramp rate 0 to full power (s)*/ 0.02,
+            /* ramp rate 0 to full power (s)*/ 0.01,
             /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
             /* drive motor PID p */ 0.075,
             /* drive motor PID i */ 0,
@@ -247,7 +274,9 @@ public final class Constants {
     public static final VisionConfig VISION_CONFIG =
         new VisionConfig(0, 0, 0.7, 0.1, .5, true, Constants.TelemetryConfig.vision);
 
-    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hugh";
+    // TODO: fixme: rename me
+    public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hopper";
+    public static final String VISION_SECONDARY_LIMELIGHT_NAME = "hugh";
   }
 
   public static final class IntakeConstants {

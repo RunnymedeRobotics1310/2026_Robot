@@ -1,7 +1,9 @@
 package frc.robot.commands.swerve;
 
 import static ca.team1310.swerve.utils.SwerveUtils.normalizeDegrees;
-import static frc.robot.Constants.OperatorConstants.*;
+import static frc.robot.Constants.OperatorConstants.GENERAL_SPEED_FACTOR;
+import static frc.robot.Constants.OperatorConstants.MAX_SPEED_FACTOR;
+import static frc.robot.Constants.OperatorConstants.SLOW_SPEED_FACTOR;
 import static frc.robot.Constants.Swerve.ROTATION_CONFIG;
 import static frc.robot.Constants.Swerve.TRANSLATION_CONFIG;
 import static frc.robot.RunnymedeUtils.getRunnymedeAlliance;
@@ -93,10 +95,9 @@ public class TeleopDriveCommand extends LoggingCommand {
 
         // Compute boost factor
         final boolean isSlow = oi.isSlowMode();
-        //    final boolean isSlow = false;
+        // final boolean isSlow = false;
         final boolean isFast = oi.isFastMode();
-        final double boostFactor =
-                isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
+        final double boostFactor = isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
 
         Translation2d velocity = calculateTeleopVelocity(vX, vY, boostFactor, invert);
 
@@ -111,8 +112,7 @@ public class TeleopDriveCommand extends LoggingCommand {
         if (correctedCcwRotAngularVelPct != 0) {
             // User is steering!
             lockOnHub = false;
-            omegaRadiansPerSecond =
-                    Math.pow(correctedCcwRotAngularVelPct, 3) * ROTATION_CONFIG.maxRotVelocityRadPS();
+            omegaRadiansPerSecond = Math.pow(correctedCcwRotAngularVelPct, 1) * ROTATION_CONFIG.maxRotVelocityRadPS();
             // Save previous heading for when we are finished steering and slow enough.
             // headingSetpoint = Rotation2d.fromDegrees(swerve.getYaw());
             headingSetpointDeg = null;
@@ -125,8 +125,9 @@ public class TeleopDriveCommand extends LoggingCommand {
             }
 
             if (faceHub || lockOnHub) {
-                lockOnHub =  true;
-                headingSetpointDeg = swerve.angleToHub().getDegrees() + 180;
+                lockOnHub = true;
+                headingSetpointDeg = swerve.angleToHub().getDegrees();
+
             }
 
             // rotate 180º button
@@ -151,8 +152,7 @@ public class TeleopDriveCommand extends LoggingCommand {
                 omegaRadiansPerSecond = 0;
             } else {
                 headingSetpointDeg = normalizeDegrees(headingSetpointDeg);
-                omegaRadiansPerSecond =
-                        swerve.computeOmega(headingSetpointDeg, ROTATION_CONFIG.maxRotVelocityRadPS());
+                omegaRadiansPerSecond = swerve.computeOmega(headingSetpointDeg, ROTATION_CONFIG.maxRotVelocityRadPS());
             }
         }
 
@@ -195,7 +195,8 @@ public class TeleopDriveCommand extends LoggingCommand {
         // apply boost factor
         magnitude *= boostFactor;
 
-        // handle case where in simulator, a value of 1,1 is possible whereas normally the
+        // handle case where in simulator, a value of 1,1 is possible whereas normally
+        // the
         // controller magnitude never exceeds 1
         magnitude = MathUtil.clamp(magnitude, -1, 1);
 
