@@ -60,8 +60,6 @@ public class OperatorInput extends SubsystemBase {
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
       SwerveSubsystem swerve,
-      LightingSubsystem lightingSubsystem,
-      ExampleSubsystem exampleSubsystem,
       ShooterSubsystem shooterSubsystem,
       LimelightVisionSubsystem vision) {
     // Schedule `ExampleCommand` when `A' button is pressed.
@@ -104,10 +102,6 @@ public class OperatorInput extends SubsystemBase {
 
   public boolean getFaceHub() {
     return getShooterActive();
-  }
-
-  public boolean getFaceHub() {
-    return driverController.getYButton();
   }
 
   public boolean isFastMode() {

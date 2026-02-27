@@ -7,6 +7,8 @@ import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
+import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAME;
+
 public class DriveToLeftTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50;
@@ -44,9 +46,9 @@ public class DriveToLeftTowerCommand extends LoggingCommand {
 
     // get offset
     final double tX;
-    if (vision.isTagInView(tagId)) {
+    if (vision.isTagInView(tagId, VISION_SECONDARY_LIMELIGHT_NAME)) {
       noDataCount = 0;
-      tX = vision.angleToTarget(tagId);
+      tX = vision.angleToTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     } else {
       noDataCount++;
 
@@ -88,7 +90,7 @@ public class DriveToLeftTowerCommand extends LoggingCommand {
       return true;
     }
 
-    final double tY = vision.heightOfTarget(tagId);
+    final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     log("TY: " + tY);
     return tY > -11 && tY < -1;
   }
