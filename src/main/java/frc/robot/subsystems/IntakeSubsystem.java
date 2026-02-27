@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -9,23 +5,22 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
+import static frc.robot.Constants.IntakeConstants.*;
+
 public class IntakeSubsystem extends SubsystemBase {
 
     //subsystem motors
-    //TODO: fixme: the motor will all be controlled through pwm. this is how they are declared.
-    private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(1);
-//    private final SparkMax topRollerMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
-//    private final SparkMax armMotor = new SparkMax(10, SparkLowLevel.MotorType.kBrushless);
+    private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(BOTTOM_ROLLER_PWM_PORT);
+    private final PWMSparkMax topRollerMotor = new PWMSparkMax(TOP_ROLLER_PWM_PORT);
+    private final PWMSparkMax doorMotor = new PWMSparkMax(DOOR_PWM_PORT);
 
-    private final double armPosition = 1;
-    private final double armStart = 0;
-    private boolean armState = false;
+    private boolean doorState = false;
 
-    //TODO: fixme: we won't be using this. there will instead be 2 limit switches
+    //TODO: fixme: use a timer instead of limit switches
 
-    private final DigitalInput beamBreak = new DigitalInput(0); //DIO port for the beam break sensor number 0
-    private final DigitalInput armExtended = new DigitalInput(0);
-    private final DigitalInput armRetracted = new DigitalInput(0);
+    private final DigitalInput beamBreak = new DigitalInput(-1); //DIO port for the beam break sensor number 0
+    private final DigitalInput doorExtended = new DigitalInput(-1);
+    private final DigitalInput doorRetracted = new DigitalInput(-1);
     /**
      * Creates a new IntakeSubsystem.
      */
@@ -37,95 +32,66 @@ public class IntakeSubsystem extends SubsystemBase {
         // TODO Update telemetry
         Telemetry.intake.isHopperFull = isBeamBroken();
 
-
-        if (armState) {
-            setArmToExtended(); //move motors forward
+        if (doorState) {
+            setDoorToExtended(); //move motors forward
         } else {
-            setArmToRetracted(); //move motors back
+            setDoorToRetracted(); //move motors back
         }
 
-        if (isArmExtended() && armState) {
-            armStop(); //stop if arm reaches extension
+        if (isDoorExtended() && doorState) {
+            doorStop(); //stop if door reaches extension
         }
-        if (isArmRetracted() && !armState) {
-            armStop(); //stop if arm reaches retraction
+        if (isDoorRetracted() && !doorState) {
+            doorStop(); //stop if door reaches retraction
         }
-
-    }
-
-
-
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
     }
 
     public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
-//        topRollerMotor.set(topRollerSpeed);
+        topRollerMotor.set(topRollerSpeed);
         bottomRollerMotor.set(bottomRollerSpeed);
     }
 
-    public void setArmSpeed(double armSpeed) {
-//        armMotor.set(armSpeed);
+    public void setDoorSpeed(double doorSpeed) {
+        doorMotor.set(doorSpeed);
     }
 
     public void rollerStop() {
         setRollerSpeeds(0, 0);
     }
 
-    public void armStop() {
-        setArmSpeed(0);
+    public void doorStop() {
+        setDoorSpeed(0);
     }
 
-
-    public boolean isArmExtended() {
-        return armExtended.get(); //return true if arm extended
+    public boolean isDoorExtended() {
+        return doorExtended.get(); //return true if door extended
     }
 
-    public boolean isArmRetracted(){
-        return armRetracted.get(); //return true if arm retracted
-
+    public boolean isDoorRetracted(){
+        return doorRetracted.get(); //return true if door retracted
     }
 
-    public boolean getArmState(){
-    return !isArmRetracted(); //return opposite of armRetracted
+    public boolean getDoorState(){
+        return !isDoorRetracted(); //return opposite of doorRetracted
     }
 
-    public void setArmToExtended(){
-        setArmSpeed(0.05); //move to extended
+    public void setDoorToExtended(){
+        setDoorSpeed(DOOR_SPEED); //move to extended
     }
 
-    public void setArmToRetracted(){
-        setArmSpeed(-0.05); //move to retracted
+    public void setDoorToRetracted(){
+        setDoorSpeed(-DOOR_SPEED); //move to retracted
     }
 
-
-    public void setArmState(boolean extended) {
-
-        armState = extended;
-
-//        extended = getArmState();
-//        if(!extended){
-//            setArmToExtended();
-//        }
-//        else{
-//            setArmToRetracted();
-//        }
-
-        /*
-         * this method should be replaced with a setArmState(boolean extended) method.
-         * we will only ever be moving the arm to 2 states, extended, or retracted.
-         * there will be 2 limit switches, 1 for extended and 1 for retracted.
-         */
-
+    public void setDoorState(boolean extended) {
+        doorState = extended;
     }
-public void setRollers(boolean roll){
 
-        if(roll){
-            setRollerSpeeds(1,-1);
+    public void setRollers(boolean roll) {
+        if (roll) {
+            setRollerSpeeds(INTAKE_SPEED,-INTAKE_SPEED);
         }
-}
-
+    }
 
     public boolean isBeamBroken() {
         return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken

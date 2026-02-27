@@ -25,7 +25,7 @@ public class IntakeCommand extends LoggingCommand{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        //arm go out
+        //door go out
         //spin motors
         //only when you press a button
         final boolean intakeCheck = oi.isIntakeDoingStuff();
@@ -33,12 +33,15 @@ public class IntakeCommand extends LoggingCommand{
 
         if(intakeCheck) {
             intakeSubsystem.setRollers(true);
-            intakeSubsystem.setArmState(true);
-//
+            intakeSubsystem.setDoorState(true);
+
         } else {
             intakeSubsystem.rollerStop();
-            intakeSubsystem.setArmState(false);
+            intakeSubsystem.setDoorState(false);
         }
+
+        //TODO: fixme: add a reverse rollers button
+        // just run the rollers in reverse
     }
 
     // Returns true when the command should end.

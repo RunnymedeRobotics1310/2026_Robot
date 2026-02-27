@@ -251,6 +251,12 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final double ARM_FAST_SPEED = 0.436;
+
+    public static final int DOOR_PWM_PORT = -1;
+    public static final int BOTTOM_ROLLER_PWM_PORT = 1;
+    public static final int TOP_ROLLER_PWM_PORT = -1;
+
+    public static final int INTAKE_SPEED = 1;
+    public static final double DOOR_SPEED = 0.05;
   }
 }
