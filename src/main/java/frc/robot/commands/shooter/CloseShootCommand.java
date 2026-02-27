@@ -11,10 +11,6 @@ public class CloseShootCommand extends LoggingCommand {
 
     private final ShooterSubsystem shooterSubsystem;
 
-    private final SwerveSubsystem swerveSubsystem;
-
-    private final OperatorInput operatorInput;
-
     private final Timer timer = new Timer();
 
     /**
@@ -22,13 +18,9 @@ public class CloseShootCommand extends LoggingCommand {
      *
      * @param shooterSubsystem The subsystem used by this command.
      */
-    public CloseShootCommand(ShooterSubsystem shooterSubsystem,
-            OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
-        // Use addRequirements() here to declare subsystem dependencies.
+    public CloseShootCommand(ShooterSubsystem shooterSubsystem) {
         addRequirements(shooterSubsystem);
         this.shooterSubsystem = shooterSubsystem;
-        this.operatorInput = operatorInput;
-        this.swerveSubsystem = swerveSubsystem;
     }
 
     // Called when the command is initially scheduled.

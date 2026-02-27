@@ -16,10 +16,6 @@ public class ShooterCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerveSubsystem;
 
-  private final LimelightVisionSubsystem vision;
-
-  private final OperatorInput operatorInput;
-
   private final Timer timer = new Timer();
 
   /**
@@ -27,13 +23,10 @@ public class ShooterCommand extends LoggingCommand {
    *
    * @param shooterSubsystem The subsystem used by this command.
    */
-  public ShooterCommand(ShooterSubsystem shooterSubsystem, LimelightVisionSubsystem vision,
-      OperatorInput operatorInput, SwerveSubsystem swerveSubsystem) {
+  public ShooterCommand(ShooterSubsystem shooterSubsystem, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
-    this.vision = vision;
-    this.operatorInput = operatorInput;
     this.swerveSubsystem = swerveSubsystem;
   }
 

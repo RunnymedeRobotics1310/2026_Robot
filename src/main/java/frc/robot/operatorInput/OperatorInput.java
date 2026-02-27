@@ -58,7 +58,7 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
 
     new Trigger(this::getShooterActive)
-        .whileTrue(new ShooterCommand(shooter, vision, this, swerve));
+        .whileTrue(new ShooterCommand(shooter, swerve));
 
     new Trigger(this::getUnstuckShooter)
             .whileTrue(new ShooterUnstuckyCommand(shooter));
