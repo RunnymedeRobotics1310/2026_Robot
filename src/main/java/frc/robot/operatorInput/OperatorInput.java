@@ -1,7 +1,5 @@
 package frc.robot.operatorInput;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,30 +9,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.auto.DemoAutoCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
-import frc.robot.commands.auto.TestAuto;
-import frc.robot.commands.swerve.DriveToLeftTowerCommand;
-import frc.robot.commands.swerve.FaceHubCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.commands.CancelCommand;
-import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.ShooterUnstuckyCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
-import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
-import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -43,6 +29,7 @@ public class OperatorInput extends SubsystemBase {
 
   private final SwerveSubsystem swerve;
   private final ShooterSubsystem shooter;
+  private final IntakeSubsystem intake;
   private final LimelightVisionSubsystem vision;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
@@ -51,33 +38,38 @@ public class OperatorInput extends SubsystemBase {
       new SendableChooser<>();
 
   public OperatorInput(
-      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve,
+      ShooterSubsystem shooter,
+      IntakeSubsystem intake,
+      LimelightVisionSubsystem vision) {
     this.swerve = swerve;
     this.shooter = shooter;
+    this.intake = intake;
     this.vision = vision;
   }
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
       SwerveSubsystem swerve,
-      ShooterSubsystem shooterSubsystem,
+      ShooterSubsystem shooter,
+      IntakeSubsystem intake,
       LimelightVisionSubsystem vision) {
-    // Schedule `ExampleCommand` when `A' button is pressed.
+
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
 
     new Trigger(this::getShooterActive)
-        .whileTrue(new ShooterCommand(shooterSubsystem, vision, this, swerve));
+        .whileTrue(new ShooterCommand(shooter, vision, this, swerve));
 
     new Trigger(this::getUnstuckShooter)
-            .whileTrue(new ShooterUnstuckyCommand(shooterSubsystem));
+            .whileTrue(new ShooterUnstuckyCommand(shooter));
 
     new Trigger(driverController::getXButton)
-        .onTrue(new TuneShooterCommand(shooterSubsystem, this, swerve));
+        .onTrue(new TuneShooterCommand(shooter, this, swerve));
 
     new Trigger(driverController::getAButton)
         .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
-    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooterSubsystem));
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooter, intake));
   }
 
   public boolean isCancel() {

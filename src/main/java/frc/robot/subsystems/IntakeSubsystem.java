@@ -97,4 +97,9 @@ public class IntakeSubsystem extends SubsystemBase {
         return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
     }
 
+    public void stop() {
+        setRollerSpeeds(0, 0);
+        setDoorSpeed(0);
+    }
+
 }

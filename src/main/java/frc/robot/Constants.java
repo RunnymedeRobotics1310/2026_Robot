@@ -68,17 +68,6 @@ public final class Constants {
     public static final int LED_STRING_PWM_PORT = 9;
     public static final int LED_STRING_LENGTH = 36;
 
-    public static final int LED_CLIMB_VIEW_START = 0;
-    public static final int LED_CLIMB_VIEW_END = 4;
-
-    public static final int LED_INTAKE_VIEW_START = 6;
-    public static final int LED_INTAKE_VIEW_END = 10;
-
-    public static final int LED_ROBOT_HEALTH_VIEW_START = 12;
-    public static final int LED_ROBOT_HEALTH_VIEW_END = 16;
-
-    public static final int LED_DRIVE_VIEW_START = 18;
-    public static final int LED_DRIVE_VIEW_END = 20;
   }
 
   public static final class FieldConstants {

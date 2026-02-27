@@ -8,11 +8,9 @@ import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
 import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -38,7 +36,8 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
-  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem);
+  private final OperatorInput operatorInput =
+          new OperatorInput(swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -54,7 +53,10 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(swerveSubsystem, shooterSubsystem,
+    operatorInput.configureButtonBindings(
+        swerveSubsystem,
+        shooterSubsystem,
+        intakeSubsystem,
         visionSubsystem);
     operatorInput.initAutoSelectors();
   }
