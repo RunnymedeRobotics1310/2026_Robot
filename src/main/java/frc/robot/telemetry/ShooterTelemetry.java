@@ -23,8 +23,8 @@ public class ShooterTelemetry {
     if (enabled) {
       SmartDashboard.putNumber(PREFIX + "Shooter/TargetShooterRPM", (int) targetShooterRPM);
       SmartDashboard.putNumber(PREFIX + "Shooter/CurrentShooterRPM", (int) currentShooterRPM);
-      SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", kickerSpeed);
-      SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", hoodAngle);
+      SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", RunnymedeUtils.round(kickerSpeed));
+      SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", RunnymedeUtils.round(hoodAngle));
     }
   }
 }
