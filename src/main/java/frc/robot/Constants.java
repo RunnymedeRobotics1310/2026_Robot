@@ -90,7 +90,7 @@ public final class Constants {
 
     public static final int SHOOTER_PRIMARY_MOTOR_CAN_ID = 30;
     public static final int SHOOTER_SECONDARY_MOTOR_CAN_ID = 31;
-    public static final int KICKER_MOTOR_PWM_PORT = -1;
+    public static final int KICKER_MOTOR_PWM_PORT = 0;
     public static final int HOOD_PWM_PORT = 2;
 
     public static final double MAX_SHOOTER_RPM = 6200;
@@ -274,9 +274,9 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int DOOR_PWM_PORT = -1;
-    public static final int BOTTOM_ROLLER_PWM_PORT = 1;
-    public static final int TOP_ROLLER_PWM_PORT = -1;
+    public static final int DOOR_PWM_PORT = 1;
+    public static final int TOP_ROLLER_PWM_PORT = 2;
+    public static final int BOTTOM_ROLLER_PWM_PORT = 3;
 
     public static final int INTAKE_SPEED = 1;
     public static final double DOOR_SPEED = 0.05;
