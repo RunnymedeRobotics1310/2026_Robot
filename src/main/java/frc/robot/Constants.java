@@ -91,7 +91,7 @@ public final class Constants {
     public static final int SHOOTER_PRIMARY_MOTOR_CAN_ID = 30;
     public static final int SHOOTER_SECONDARY_MOTOR_CAN_ID = 31;
     public static final int KICKER_MOTOR_PWM_PORT = 0;
-    public static final int HOOD_PWM_PORT = 2;
+    public static final int HOOD_PWM_PORT = 4;
 
     public static final double MAX_SHOOTER_RPM = 6200;
     public static final double KP = 0.00005;

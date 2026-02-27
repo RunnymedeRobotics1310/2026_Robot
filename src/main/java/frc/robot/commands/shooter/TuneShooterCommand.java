@@ -26,7 +26,8 @@ public class TuneShooterCommand extends LoggingCommand {
    *
    * @param shooterSubsystem The subsystem used by this command.
    */
-  public TuneShooterCommand(ShooterSubsystem shooterSubsystem,
+  public TuneShooterCommand(
+      ShooterSubsystem shooterSubsystem,
       OperatorInput operatorInput,
       SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -69,7 +70,7 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     if (currentPOV == 270) {
-      shooterSubsystem.setKickerSpeed(-0.7);
+      shooterSubsystem.setKickerSpeed(1);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
     }
@@ -80,14 +81,12 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     lastPov = currentPOV;
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
-
   }
 
   // Called once the command ends or is interrupted.
