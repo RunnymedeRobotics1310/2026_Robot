@@ -57,8 +57,8 @@ public class OperatorInput extends SubsystemBase {
 
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
 
-    new Trigger(this::getShooterActive)
-        .whileTrue(new ShooterCommand(shooter, swerve));
+//    new Trigger(this::getShooterActive)
+//        .whileTrue(new ShooterCommand(shooter, swerve));
 
     new Trigger(this::getUnstuckShooter)
             .whileTrue(new ShooterUnstuckyCommand(shooter));
@@ -66,8 +66,8 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(driverController::getXButton)
         .onTrue(new TuneShooterCommand(shooter, this, swerve));
 
-    new Trigger(driverController::getAButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, false));
+//    new Trigger(driverController::getAButton)
+//        .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooter, intake));
   }
@@ -81,7 +81,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean getRotate180Val() {
-    return driverController.getAButton() && false;
+    return false;
   }
 
   public boolean getShooterActive() {
