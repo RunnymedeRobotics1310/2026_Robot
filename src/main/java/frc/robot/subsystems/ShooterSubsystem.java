@@ -1,22 +1,28 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.KFF;
+import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_CAN_ID;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
-
 import com.revrobotics.spark.config.SparkFlexConfig;
+
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
-import static frc.robot.Constants.ShooterConstants.*;
-
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final SparkFlex primaryShooterMotor = new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
-  private final SparkFlex secondaryShooterMotor = new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
+  private final SparkFlex primaryShooterMotor = new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID,
+      SparkFlex.MotorType.kBrushless);
+  private final SparkFlex secondaryShooterMotor = new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID,
+      SparkFlex.MotorType.kBrushless);
   private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
 
@@ -25,8 +31,8 @@ public class ShooterSubsystem extends SubsystemBase {
   /** Creates The Shooter Subsystem. */
   public ShooterSubsystem() {
     secondaryShooterMotor.configure(
-            new SparkFlexConfig().follow(primaryShooterMotor, true),
-            ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        new SparkFlexConfig().follow(primaryShooterMotor, true),
+        ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 
   @Override
@@ -37,31 +43,31 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double getShooterVelocity() {
-      return primaryShooterMotor.getEncoder().getVelocity();
+    return primaryShooterMotor.getEncoder().getVelocity();
   }
 
   public void setShooterVelocity(double target) {
-      targetShooterVelocity = target;
-      double currentSpeed = getShooterVelocity();
-      double error = (target - currentSpeed); // Normalize error
-      primaryShooterMotor.set((target * KFF) + (error * KP));
+    targetShooterVelocity = target;
+    double currentSpeed = getShooterVelocity();
+    double error = (target - currentSpeed); // Normalize error
+    primaryShooterMotor.set((target * KFF) + (error * KP));
   }
 
   public void setShooterSpeed(double speed) {
-      primaryShooterMotor.set(speed);
+    primaryShooterMotor.set(speed);
   }
 
   public void setKickerSpeed(double speed) {
-      kickerMotor.set(speed);
-      Telemetry.shooter.kickerSpeed = speed;
+    kickerMotor.set(speed);
+    Telemetry.shooter.kickerSpeed = speed;
   }
 
   /**
    * @param value a value between 0.0 and 1.0
    */
   public void setHood(double value) {
-    hoodServo.set(value);
-    Telemetry.shooter.hoodAngle = value;
+    hoodServo.set(1 - value); // FIXME: Maybe take out the 1 - part later
+    Telemetry.shooter.hoodAngle = 1 - value;
   }
 
   public double calculateShootingAngle(double distanceMeters) {
@@ -72,8 +78,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stop() {
-      primaryShooterMotor.stopMotor();
-      kickerMotor.stopMotor();
+    primaryShooterMotor.stopMotor();
+    kickerMotor.stopMotor();
   }
 
 }

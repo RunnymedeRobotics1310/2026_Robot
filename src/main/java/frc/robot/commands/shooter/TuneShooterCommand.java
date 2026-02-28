@@ -1,5 +1,6 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,7 +71,7 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     if (currentPOV == 270) {
-      shooterSubsystem.setKickerSpeed(1);
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
     }
