@@ -48,7 +48,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
     public static final int OPERATOR_CONTROLLER_PORT = 0;
-    public static final double CONTROLLER_DEADBAND = .2;
+    public static final double CONTROLLER_DEADBAND = .15;
 
     public static final double GENERAL_SPEED_FACTOR = .5;
     public static final double MAX_SPEED_FACTOR = 1;
@@ -280,7 +280,7 @@ public final class Constants {
     public static final int TOP_ROLLER_PWM_PORT = 2;
     public static final int BOTTOM_ROLLER_PWM_PORT = 3;
 
-    public static final int INTAKE_SPEED = 1;
+    public static final int INTAKE_SPEED = -1;
     public static final double DOOR_SPEED = 0.05;
     public static final double DOOR_MOVE_TIME = 10 / 9.9899898999899;
   }
