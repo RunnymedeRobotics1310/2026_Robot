@@ -5,6 +5,7 @@ import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -28,9 +29,10 @@ public class TuneShooterCommand extends LoggingCommand {
    */
   public TuneShooterCommand(ShooterSubsystem shooterSubsystem,
       OperatorInput operatorInput,
-      SwerveSubsystem swerveSubsystem) {
+      SwerveSubsystem swerveSubsystem,
+      IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem);
+    addRequirements(shooterSubsystem, swerveSubsystem, intakeSubsystem);
     this.shooterSubsystem = shooterSubsystem;
     this.operatorInput = operatorInput;
     this.swerveSubsystem = swerveSubsystem;
@@ -75,9 +77,12 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     // hood control
-    if (currentPOV == 90) {
-      shooterSubsystem.setHood(operatorInput.getDriverController().getLeftTriggerAxis());
-    }
+    //    if (currentPOV == 90) {
+    //      shooterSubsystem.setHood(operatorInput.getDriverController().getLeftTriggerAxis());
+    //    }
+    double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
+
+    shooterSubsystem.setHood(Math.abs(joystick));
 
     lastPov = currentPOV;
 

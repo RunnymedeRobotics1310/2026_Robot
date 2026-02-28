@@ -10,11 +10,11 @@ import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
+import frc.robot.commands.shooter.LazyShooterCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.ShooterCommand;
-import frc.robot.commands.shooter.ShooterUnstuckyCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -26,6 +26,8 @@ public class OperatorInput extends SubsystemBase {
 
   private final GameController driverController =
       new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
+//  private final GameController operatorController =
+//      new GameController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
   private final ShooterSubsystem shooter;
@@ -56,26 +58,48 @@ public class OperatorInput extends SubsystemBase {
       LimelightVisionSubsystem vision) {
 
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooter, intake));
 
-//    new Trigger(this::getShooterActive)
-//        .whileTrue(new ShooterCommand(shooter, swerve));
+    /* DRIVER CONTROLS */
 
-    new Trigger(this::getUnstuckShooter)
-            .whileTrue(new ShooterUnstuckyCommand(shooter));
+    // Shoot from anywhere
+    new Trigger(this::shootFromAnywhere)
+        .whileTrue(new ShooterCommand(shooter, swerve));
+
+    // Auto align to climb
+//    new Trigger(driverController::getAButton)
+//            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+
+    // not included here:
+    //   intake - left trigger
+    //   drive
+
+    /* OPERATOR CONTROLS */
+
+    // Shoot from set range - ends when button is released, or after 100 seconds
+    new Trigger(this::isCloseShoot)
+            .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
+
+    // tune shooter - for now
+
+    // not included here:
+    //   manual climb
+    //   reverse kicker
+    //   reverse intake
+    //   stop shooter
+    //   tune shooter controls
+    //     ...
+
 
     new Trigger(driverController::getXButton)
-        .onTrue(new TuneShooterCommand(shooter, this, swerve));
+        .onTrue(new TuneShooterCommand(shooter, this, swerve, intake));
 
-//    new Trigger(driverController::getAButton)
-//        .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
-    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooter, intake));
   }
 
   public boolean isCancel() {
     return (driverController.getStartButton() && !driverController.getBackButton());
   }
-
   public boolean isZeroGyro() {
     return driverController.getBackButton();
   }
@@ -84,16 +108,12 @@ public class OperatorInput extends SubsystemBase {
     return false;
   }
 
-  public boolean getShooterActive() {
+  public boolean shootFromAnywhere() {
     return driverController.getRightTriggerAxis() > 0.5;
   }
 
-  public boolean getUnstuckShooter() {
-    return driverController.getLeftTriggerAxis() > 0.5;
-  }
-
   public boolean getFaceHub() {
-    return getShooterActive();
+    return shootFromAnywhere();
   }
 
   public boolean isFastMode() {
@@ -105,6 +125,11 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isIntakeDoingStuff(){ return driverController.getLeftTriggerAxis()>0.5;}
+
+  public boolean isCloseShoot() {
+    return false;
+    //return operatorController.getRightTriggerAxis() > 0.5;
+  }
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
       return switch (stick) {
