@@ -78,7 +78,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setRollers(boolean roll) {
     if (roll) {
-      setRollerSpeeds(INTAKE_SPEED, -INTAKE_SPEED);
+      setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
     }
   }
 
