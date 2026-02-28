@@ -73,7 +73,13 @@ public class OperatorInput extends SubsystemBase {
     // not included here:
     //   intake - left trigger
     //   drive
-    //     ...
+    //     both joysticks - move
+    //     both bumpers - fast/slow
+    //   tune shooter controls
+    //     POV up/down - adjust shooter speed
+    //     POV left - enable kicker
+    //     POV right - enable hood adjust
+    //     rightY - set hood angle
 
 
     /* OPERATOR CONTROLS */
@@ -82,15 +88,11 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::isCloseShoot)
             .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
 
-    // tune shooter - for now
-
     // not included here:
     //   manual climb
     //   reverse kicker
     //   reverse intake
     //   stop shooter
-    //   tune shooter controls
-    //     ...
 
 
     new Trigger(driverController::getXButton)
