@@ -51,6 +51,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 0;
     public static final double CONTROLLER_DEADBAND = .2;
 
     public static final double GENERAL_SPEED_FACTOR = .5;
