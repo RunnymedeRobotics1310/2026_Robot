@@ -41,6 +41,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     } else {
       doorStop();
+      ravenTimer.stop();
+      ravenTimer.reset();
     }
   }
 
@@ -56,6 +58,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setDoorState(boolean extended) {
     if (doorState != extended) {
       doorState = extended;
+      ravenTimer.reset();
+      ravenTimer.start();
     }
   }
 
