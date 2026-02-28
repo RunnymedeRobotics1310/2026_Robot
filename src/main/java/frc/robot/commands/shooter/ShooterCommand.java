@@ -12,6 +12,7 @@ import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
 import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_FAR;
 import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
@@ -102,7 +103,7 @@ public class ShooterCommand extends LoggingCommand {
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
 
     if (timer.hasElapsed(1.75)) {
-      shooterSubsystem.setKickerSpeed(-0.7);
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     }
     if (timer.hasElapsed(2.0)) {
       shooterSubsystem.setKickerSpeed(0.0);
