@@ -49,9 +49,8 @@ public class TuneShooterCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean YButton = operatorInput.getDriverController().getYButton();
+    boolean shoot = operatorInput.getDriverController().getLeftTriggerAxis() > 0.5;
     int currentPOV = operatorInput.getDriverController().getPOV();
-    double distance = swerveSubsystem.distanceToHub();
 
     if (currentPOV == 0 && lastPov == -1) {
       testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
@@ -63,7 +62,7 @@ public class TuneShooterCommand extends LoggingCommand {
       SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
     }
 
-    if (YButton) {
+    if (shoot) {
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
 
     } else if (operatorInput.getDriverController().getBButton()) {
@@ -78,13 +77,10 @@ public class TuneShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(0.0);
     }
 
-    // hood control
-    //    if (currentPOV == 90) {
-    //      shooterSubsystem.setHood(operatorInput.getDriverController().getLeftTriggerAxis());
-    //    }
-    double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
-
-    shooterSubsystem.setHood(Math.abs(joystick));
+    if (currentPOV == 90) {
+      double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
+      shooterSubsystem.setHood(Math.abs(joystick));
+    }
 
     lastPov = currentPOV;
   }

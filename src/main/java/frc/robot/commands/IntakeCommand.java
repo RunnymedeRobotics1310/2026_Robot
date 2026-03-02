@@ -3,6 +3,8 @@ package frc.robot.commands;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+
 public class IntakeCommand extends LoggingCommand{
 
     private final IntakeSubsystem intakeSubsystem;
@@ -30,7 +32,6 @@ public class IntakeCommand extends LoggingCommand{
         //only when you press a button
         final boolean intakeCheck = oi.isIntakeDoingStuff();
 
-
         if(intakeCheck) {
             intakeSubsystem.setRollers(true);
             intakeSubsystem.setDoorState(true);
@@ -40,8 +41,9 @@ public class IntakeCommand extends LoggingCommand{
             intakeSubsystem.setDoorState(false);
         }
 
-        //TODO: fixme: add a reverse rollers button
-        // just run the rollers in reverse
+        if (oi.isReverseIntake()) {
+          intakeSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+        }
     }
 
     // Returns true when the command should end.

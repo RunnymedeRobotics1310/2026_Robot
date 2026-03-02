@@ -26,8 +26,8 @@ public class OperatorInput extends SubsystemBase {
 
   private final GameController driverController =
       new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
-//  private final GameController operatorController =
-//      new GameController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+  private final GameController operatorController =
+      new GameController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
   private final ShooterSubsystem shooter;
@@ -67,12 +67,20 @@ public class OperatorInput extends SubsystemBase {
         .whileTrue(new ShooterCommand(shooter, swerve));
 
     // Auto align to climb
-//    new Trigger(driverController::getAButton)
-//            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+    new Trigger(driverController::getAButton)
+            .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
     // not included here:
     //   intake - left trigger
     //   drive
+    //     both joysticks - move
+    //     both bumpers - fast/slow
+    //   tune shooter controls
+    //     POV up/down - adjust shooter speed
+    //     POV left - enable kicker
+    //     POV right - enable hood adjust
+    //     rightY - set hood angle
+
 
     /* OPERATOR CONTROLS */
 
@@ -80,15 +88,11 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::isCloseShoot)
             .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
 
-    // tune shooter - for now
-
     // not included here:
     //   manual climb
     //   reverse kicker
     //   reverse intake
     //   stop shooter
-    //   tune shooter controls
-    //     ...
 
 
     new Trigger(driverController::getXButton)
@@ -107,28 +111,32 @@ public class OperatorInput extends SubsystemBase {
   public boolean getRotate180Val() {
     return false;
   }
-
-  public boolean shootFromAnywhere() {
-    return driverController.getRightTriggerAxis() > 0.5;
-  }
-
-  public boolean getFaceHub() {
-    return shootFromAnywhere();
-  }
-
   public boolean isFastMode() {
     return driverController.getRightBumperButton();
   }
-
   public boolean isSlowMode() {
     return driverController.getLeftBumperButton();
   }
 
+  public boolean shootFromAnywhere() {
+    return driverController.getRightTriggerAxis() > 0.5;
+  }
+  public boolean getFaceHub() {
+    return shootFromAnywhere();
+  }
   public boolean isIntakeDoingStuff(){ return driverController.getLeftTriggerAxis()>0.5;}
 
   public boolean isCloseShoot() {
-    return false;
-    //return operatorController.getRightTriggerAxis() > 0.5;
+    return operatorController.getRightTriggerAxis() > 0.5;
+  }
+  public boolean isStopFlywheel() {
+    return operatorController.getYButton();
+  }
+  public boolean isReverseKicker() {
+    return operatorController.getBButton();
+  }
+  public boolean isReverseIntake() {
+    return operatorController.getAButton();
   }
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
