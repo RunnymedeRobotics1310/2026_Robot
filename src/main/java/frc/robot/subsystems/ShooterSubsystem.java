@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ShooterConstants.AGITATOR_PWM_PORT;
 import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
 import static frc.robot.Constants.ShooterConstants.KFF;
 import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_PWM_PORT;
@@ -25,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase {
       SparkFlex.MotorType.kBrushless);
   private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
+  private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
 
   private double targetShooterVelocity;
 
@@ -60,6 +62,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public void setKickerSpeed(double speed) {
     kickerMotor.set(speed);
     Telemetry.shooter.kickerSpeed = speed;
+  }
+
+  public void setAgitatorSpeed(double speed) {
+    agitatorMotor.set(speed);
+    Telemetry.shooter.agitatorSpeed = speed;
   }
 
   /**

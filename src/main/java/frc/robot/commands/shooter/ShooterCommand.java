@@ -1,8 +1,10 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.FAR_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.FAR_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_value;
@@ -12,7 +14,6 @@ import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
 import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_FAR;
 import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
@@ -104,9 +105,12 @@ public class ShooterCommand extends LoggingCommand {
 
     if (timer.hasElapsed(1.75)) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+
     }
     if (timer.hasElapsed(2.0)) {
       shooterSubsystem.setKickerSpeed(0.0);
+      shooterSubsystem.setAgitatorSpeed(0.0);
       timer.reset();
       timer.stop();
     }

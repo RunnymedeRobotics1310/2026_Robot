@@ -17,6 +17,7 @@ public class ShooterTelemetry {
   public double currentShooterRPM;
   public double kickerSpeed;
   public double hoodAngle;
+  public double agitatorSpeed;
 
   void post() {
 
