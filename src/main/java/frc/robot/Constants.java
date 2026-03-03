@@ -99,7 +99,7 @@ public final class Constants {
     public static final int HOOD_PWM_PORT = 4;
     public static final int AGITATOR_PWM_PORT = 5;
 
-    public static final double MAX_SHOOTER_RPM = 6200;
+    public static final double MAX_SHOOTER_RPM = 4650; // 6200 * 18/24
     public static final double KP = 0.00005;
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
