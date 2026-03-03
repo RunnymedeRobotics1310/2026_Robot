@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.IntakeConstants.*;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final Timer ravenTimer = new Timer();
   private boolean doorState = false;
 
-  private final DigitalInput beamBreak = new DigitalInput(-1);
+//  private final DigitalInput beamBreak = new DigitalInput(-1);
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {}
@@ -81,7 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isBeamBroken() {
-      return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
+//      return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
+      return false;
   }
 
   public void rollerStop() {

@@ -99,7 +99,7 @@ public final class Constants {
     public static final double KP = 0.00005;
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
-    public static final double AGITATOR_RUNSPEED = 0.2;
+    public static final double AGITATOR_RUNSPEED = 1;
 
     public static final double SLOPE_VALUE_FAR = 487.97; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_FAR = 2216.94;
@@ -283,7 +283,7 @@ public final class Constants {
     public static final int BOTTOM_ROLLER_PWM_PORT = 1;
 
     public static final int INTAKE_SPEED = -1;
-    public static final double DOOR_SPEED = 0.05;
+    public static final double DOOR_SPEED = -0.25;
     public static final double DOOR_MOVE_TIME = 10 / 9.9899898999899;
   }
 }
