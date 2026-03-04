@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final Timer ravenTimer = new Timer();
   private boolean doorState = false;
 
-//  private final DigitalInput beamBreak = new DigitalInput(-1);
+  //  private final DigitalInput beamBreak = new DigitalInput(-1);
 
   /** Creates a new IntakeSubsystem. */
   public IntakeSubsystem() {}
@@ -30,16 +30,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     if (!ravenTimer.hasElapsed(DOOR_MOVE_TIME)) {
 
-      if (doorState) {
-        setDoorToExtended();
-      } else {
-        setDoorToRetracted();
-      }
+      //      if (doorState) {
+      //        setDoorToExtended();
+      //      } else {
+      //        setDoorToRetracted();
+      //      }
 
     } else {
-      doorStop();
-      ravenTimer.stop();
-      ravenTimer.reset();
+      //      doorStop();
+      //      ravenTimer.stop();
+      //      ravenTimer.reset();
     }
   }
 
@@ -80,8 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isBeamBroken() {
-//      return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
-      return false;
+    //      return !beamBreak.get(); // Assuming the sensor returns false when the beam is broken
+    return false;
   }
 
   public void rollerStop() {

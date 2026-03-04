@@ -10,17 +10,16 @@ import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
-import frc.robot.commands.shooter.LazyShooterCommand;
-import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
-import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.shooter.LazyShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
+import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -63,12 +62,13 @@ public class OperatorInput extends SubsystemBase {
     /* DRIVER CONTROLS */
 
     // Shoot from anywhere
-    new Trigger(this::shootFromAnywhere)
-        .whileTrue(new ShooterCommand(shooter, swerve));
+    //    new Trigger(this::shootFromAnywhere)
+    //        .whileTrue(new ShooterCommand(shooter, swerve));
+    new Trigger(this::shootFromAnywhere).whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
 
     // Auto align to climb
     new Trigger(driverController::getAButton)
-            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+        .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
     // not included here:
     //   intake - left trigger
@@ -81,12 +81,11 @@ public class OperatorInput extends SubsystemBase {
     //     POV right - enable hood adjust
     //     rightY - set hood angle
 
-
     /* OPERATOR CONTROLS */
 
     // Shoot from set range - ends when button is released, or after 100 seconds
-    new Trigger(this::isCloseShoot)
-            .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
+    //    new Trigger(this::isCloseShoot)
+    //            .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
 
     // not included here:
     //   manual climb
@@ -94,16 +93,14 @@ public class OperatorInput extends SubsystemBase {
     //   reverse intake
     //   stop shooter
 
-
     new Trigger(driverController::getXButton)
         .onTrue(new TuneShooterCommand(shooter, this, swerve, intake));
-
-
   }
 
   public boolean isCancel() {
     return (driverController.getStartButton() && !driverController.getBackButton());
   }
+
   public boolean isZeroGyro() {
     return driverController.getBackButton();
   }
@@ -111,9 +108,11 @@ public class OperatorInput extends SubsystemBase {
   public boolean getRotate180Val() {
     return false;
   }
+
   public boolean isFastMode() {
     return driverController.getRightBumperButton();
   }
+
   public boolean isSlowMode() {
     return driverController.getLeftBumperButton();
   }
@@ -121,36 +120,44 @@ public class OperatorInput extends SubsystemBase {
   public boolean shootFromAnywhere() {
     return driverController.getRightTriggerAxis() > 0.5;
   }
+
   public boolean getFaceHub() {
-    return shootFromAnywhere();
+    return shootFromAnywhere() || false;
   }
-  public boolean isIntakeDoingStuff(){ return driverController.getLeftTriggerAxis()>0.5;}
+
+  public boolean isIntakeDoingStuff() {
+    return driverController.getLeftTriggerAxis() > 0.5;
+  }
 
   public boolean isCloseShoot() {
     return operatorController.getRightTriggerAxis() > 0.5;
   }
+
   public boolean isStopFlywheel() {
     return operatorController.getYButton();
   }
+
   public boolean isReverseKicker() {
     return operatorController.getBButton();
   }
+
   public boolean isReverseIntake() {
     return operatorController.getAButton();
   }
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
-      return switch (stick) {
-          case LEFT -> switch (axis) {
-              case X -> driverController.getLeftX();
-              case Y -> driverController.getLeftY();
+    return switch (stick) {
+      case LEFT ->
+          switch (axis) {
+            case X -> driverController.getLeftX();
+            case Y -> driverController.getLeftY();
           };
-          case RIGHT -> switch (axis) {
-              case X -> driverController.getRightX();
-              case Y -> driverController.getRightY();
+      case RIGHT ->
+          switch (axis) {
+            case X -> driverController.getRightX();
+            case Y -> driverController.getRightY();
           };
-      };
-
+    };
   }
 
   public enum Stick {
