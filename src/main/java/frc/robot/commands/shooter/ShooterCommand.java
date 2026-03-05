@@ -7,13 +7,17 @@ import static frc.robot.Constants.ShooterConstants.FAR_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_value;
+import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_FAR;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
+import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
+import static frc.robot.Constants.ShooterConstants.SUPEPR_FAR_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_FAR;
 import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
+import static frc.robot.Constants.ShooterConstants.Y_INT_SUPER_FAR;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
@@ -76,10 +80,11 @@ public class ShooterCommand extends LoggingCommand {
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
     if (distanceMeters < MAX_SHOOTING_DISTANCE) {
-      if (distanceMeters > FAR_SHOOTING_DISTANCE) {
+      if (distanceMeters >= SUPEPR_FAR_SHOOTING_DISTANCE) {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
+      } else if (distanceMeters >= FAR_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_FAR) + Y_INT_FAR;
-        // log("Target speed: " + shooterSpeed);
-      } else if (distanceMeters > MEDIUM_SHOOTING_DISTANCE) {
+      } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
       } else {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_CLOSE) + Y_INT_CLOSE;
@@ -92,12 +97,16 @@ public class ShooterCommand extends LoggingCommand {
     double shooterSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(shooterSpeed);
 
-    if (swerveSubsystem.distanceToHub() > FAR_SHOOTING_DISTANCE) {
-      shooterSubsystem.setHood(FAR_SHOOT_HOOD_VALUE);
-    } else if (swerveSubsystem.distanceToHub() > MEDIUM_SHOOTING_DISTANCE) {
-      shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_value);
-    } else {
-      shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
+    if (swerveSubsystem.distanceToHub() < MAX_SHOOTING_DISTANCE) {
+      if (swerveSubsystem.distanceToHub() >= SUPEPR_FAR_SHOOTING_DISTANCE) {
+        shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
+      } else if (swerveSubsystem.distanceToHub() >= FAR_SHOOTING_DISTANCE) {
+        shooterSubsystem.setHood(FAR_SHOOT_HOOD_VALUE);
+      } else if (swerveSubsystem.distanceToHub() >= MEDIUM_SHOOTING_DISTANCE) {
+        shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
+      } else {
+        shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
+      }
     }
 
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
@@ -106,11 +115,11 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     }
-    //    if (timer.hasElapsed(2.0)) {
-    //      shooterSubsystem.setKickerSpeed(0.0);
-    //      shooterSubsystem.setAgitatorSpeed(0.0);
-    //      timer.reset();
-    //      timer.stop();
-    //    }
+    // if (timer.hasElapsed(2.0)) {
+    // shooterSubsystem.setKickerSpeed(0.0);
+    // shooterSubsystem.setAgitatorSpeed(0.0);
+    // timer.reset();
+    // timer.stop();
+    // }
   }
 }
