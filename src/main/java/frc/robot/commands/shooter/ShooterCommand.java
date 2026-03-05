@@ -1,5 +1,6 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
@@ -103,7 +104,7 @@ public class ShooterCommand extends LoggingCommand {
 
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
 
-    if (timer.hasElapsed(1.45)) {
+    if (Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < ACCPETED_SHOOTER_ERROR) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     }
