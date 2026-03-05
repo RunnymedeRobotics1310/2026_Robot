@@ -10,7 +10,7 @@ import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
-import static frc.robot.Constants.ShooterConstants.SUPEPR_FAR_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
@@ -47,7 +47,6 @@ public class ShooterCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     timer.reset();
-    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -77,7 +76,7 @@ public class ShooterCommand extends LoggingCommand {
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
     if (distanceMeters < MAX_SHOOTING_DISTANCE) {
-      if (distanceMeters >= SUPEPR_FAR_SHOOTING_DISTANCE) {
+      if (distanceMeters >= SUPER_FAR_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
       } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
@@ -90,25 +89,33 @@ public class ShooterCommand extends LoggingCommand {
 
   public void shooting(double distance) {
     double shooterSpeed = calculateShootingSpeed(distance);
-    shooterSubsystem.setShooterVelocity(shooterSpeed);
+    shooterSubsystem.setShooterVelocity(shooterSpeed + 80.0);
+    double currentVelocity = shooterSubsystem.getShooterVelocity();
+    boolean atSpeed = Math.abs(currentVelocity - shooterSpeed) < ACCPETED_SHOOTER_ERROR;
 
-    if (swerveSubsystem.distanceToHub() < MAX_SHOOTING_DISTANCE) {
-      if (swerveSubsystem.distanceToHub() >= SUPEPR_FAR_SHOOTING_DISTANCE) {
+    if (distance < MAX_SHOOTING_DISTANCE) {
+      if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
-      } else if (swerveSubsystem.distanceToHub() >= MEDIUM_SHOOTING_DISTANCE) {
+      } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
+
       } else {
         shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
       }
     }
-    if (Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) > ACCPETED_SHOOTER_ERROR) {
+
+    if (atSpeed) {
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
-    }
-    if (!timer.hasElapsed(1.0) && timer.get() > 0) {
+      timer.start();
+    } else if (timer.get() < 1.0 && timer.get() > 0.05) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
+      timer.stop();
+      timer.reset();
     }
+
     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }

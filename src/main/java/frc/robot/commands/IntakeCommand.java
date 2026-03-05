@@ -48,7 +48,7 @@ public class IntakeCommand extends LoggingCommand {
 
     if (intakeCheck) {
       intakeSubsystem.setRollerSpeeds(-1, -0.8);
-      intakeSubsystem.setDoorSetpoint(25);
+      intakeSubsystem.setDoorSetpoint(30);
       //      shooter.setAgitatorSpeed(Constants.ShooterConstants.AGITATOR_RUNSPEED);
     } else {
       intakeSubsystem.setRollerSpeeds(0, 0);

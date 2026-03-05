@@ -100,16 +100,16 @@ public final class Constants {
     public static final int HOOD_PWM_PORT = 4;
     public static final int AGITATOR_PWM_PORT = 5;
 
-    public static final double MAX_SHOOTER_RPM = 6400;
-    public static final double KP = 0.00005;
+    public static final double MAX_SHOOTER_RPM = 6000;
+    public static final double KP = 0.0003;
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -0.6;
-    public static final double ACCPETED_SHOOTER_ERROR = 100.0;
+    public static final double ACCPETED_SHOOTER_ERROR = 65.0;
 
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_SUPER_FAR = 2867.33;
-    public static final double SUPEPR_FAR_SHOOTING_DISTANCE = 3.5;
+    public static final double SUPER_FAR_SHOOTING_DISTANCE = 3.5;
     public static final double SUPER_FAR_SHOOT_HOOD_VALUE = 0.6;
 
     public static final double SLOPE_VALUE_MID = 570.14;
