@@ -63,8 +63,7 @@ public class OperatorInput extends SubsystemBase {
     /* DRIVER CONTROLS */
 
     // Shoot from anywhere
-        new Trigger(this::shootFromAnywhere)
-            .whileTrue(new ShooterCommand(shooter, swerve));
+    new Trigger(this::shootFromAnywhere).whileTrue(new ShooterCommand(shooter, swerve));
 
     // Auto align to climb
     new Trigger(driverController::getAButton)
@@ -190,6 +189,7 @@ public class OperatorInput extends SubsystemBase {
         "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
+    autoPatternChooser.addOption("Shoot Center", Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -220,7 +220,7 @@ public class OperatorInput extends SubsystemBase {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
-      case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, delay);
+      case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
 
       default -> new InstantCommand();
     };
