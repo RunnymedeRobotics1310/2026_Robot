@@ -1,20 +1,18 @@
 package frc.robot.commands.swerve;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAME;
+
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
-import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAME;
-
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = -8;
-  private static final int RIGHT_TOWER_TX_OFFSET = 29;
+  private static final int LEFT_TOWER_TX_OFFSET = -13; // robot left
+  private static final int RIGHT_TOWER_TX_OFFSET = 23; // robot right
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
@@ -65,8 +63,8 @@ public class DriveToTowerCommand extends LoggingCommand {
 
       double omega = swerve.computeOmega(theta);
       // if more than 5º off, don't drive, just rotate
-      double normalYaw = (swerve.getYaw()+360)%360;
-      if (Math.abs(normalYaw-theta) > 5) {
+      double normalYaw = (swerve.getYaw() + 360) % 360;
+      if (Math.abs(normalYaw - theta) > 5) {
         swerve.driveRobotOriented(0, 0, omega);
       } else {
         swerve.driveRobotOriented(0, -0.7, omega);
@@ -78,18 +76,13 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double vX; // forward/backward speed
     final double vY; // left/right speed
     if (Math.abs(tX + tXOffset) > 10) {
-      // if offset is big, don't go forwards, unless ur far away
-      //      if (Math.abs(tA) < 0.5 ) { // Untested 1!!!1!1!!!11!!1
-//      vX = 0.4;
-      // } else {
-        vX = 0;
-      // }
+      vX = 0;
     } else {
       vX = 0.2;
     }
 
     // align to tag
-    vY = -0.055 * (tX + tXOffset);
+    vY = -0.065 * (tX + tXOffset);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
@@ -106,10 +99,10 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
-//      log("TY: " + tY);
-      return tY > 12; // tY when aligned is 6.7ish
-//      return false;
-      // will eventually end based on a sensor in the climb
+    log("TY: " + tY);
+    return tY < -12; // tY when aligned is 6.7ish
+    //      return false;
+    // will eventually end based on a sensor in the climb
   }
 
   @Override
