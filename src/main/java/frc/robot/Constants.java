@@ -95,7 +95,7 @@ public final class Constants {
     public static final int HOOD_PWM_PORT = 4;
     public static final int AGITATOR_PWM_PORT = 5;
 
-    public static final double MAX_SHOOTER_RPM = 4650; // 6200 * 18/24
+    public static final double MAX_SHOOTER_RPM = 6400;
     public static final double KP = 0.00005;
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
@@ -103,13 +103,13 @@ public final class Constants {
 
     public static final double SLOPE_VALUE_FAR = 487.97; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_FAR = 2216.94;
-    public static final double FAR_SHOOTING_DISTANCE = 2.2;
-    public static final double FAR_SHOOT_HOOD_VALUE = 1.0;
+    public static final double FAR_SHOOTING_DISTANCE = 3.0;
+    public static final double FAR_SHOOT_HOOD_VALUE = 0.8;
 
     public static final double SLOPE_VALUE_MID = 487.97;
     public static final double Y_INT_MID = 2216.94;
     public static final double MEDIUM_SHOOTING_DISTANCE = 1.5;
-    public static final double MEDIUM_SHOOT_HOOD_value = 0.6;
+    public static final double MEDIUM_SHOOT_HOOD_value = 0.35;
 
     public static final double SLOPE_VALUE_CLOSE = 318.1;
     public static final double Y_INT_CLOSE = 2571.9;
@@ -278,12 +278,14 @@ public final class Constants {
 
   public static final class IntakeConstants {
 
-    public static final int DOOR_PWM_PORT = 2;
+    public static final int DOOR_CAN_ID = 41;
     public static final int TOP_ROLLER_PWM_PORT = 3;
     public static final int BOTTOM_ROLLER_PWM_PORT = 1;
+    public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 
     public static final int INTAKE_SPEED = -1;
-    public static final double DOOR_SPEED = -0.4;
-    public static final double DOOR_MOVE_TIME = 10 / 9.9899898999899;
+    public static final double DOOR_SPEED = -0.048;
+    public static final double DOOR_KP = 0.01;
+    public static final double DOOR_ENCODERS_TO_DEGREES = 360 / 90;
   }
 }

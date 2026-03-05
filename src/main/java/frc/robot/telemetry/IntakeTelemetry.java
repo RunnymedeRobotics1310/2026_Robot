@@ -1,10 +1,9 @@
 package frc.robot.telemetry;
 
+import static frc.robot.RunnymedeUtils.round;
 import static frc.robot.telemetry.Telemetry.PREFIX;
 
-import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RunnymedeUtils;
 
 /**
  * @author Tony Field
@@ -20,8 +19,14 @@ public class IntakeTelemetry {
   /** the bottom intake roller speed */
   public double bottomRollerSpeed = Double.MIN_VALUE;
 
-  /** Whether the arm is extended or not */
-  public boolean isArmExtended = false;
+  /** Whether the door is at the lower limit or not */
+  public boolean isDoorClosed = false;
+
+  /** The current angle of the door in degrees */
+  public double doorSetpoint = 0;
+
+  /** The current angle of the door in degrees */
+  public double doorAngle = 0;
 
   /** Whether the hopper is full or not */
   public boolean isHopperFull = false;
@@ -29,9 +34,11 @@ public class IntakeTelemetry {
   void post() {
 
     if (enabled) {
-      SmartDashboard.putNumber(PREFIX + "Intake/TopRollerSpeed", RunnymedeUtils.round(topRollerSpeed));
-      SmartDashboard.putNumber(PREFIX + "Intake/BottomRollerSpeed", RunnymedeUtils.round(bottomRollerSpeed));
-      SmartDashboard.putBoolean(PREFIX + "Intake/ArmExtended", isArmExtended);
+      SmartDashboard.putNumber(PREFIX + "Intake/TopRollerSpeed", round(topRollerSpeed));
+      SmartDashboard.putNumber(PREFIX + "Intake/BottomRollerSpeed", round(bottomRollerSpeed));
+      SmartDashboard.putBoolean(PREFIX + "Intake/DoorLowerLimit", isDoorClosed);
+      SmartDashboard.putNumber(PREFIX + "Intake/DoorSetpoint", doorSetpoint);
+      SmartDashboard.putNumber(PREFIX + "Intake/DoorAngle", round(doorAngle));
       SmartDashboard.putBoolean(PREFIX + "Intake/HopperFull", isHopperFull);
     }
   }

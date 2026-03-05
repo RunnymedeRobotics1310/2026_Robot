@@ -1,17 +1,20 @@
 package frc.robot.commands;
 
-
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class IntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
+  private final ShooterSubsystem shooter;
   private final OperatorInput oi;
 
-  public IntakeCommand(IntakeSubsystem intake, OperatorInput operatorInput) {
+  public IntakeCommand(
+      IntakeSubsystem intake, ShooterSubsystem shooter, OperatorInput operatorInput) {
     super();
     intakeSubsystem = intake;
+    this.shooter = shooter;
     addRequirements(intake);
     oi = operatorInput;
   }
@@ -44,10 +47,13 @@ public class IntakeCommand extends LoggingCommand {
     //        }
 
     if (intakeCheck) {
-      intakeSubsystem.setRollers(true);
-//      intakeSubsystem.setDoorSpeed(DOOR_SPEED);
+      intakeSubsystem.setRollerSpeeds(-1, -0.8);
+      intakeSubsystem.setDoorSetpoint(25);
+      //      shooter.setAgitatorSpeed(Constants.ShooterConstants.AGITATOR_RUNSPEED);
     } else {
-      intakeSubsystem.stop();
+      intakeSubsystem.setRollerSpeeds(0, 0);
+      intakeSubsystem.setDoorSetpoint(0);
+      shooter.stop();
     }
   }
 

@@ -61,7 +61,6 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public boolean isFinished() {
     return false;
-
   }
 
   // Called once the command ends or is interrupted.
@@ -103,16 +102,15 @@ public class ShooterCommand extends LoggingCommand {
 
     // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
 
-    if (timer.hasElapsed(1.75)) {
+    if (timer.hasElapsed(1.45)) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
-
     }
-    if (timer.hasElapsed(2.0)) {
-      shooterSubsystem.setKickerSpeed(0.0);
-      shooterSubsystem.setAgitatorSpeed(0.0);
-      timer.reset();
-      timer.stop();
-    }
+    //    if (timer.hasElapsed(2.0)) {
+    //      shooterSubsystem.setKickerSpeed(0.0);
+    //      shooterSubsystem.setAgitatorSpeed(0.0);
+    //      timer.reset();
+    //      timer.stop();
+    //    }
   }
 }

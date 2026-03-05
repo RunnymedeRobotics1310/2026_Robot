@@ -12,7 +12,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
-
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -87,6 +86,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stop() {
     primaryShooterMotor.stopMotor();
     kickerMotor.stopMotor();
+    agitatorMotor.stopMotor();
   }
 
 }

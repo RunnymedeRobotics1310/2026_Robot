@@ -12,7 +12,7 @@ import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
-import frc.robot.commands.shooter.LazyShooterCommand;
+import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
@@ -62,9 +62,8 @@ public class OperatorInput extends SubsystemBase {
     /* DRIVER CONTROLS */
 
     // Shoot from anywhere
-    //    new Trigger(this::shootFromAnywhere)
-    //        .whileTrue(new ShooterCommand(shooter, swerve));
-    new Trigger(this::shootFromAnywhere).whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
+        new Trigger(this::shootFromAnywhere)
+            .whileTrue(new ShooterCommand(shooter, swerve));
 
     // Auto align to climb
     new Trigger(driverController::getAButton)
@@ -122,7 +121,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean getFaceHub() {
-    return shootFromAnywhere() || false;
+    return shootFromAnywhere();
   }
 
   public boolean isIntakeDoingStuff() {
