@@ -118,7 +118,7 @@ public final class Constants {
     public static final double MEDIUM_SHOOT_HOOD_VALUE = 0.35;
 
     public static final double SLOPE_VALUE_CLOSE = 733.5;
-    public static final double Y_INT_CLOSE = 3082.2;
+    public static final double Y_INT_CLOSE = 2882.2;
     public static final double CLOSE_SHOOT_HOOD_VALUE = 0.0;
 
     public static final double MAX_SHOOTING_DISTANCE = 10.0;

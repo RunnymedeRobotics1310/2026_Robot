@@ -101,18 +101,14 @@ public class ShooterCommand extends LoggingCommand {
         shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
       }
     }
-
-    // Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < 10
-
-    if (Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) < ACCPETED_SHOOTER_ERROR) {
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    if (Math.abs(shooterSubsystem.getShooterVelocity() - shooterSpeed) > ACCPETED_SHOOTER_ERROR) {
+      timer.reset();
     }
-    // if (timer.hasElapsed(2.0)) {
-    // shooterSubsystem.setKickerSpeed(0.0);
-    // shooterSubsystem.setAgitatorSpeed(0.0);
-    // timer.reset();
-    // timer.stop();
-    // }
+    if (!timer.hasElapsed(1.0) && timer.get() > 0) {
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    } else {
+      shooterSubsystem.setKickerSpeed(0);
+    }
+    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
