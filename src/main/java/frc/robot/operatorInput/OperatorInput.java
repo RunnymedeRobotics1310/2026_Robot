@@ -11,6 +11,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.ExitZoneAutoCommand;
 import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
+import frc.robot.commands.auto.ShootCenterAutoCommand;
 import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.shooter.LazyShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
@@ -220,6 +221,7 @@ public class OperatorInput extends SubsystemBase {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
+      case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, delay);
 
       default -> new InstantCommand();
     };
