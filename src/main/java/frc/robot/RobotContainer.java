@@ -18,12 +18,9 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -34,10 +31,10 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   private final OperatorInput operatorInput =
-          new OperatorInput(swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
+      new OperatorInput(swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -49,15 +46,13 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    intakeSubsystem.setDefaultCommand(new IntakeCommand(intakeSubsystem, operatorInput));
+    intakeSubsystem.setDefaultCommand(
+        new IntakeCommand(intakeSubsystem, shooterSubsystem, operatorInput));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
     operatorInput.configureButtonBindings(
-        swerveSubsystem,
-        shooterSubsystem,
-        intakeSubsystem,
-        visionSubsystem);
+        swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
     operatorInput.initAutoSelectors();
   }
 
