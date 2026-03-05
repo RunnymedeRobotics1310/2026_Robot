@@ -2,20 +2,16 @@ package frc.robot.commands.shooter;
 
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.FAR_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_FAR;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
 import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
 import static frc.robot.Constants.ShooterConstants.SUPEPR_FAR_SHOOTING_DISTANCE;
 import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
-import static frc.robot.Constants.ShooterConstants.Y_INT_FAR;
 import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
 import static frc.robot.Constants.ShooterConstants.Y_INT_SUPER_FAR;
 
@@ -82,8 +78,6 @@ public class ShooterCommand extends LoggingCommand {
     if (distanceMeters < MAX_SHOOTING_DISTANCE) {
       if (distanceMeters >= SUPEPR_FAR_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
-      } else if (distanceMeters >= FAR_SHOOTING_DISTANCE) {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_FAR) + Y_INT_FAR;
       } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
       } else {
@@ -100,8 +94,6 @@ public class ShooterCommand extends LoggingCommand {
     if (swerveSubsystem.distanceToHub() < MAX_SHOOTING_DISTANCE) {
       if (swerveSubsystem.distanceToHub() >= SUPEPR_FAR_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
-      } else if (swerveSubsystem.distanceToHub() >= FAR_SHOOTING_DISTANCE) {
-        shooterSubsystem.setHood(FAR_SHOOT_HOOD_VALUE);
       } else if (swerveSubsystem.distanceToHub() >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
       } else {
