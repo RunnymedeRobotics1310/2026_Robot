@@ -464,6 +464,13 @@
       onConfigReceived: handleConfigReceived,
       onWriteStatus: handleWriteStatus,
       onFeatureSupportChange: handleFeatureSupportChange,
+      onCommandMetadata: function (metadata) {
+        CP.updateFromRobotMetadata(metadata);
+        CP.createPaletteItems(dom.palette);
+        DD.setupPaletteDrag(dom.palette);
+        renderSequence();
+        renderProperties();
+      },
     });
 
     renderSequence();

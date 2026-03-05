@@ -2,16 +2,11 @@ package frc.robot.commands.auto.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,16 +20,8 @@ public class AutoConfigParser {
     private static final int MAX_TOP_LEVEL_STEPS = 30;
     private static final int MAX_TOTAL_STEPS = 80;
     private static final int MAX_PARALLEL_CHILDREN = 6;
-    private static final double MAX_DRIVE_SPEED_MPS = 5.36;
-    private static final double MAX_DRIVE_DISTANCE_METRES = 20.0;
-    private static final double MAX_STEP_DURATION_SECONDS = 15.0;
-    private static final double MAX_TIMEOUT_SECONDS = 15.0;
-    private static final double MAX_FIELD_COORD_METRES = 20.0;
-    private static final double MAX_HEADING_TOLERANCE_DEGREES = 20.0;
-    private static final double MAX_POSITION_TOLERANCE_METRES = 2.0;
 
     private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(AutoStep.class, new AutoStepDeserializer())
             .setPrettyPrinting()
             .create();
 
@@ -260,8 +247,9 @@ public class AutoConfigParser {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private static String validateStep(
-            AutoStep step,
+            Map<String, Object> step,
             String path,
             boolean allowParallel,
             int[] totalStepCount) {
@@ -272,377 +260,67 @@ public class AutoConfigParser {
         if (totalStepCount[0] > MAX_TOTAL_STEPS) {
             return "too many total steps (max " + MAX_TOTAL_STEPS + ")";
         }
-        if (step.type == null) {
+
+        Object typeObj = step.get("type");
+        if (typeObj == null) {
             return path + ": missing step type";
         }
+        String type = String.valueOf(typeObj);
 
-        switch (step.type) {
-            case drive:
-                if (step.mode == null) {
-                    return path + ": drive.mode is required";
+        // Validate structural types
+        if ("parallel".equals(type)) {
+            if (!allowParallel) {
+                return path + ": nested parallel blocks are not allowed";
+            }
+            Object endConditionObj = step.get("endCondition");
+            if (endConditionObj == null) {
+                return path + ": parallel.endCondition is required";
+            }
+            Object commandsObj = step.get("commands");
+            if (!(commandsObj instanceof List)) {
+                return path + ": parallel.commands must be an array";
+            }
+            List<Map<String, Object>> commands = (List<Map<String, Object>>) commandsObj;
+            if (commands.size() < 2) {
+                return path + ": parallel.commands must contain at least 2 commands";
+            }
+            if (commands.size() > MAX_PARALLEL_CHILDREN) {
+                return path + ": parallel.commands exceeds max " + MAX_PARALLEL_CHILDREN;
+            }
+            String endCondition = String.valueOf(endConditionObj);
+            if ("deadline".equals(endCondition)) {
+                double deadlineIndex = getDouble(step, "deadlineIndex");
+                if (deadlineIndex < 0 || deadlineIndex >= commands.size()) {
+                    return path + ": parallel.deadlineIndex must be between 0 and " + (commands.size() - 1);
                 }
-                if (step.mode == AutoStep.DriveMode.distance) {
-                    if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
-                        return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
-                    }
-                    if (!isFinite(step.direction)) {
-                        return path + ": drive.direction must be finite";
-                    }
-                    if (!isFinite(step.headingDegrees)) {
-                        return path + ": drive.headingDegrees must be finite";
-                    }
-                    if (step.distanceMetres <= 0 || step.distanceMetres > MAX_DRIVE_DISTANCE_METRES) {
-                        return path + ": drive.distanceMetres must be > 0 and <= " + MAX_DRIVE_DISTANCE_METRES;
-                    }
-                    if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
-                        return path + ": drive.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
-                    }
-                } else if (step.mode == AutoStep.DriveMode.time) {
-                    if (!isFinite(step.direction)) {
-                        return path + ": drive.direction must be finite";
-                    }
-                    if (!isFinite(step.headingDegrees)) {
-                        return path + ": drive.headingDegrees must be finite";
-                    }
-                    if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
-                        return path + ": drive.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                    }
-                } else if (step.mode == AutoStep.DriveMode.to_pose) {
-                    if (step.speedMPS <= 0 || step.speedMPS > MAX_DRIVE_SPEED_MPS) {
-                        return path + ": drive.speedMPS must be > 0 and <= " + MAX_DRIVE_SPEED_MPS;
-                    }
-                    if (!isFinite(step.xMetres) || Math.abs(step.xMetres) > MAX_FIELD_COORD_METRES) {
-                        return path + ": drive.xMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
-                    }
-                    if (!isFinite(step.yMetres) || Math.abs(step.yMetres) > MAX_FIELD_COORD_METRES) {
-                        return path + ": drive.yMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
-                    }
-                    if (!isFinite(step.headingDegrees)) {
-                        return path + ": drive.headingDegrees must be finite";
-                    }
-                    if (step.positionToleranceMetres <= 0 || step.positionToleranceMetres > MAX_POSITION_TOLERANCE_METRES) {
-                        return path + ": drive.positionToleranceMetres must be > 0 and <= "
-                                + MAX_POSITION_TOLERANCE_METRES;
-                    }
-                    if (step.headingToleranceDegrees <= 0 || step.headingToleranceDegrees > MAX_HEADING_TOLERANCE_DEGREES) {
-                        return path + ": drive.headingToleranceDegrees must be > 0 and <= "
-                                + MAX_HEADING_TOLERANCE_DEGREES;
-                    }
-                    if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
-                        return path + ": drive.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
-                    }
-                } else if (step.mode == AutoStep.DriveMode.velocity) {
-                    if (step.frame == null) {
-                        return path + ": drive.frame is required in velocity mode";
-                    }
-                    if (!isFinite(step.vxMPS) || Math.abs(step.vxMPS) > MAX_DRIVE_SPEED_MPS) {
-                        return path + ": drive.vxMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
-                    }
-                    if (!isFinite(step.vyMPS) || Math.abs(step.vyMPS) > MAX_DRIVE_SPEED_MPS) {
-                        return path + ": drive.vyMPS must be finite and <= " + MAX_DRIVE_SPEED_MPS + " magnitude";
-                    }
-                    if (!isFinite(step.headingDegrees)) {
-                        return path + ": drive.headingDegrees must be finite";
-                    }
-                    if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
-                        return path + ": drive.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                    }
-                } else {
-                    return path + ": unsupported drive.mode: " + step.mode;
+            }
+            for (int i = 0; i < commands.size(); i++) {
+                String childError = validateStep(
+                        commands.get(i), path + ".commands[" + i + "]", false, totalStepCount);
+                if (childError != null) {
+                    return childError;
                 }
-                return null;
-
-            case set_pose:
-                if (!isFinite(step.xMetres) || Math.abs(step.xMetres) > MAX_FIELD_COORD_METRES) {
-                    return path + ": set_pose.xMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
-                }
-                if (!isFinite(step.yMetres) || Math.abs(step.yMetres) > MAX_FIELD_COORD_METRES) {
-                    return path + ": set_pose.yMetres must be finite and <= " + MAX_FIELD_COORD_METRES + " magnitude";
-                }
-                if (!isFinite(step.headingDegrees)) {
-                    return path + ": set_pose.headingDegrees must be finite";
-                }
-                return null;
-
-            case rotate:
-                if (!isFinite(step.headingDegrees)) {
-                    return path + ": rotate.headingDegrees must be finite";
-                }
-                if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
-                    return path + ": rotate.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
-                }
-                return null;
-
-            case shooter:
-                if (step.action == null) {
-                    return path + ": shooter.action is required";
-                }
-                if (step.action == AutoStep.ShooterAction.off) {
-                    return null;
-                }
-                if (step.rpm <= 0 || step.rpm > 6200) {
-                    return path + ": shooter.rpm must be > 0 and <= 6200";
-                }
-                if (step.hoodPosition < 0 || step.hoodPosition > 1) {
-                    return path + ": shooter.hoodPosition must be between 0 and 1";
-                }
-                if (step.kickerSpeed < -1 || step.kickerSpeed > 1) {
-                    return path + ": shooter.kickerSpeed must be between -1 and 1";
-                }
-                if (step.kickerDelaySeconds < 0 || step.kickerDelaySeconds > MAX_TIMEOUT_SECONDS) {
-                    return path + ": shooter.kickerDelaySeconds must be between 0 and " + MAX_TIMEOUT_SECONDS;
-                }
-                if (step.action == AutoStep.ShooterAction.on_with_duration
-                        && (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS)) {
-                    return path + ": shooter.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                }
-                return null;
-
-            case intake:
-                if (step.intakeAction == null) {
-                    return path + ": intake.action is required";
-                }
-                if (step.intakeAction == AutoStep.IntakeAction.off) {
-                    return null;
-                }
-                if (step.speed < -1 || step.speed > 1 || step.speed == 0) {
-                    return path + ": intake.speed must be between -1 and 1 and not 0";
-                }
-                if (step.intakeAction == AutoStep.IntakeAction.on_with_duration
-                        && (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS)) {
-                    return path + ": intake.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                }
-                return null;
-
-            case delay:
-                if (step.durationSeconds <= 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
-                    return path + ": delay.durationSeconds must be > 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                }
-                return null;
-
-            case parallel:
-                if (!allowParallel) {
-                    return path + ": nested parallel blocks are not allowed";
-                }
-                if (step.endCondition == null) {
-                    return path + ": parallel.endCondition is required";
-                }
-                if (step.commands == null || step.commands.size() < 2) {
-                    return path + ": parallel.commands must contain at least 2 commands";
-                }
-                if (step.commands.size() > MAX_PARALLEL_CHILDREN) {
-                    return path + ": parallel.commands exceeds max " + MAX_PARALLEL_CHILDREN;
-                }
-                if (step.endCondition == AutoStep.ParallelEndCondition.deadline
-                        && (step.deadlineIndex < 0 || step.deadlineIndex >= step.commands.size())) {
-                    return path + ": parallel.deadlineIndex must be between 0 and " + (step.commands.size() - 1);
-                }
-                for (int i = 0; i < step.commands.size(); i++) {
-                    String childError = validateStep(
-                            step.commands.get(i), path + ".commands[" + i + "]", false, totalStepCount);
-                    if (childError != null) {
-                        return childError;
-                    }
-                }
-                return null;
-
-            case face_target:
-                if (step.target == null) {
-                    return path + ": face_target.target is required";
-                }
-                if (step.target == AutoStep.FaceTargetType.point) {
-                    if (!isFinite(step.targetXMetres) || Math.abs(step.targetXMetres) > MAX_FIELD_COORD_METRES) {
-                        return path + ": face_target.targetXMetres must be finite and <= " + MAX_FIELD_COORD_METRES
-                                + " magnitude";
-                    }
-                    if (!isFinite(step.targetYMetres) || Math.abs(step.targetYMetres) > MAX_FIELD_COORD_METRES) {
-                        return path + ": face_target.targetYMetres must be finite and <= " + MAX_FIELD_COORD_METRES
-                                + " magnitude";
-                    }
-                }
-                if (step.headingToleranceDegrees <= 0 || step.headingToleranceDegrees > MAX_HEADING_TOLERANCE_DEGREES) {
-                    return path + ": face_target.headingToleranceDegrees must be > 0 and <= "
-                            + MAX_HEADING_TOLERANCE_DEGREES;
-                }
-                if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
-                    return path + ": face_target.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
-                }
-                return null;
-
-            case vision_approach_tag:
-                if (step.timeoutSeconds <= 0 || step.timeoutSeconds > MAX_TIMEOUT_SECONDS) {
-                    return path + ": vision_approach_tag.timeoutSeconds must be > 0 and <= " + MAX_TIMEOUT_SECONDS;
-                }
-                return null;
-
-            case hold:
-                if (step.durationSeconds < 0 || step.durationSeconds > MAX_STEP_DURATION_SECONDS) {
-                    return path + ": hold.durationSeconds must be >= 0 and <= " + MAX_STEP_DURATION_SECONDS;
-                }
-                return null;
-
-            default:
-                return path + ": unknown step type";
+            }
+            return null;
         }
+
+        if ("delay".equals(type)) {
+            double duration = getDouble(step, "durationSeconds");
+            if (duration <= 0 || duration > 15) {
+                return path + ": delay.durationSeconds must be > 0 and <= 15";
+            }
+            return null;
+        }
+
+        // All other types are validated at command creation time by the registry
+        return null;
     }
 
-    private static boolean isFinite(double value) {
-        return !Double.isNaN(value) && !Double.isInfinite(value);
-    }
-
-    /**
-     * Custom deserializer that handles the intake action field name collision.
-     * In JSON, intake steps use "action" for the intake action, but we store it
-     * as intakeAction in the Java model to avoid collision with shooter's action field.
-     */
-    private static class AutoStepDeserializer implements JsonDeserializer<AutoStep> {
-
-        @Override
-        public AutoStep deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-                throws JsonParseException {
-            JsonObject obj = json.getAsJsonObject();
-            AutoStep step = new AutoStep();
-
-            if (!obj.has("type")) {
-                throw new JsonParseException("Step is missing required field 'type'");
-            }
-            String typeString = obj.get("type").getAsString();
-            // Backward-compatible alias: legacy drive_velocity maps to drive mode=velocity.
-            if ("drive_velocity".equals(typeString)) {
-                step.type = AutoStep.StepType.drive;
-                step.mode = AutoStep.DriveMode.velocity;
-            } else {
-                step.type = parseEnum(
-                        typeString,
-                        AutoStep.StepType.class,
-                        "type");
-            }
-
-            switch (step.type) {
-                case drive:
-                    step.direction = getDouble(obj, "direction");
-                    step.speedMPS = getDouble(obj, "speedMPS");
-                    if (obj.has("mode")) {
-                        step.mode = parseEnum(obj.get("mode").getAsString(), AutoStep.DriveMode.class, "mode");
-                    }
-                    step.distanceMetres = getDouble(obj, "distanceMetres");
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
-                    step.headingDegrees = getDouble(obj, "headingDegrees");
-                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
-                    step.xMetres = getDouble(obj, "xMetres");
-                    step.yMetres = getDouble(obj, "yMetres");
-                    step.positionToleranceMetres = getDouble(obj, "positionToleranceMetres");
-                    step.headingToleranceDegrees = getDouble(obj, "headingToleranceDegrees");
-                    if (obj.has("frame")) {
-                        step.frame = parseEnum(
-                                obj.get("frame").getAsString(),
-                                AutoStep.VelocityFrame.class,
-                                "frame");
-                    }
-                    step.vxMPS = getDouble(obj, "vxMPS");
-                    step.vyMPS = getDouble(obj, "vyMPS");
-                    break;
-
-                case rotate:
-                    step.headingDegrees = getDouble(obj, "headingDegrees");
-                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
-                    break;
-
-                case set_pose:
-                    step.xMetres = getDouble(obj, "xMetres");
-                    step.yMetres = getDouble(obj, "yMetres");
-                    step.headingDegrees = getDouble(obj, "headingDegrees");
-                    break;
-
-                case shooter:
-                    if (obj.has("action")) {
-                        step.action = parseEnum(
-                                obj.get("action").getAsString(),
-                                AutoStep.ShooterAction.class,
-                                "action");
-                    }
-                    step.rpm = getDouble(obj, "rpm");
-                    step.hoodPosition = getDouble(obj, "hoodPosition");
-                    step.kickerSpeed = getDouble(obj, "kickerSpeed");
-                    step.kickerDelaySeconds = getDouble(obj, "kickerDelaySeconds");
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
-                    break;
-
-                case intake:
-                    if (obj.has("action")) {
-                        step.intakeAction = parseEnum(
-                                obj.get("action").getAsString(),
-                                AutoStep.IntakeAction.class,
-                                "action");
-                    }
-                    step.speed = getDouble(obj, "speed");
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
-                    break;
-
-                case delay:
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
-                    break;
-
-                case parallel:
-                    if (obj.has("endCondition")) {
-                        step.endCondition = parseEnum(
-                                obj.get("endCondition").getAsString(),
-                                AutoStep.ParallelEndCondition.class,
-                                "endCondition");
-                    }
-                    step.deadlineIndex = getInt(obj, "deadlineIndex");
-                    if (obj.has("commands")) {
-                        step.commands = new ArrayList<>();
-                        for (JsonElement elem : obj.getAsJsonArray("commands")) {
-                            step.commands.add(context.deserialize(elem, AutoStep.class));
-                        }
-                    }
-                    break;
-
-                case face_target:
-                    if (obj.has("target")) {
-                        step.target = parseEnum(
-                                obj.get("target").getAsString(),
-                                AutoStep.FaceTargetType.class,
-                                "target");
-                    }
-                    step.targetXMetres = getDouble(obj, "targetXMetres");
-                    step.targetYMetres = getDouble(obj, "targetYMetres");
-                    step.headingToleranceDegrees = getDouble(obj, "headingToleranceDegrees");
-                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
-                    break;
-
-                case vision_approach_tag:
-                    step.rightSide = getBoolean(obj, "rightSide");
-                    step.timeoutSeconds = getDouble(obj, "timeoutSeconds");
-                    break;
-
-                case hold:
-                    step.durationSeconds = getDouble(obj, "durationSeconds");
-                    break;
-            }
-
-            return step;
+    private static double getDouble(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        if (val instanceof Number n) {
+            return n.doubleValue();
         }
-
-        private <T extends Enum<T>> T parseEnum(String value, Class<T> enumClass, String fieldName) {
-            try {
-                return Enum.valueOf(enumClass, value);
-            } catch (IllegalArgumentException e) {
-                throw new JsonParseException("Invalid value '" + value + "' for field '" + fieldName + "'");
-            }
-        }
-
-        private double getDouble(JsonObject obj, String field) {
-            return obj.has(field) ? obj.get(field).getAsDouble() : 0;
-        }
-
-        private int getInt(JsonObject obj, String field) {
-            return obj.has(field) ? obj.get(field).getAsInt() : 0;
-        }
-
-        private boolean getBoolean(JsonObject obj, String field) {
-            return obj.has(field) && obj.get(field).getAsBoolean();
-        }
+        return 0;
     }
 }

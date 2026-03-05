@@ -21,6 +21,7 @@ public class AutoConfigNTBridge {
     private final StringArrayPublisher runtimeAutosPub;
     private final StringPublisher bridgeVersionPub;
     private final StringPublisher lastWriteStatusPub;
+    private final StringPublisher commandMetadataPub;
     private final StringSubscriber writeConfigSub;
     private final StringSubscriber deleteConfigSub;
     private final Map<String, StringPublisher> configPublishers = new HashMap<>();
@@ -38,13 +39,18 @@ public class AutoConfigNTBridge {
         runtimeAutosPub = table.getStringArrayTopic("runtimeAutos").publish();
         bridgeVersionPub = table.getStringTopic("bridgeVersion").publish();
         lastWriteStatusPub = table.getStringTopic("lastWriteStatus").publish();
+        commandMetadataPub = table.getStringTopic("commandMetadata").publish();
         writeConfigSub = table.getStringTopic("writeConfig").subscribe("");
         deleteConfigSub = table.getStringTopic("deleteConfig").subscribe("");
 
-        bridgeVersionPub.set("1");
+        bridgeVersionPub.set("2");
 
         // Initial publish of available configs
         refreshAvailableAutos();
+    }
+
+    public void publishCommandMetadata(String json) {
+        commandMetadataPub.set(json);
     }
 
     public void setOnConfigsChanged(Runnable callback) {

@@ -18,6 +18,7 @@ window.NTBridge = (function () {
   var onConfigReceived = function () {};
   var onWriteStatus = function () {};
   var onFeatureSupportChange = function () {};
+  var onCommandMetadata = function () {};
 
   var NT_PREFIX = '/SmartDashboard/1310/autoconfig/';
   var FEATURE_DETECT_TIMEOUT_MS = 2500;
@@ -32,6 +33,7 @@ window.NTBridge = (function () {
     onConfigReceived = callbacks.onConfigReceived || function () {};
     onWriteStatus = callbacks.onWriteStatus || function () {};
     onFeatureSupportChange = callbacks.onFeatureSupportChange || function () {};
+    onCommandMetadata = callbacks.onCommandMetadata || function () {};
   }
 
   function clearFeatureDetectTimer() {
@@ -85,6 +87,7 @@ window.NTBridge = (function () {
           subscribeToDeployAutos();
           subscribeToRuntimeAutos();
           subscribeToWriteStatus();
+          subscribeToCommandMetadata();
         } else {
           clearFeatureDetectTimer();
           setFeatureSupport(null, '');
@@ -243,6 +246,26 @@ window.NTBridge = (function () {
       });
     } catch (e) {
       console.error('Error subscribing to lastWriteStatus:', e);
+    }
+  }
+
+  function subscribeToCommandMetadata() {
+    if (!ntClient) return;
+    try {
+      var topic = ntClient.createTopic(NT_PREFIX + 'commandMetadata', 'string');
+      ntClient.subscribe(topic, function (value) {
+        if (typeof value === 'string' && value.length > 0) {
+          markFeatureSupported();
+          try {
+            var metadata = JSON.parse(value);
+            onCommandMetadata(metadata);
+          } catch (e) {
+            console.error('Failed to parse command metadata:', e);
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Error subscribing to commandMetadata:', e);
     }
   }
 

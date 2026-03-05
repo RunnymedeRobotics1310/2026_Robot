@@ -5,8 +5,7 @@
   "startingHeadingDegrees": 0,
   "steps": [
     {
-      "type": "drive",
-      "mode": "to_pose",
+      "type": "drive_to_pose",
       "speedMPS": 2.0,
       "xMetres": 0.8,
       "yMetres": 0.6,
@@ -16,30 +15,25 @@
       "timeoutSeconds": 8.0
     },
     {
-      "type": "drive",
-      "mode": "velocity",
-      "frame": "robot",
+      "type": "drive_velocity",
       "vxMPS": -0.5,
       "vyMPS": 0.0,
       "headingDegrees": 0,
-      "durationSeconds": 1.0
+      "timeoutSeconds": 1.0
     },
     {
       "type": "hold",
       "durationSeconds": 3.0
     },
     {
-      "type": "drive",
-      "mode": "velocity",
-      "frame": "robot",
+      "type": "drive_velocity",
       "vxMPS": 1.0,
       "vyMPS": 1.6,
       "headingDegrees": 0,
-      "durationSeconds": 2.0
+      "timeoutSeconds": 2.0
     },
     {
-      "type": "face_target",
-      "target": "hub",
+      "type": "face_hub",
       "headingToleranceDegrees": 3.0,
       "timeoutSeconds": 4.0
     },
@@ -64,8 +58,7 @@
       ]
     },
     {
-      "type": "drive",
-      "mode": "to_pose",
+      "type": "drive_to_pose",
       "speedMPS": 2.0,
       "xMetres": 2.4,
       "yMetres": 4.0,

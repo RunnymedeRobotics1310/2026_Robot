@@ -512,10 +512,196 @@ window.CommandPalette = (function () {
     return hr;
   }
 
-  function deserializeStep(jsonStep) {
-    if (jsonStep && jsonStep.type === 'drive_velocity') {
-      jsonStep = Object.assign({}, jsonStep, { type: 'drive', mode: 'velocity' });
+  /**
+   * Migrate legacy step format to new type names.
+   * {type:"drive", mode:"distance"} -> {type:"drive_distance"}
+   * {type:"face_target", target:"hub"} -> {type:"face_hub"}
+   * {type:"face_target", target:"point"} -> {type:"face_field_point"}
+   * {type:"drive_velocity"} -> {type:"drive_velocity"} (already correct)
+   */
+  function migrateStep(jsonStep) {
+    if (!jsonStep || !jsonStep.type) return jsonStep;
+    var step = Object.assign({}, jsonStep);
+
+    if (step.type === 'drive' && step.mode) {
+      if (step.mode === 'distance') step.type = 'drive_distance';
+      else if (step.mode === 'time') step.type = 'drive_timed';
+      else if (step.mode === 'velocity') step.type = 'drive_velocity';
+      else if (step.mode === 'to_pose') step.type = 'drive_to_pose';
+      delete step.mode;
     }
+    if (step.type === 'face_target') {
+      if (step.target === 'hub') step.type = 'face_hub';
+      else if (step.target === 'point') step.type = 'face_field_point';
+      delete step.target;
+    }
+
+    // Recursively migrate parallel children
+    if (step.type === 'parallel' && Array.isArray(step.commands)) {
+      step.commands = step.commands.map(migrateStep);
+    }
+    return step;
+  }
+
+  /**
+   * Update COMMAND_TYPES from robot-published metadata.
+   * Structural types (parallel, delay) are preserved as hardcoded.
+   * Dynamic types are built from the metadata array.
+   */
+  function updateFromRobotMetadata(metadata) {
+    if (!Array.isArray(metadata)) return;
+
+    // Cache in localStorage for offline use
+    try {
+      localStorage.setItem('1310-command-metadata', JSON.stringify(metadata));
+    } catch (e) { /* ignore */ }
+
+    _applyMetadata(metadata);
+  }
+
+  function _loadCachedMetadata() {
+    try {
+      var cached = localStorage.getItem('1310-command-metadata');
+      if (cached) {
+        var metadata = JSON.parse(cached);
+        _applyMetadata(metadata);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  var CATEGORY_COLORS = {
+    drive: 'drive',
+    shooter: 'shooter',
+    intake: 'intake',
+    utility: 'delay',
+  };
+
+  var CATEGORY_ICONS = {
+    drive: 'D',
+    shooter: 'S',
+    intake: 'I',
+    utility: 'U',
+  };
+
+  function _applyMetadata(metadata) {
+    // Keep structural types
+    var preserved = {};
+    if (COMMAND_TYPES.parallel) preserved.parallel = COMMAND_TYPES.parallel;
+    if (COMMAND_TYPES.delay) preserved.delay = COMMAND_TYPES.delay;
+
+    // Clear all non-structural types
+    var keys = Object.keys(COMMAND_TYPES);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] !== 'parallel' && keys[i] !== 'delay') {
+        delete COMMAND_TYPES[keys[i]];
+      }
+    }
+
+    // Build dynamic types from metadata
+    for (var j = 0; j < metadata.length; j++) {
+      var meta = metadata[j];
+      COMMAND_TYPES[meta.type] = _buildDynamicCommandType(meta);
+    }
+
+    // Re-add structural types at the end
+    if (preserved.delay) COMMAND_TYPES.delay = preserved.delay;
+    if (preserved.parallel) COMMAND_TYPES.parallel = preserved.parallel;
+  }
+
+  function _buildDynamicCommandType(meta) {
+    var defaults = { type: meta.type };
+    var fields = [];
+
+    var params = meta.params || [];
+    for (var i = 0; i < params.length; i++) {
+      var p = params[i];
+      var field = { key: p.name, label: _paramLabel(p), hint: p.description || '' };
+
+      if (p.options && p.options.length > 0) {
+        field.type = 'select';
+        field.options = p.options.map(function (opt) { return { value: opt, label: opt }; });
+        defaults[p.name] = p.options[0];
+      } else if (p.javaType === 'boolean') {
+        field.type = 'select';
+        field.coerce = 'boolean';
+        field.options = [{ value: 'false', label: 'No' }, { value: 'true', label: 'Yes' }];
+        defaults[p.name] = p.defaultValue !== 0;
+      } else {
+        field.type = 'number';
+        if (p.min !== undefined) field.min = p.min;
+        if (p.max !== undefined) field.max = p.max;
+        field.step = _guessStep(p);
+        defaults[p.name] = p.defaultValue || 0;
+      }
+
+      fields.push(field);
+    }
+
+    var category = meta.category || 'utility';
+
+    return {
+      label: _typeLabel(meta.type),
+      icon: CATEGORY_ICONS[category] || meta.type.charAt(0).toUpperCase(),
+      colorClass: CATEGORY_COLORS[category] || 'delay',
+      description: meta.description || '',
+      defaultValues: defaults,
+      fields: fields,
+      summarize: function (v) {
+        var parts = [];
+        for (var k = 0; k < params.length; k++) {
+          var key = params[k].name;
+          if (v[key] !== undefined && v[key] !== null) {
+            var unit = params[k].unit ? params[k].unit : '';
+            parts.push(key + '=' + v[key] + unit);
+          }
+          if (parts.length >= 3) break;
+        }
+        return parts.join(', ') || meta.type;
+      },
+      validate: function () { return []; },
+      serialize: function (v) {
+        var out = { type: meta.type };
+        for (var k = 0; k < params.length; k++) {
+          var key = params[k].name;
+          if (v[key] !== undefined) out[key] = v[key];
+        }
+        return out;
+      },
+    };
+  }
+
+  function _typeLabel(type) {
+    return type.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function _paramLabel(p) {
+    var label = p.name.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ');
+    label = label.charAt(0).toUpperCase() + label.slice(1);
+    if (p.unit) label += ' (' + p.unit + ')';
+    return label;
+  }
+
+  function _guessStep(p) {
+    if (p.unit === 'deg') return 1;
+    if (p.unit === 's') return 0.1;
+    if (p.unit === 'm') return 0.1;
+    if (p.unit === 'm/s') return 0.1;
+    if (p.unit === 'rpm') return 100;
+    if (p.max !== undefined && p.min !== undefined) {
+      var range = p.max - p.min;
+      if (range <= 2) return 0.05;
+      if (range <= 20) return 0.5;
+      return 1;
+    }
+    return 0.1;
+  }
+
+  // Load cached metadata on startup
+  _loadCachedMetadata();
+
+  function deserializeStep(jsonStep) {
+    // Migrate legacy format
+    jsonStep = migrateStep(jsonStep);
     var typeDef = COMMAND_TYPES[jsonStep.type];
     if (!typeDef) return jsonStep;
     var merged = Object.assign({}, typeDef.defaultValues, jsonStep);
@@ -552,5 +738,7 @@ window.CommandPalette = (function () {
     getStepSummary: getStepSummary,
     validateStep: validateStep,
     generateStepId: generateStepId,
+    updateFromRobotMetadata: updateFromRobotMetadata,
+    migrateStep: migrateStep,
   };
 })();

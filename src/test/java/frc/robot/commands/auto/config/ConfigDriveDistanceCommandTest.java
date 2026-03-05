@@ -3,13 +3,14 @@ package frc.robot.commands.auto.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import frc.robot.commands.swerve.DriveDistanceCommand;
 import org.junit.jupiter.api.Test;
 
 class ConfigDriveDistanceCommandTest {
 
     @Test
     void calculateStopDistanceIncludesBrakingDelayAndMargin() {
-        double stopDistance = ConfigDriveDistanceCommand.calculateStopDistanceMetres(
+        double stopDistance = DriveDistanceCommand.calculateStopDistanceMetres(
                 1.5,
                 10.0,
                 0.06,
@@ -20,15 +21,15 @@ class ConfigDriveDistanceCommandTest {
 
     @Test
     void calculateStopDistanceGrowsWithSpeed() {
-        double atOneMPS = ConfigDriveDistanceCommand.calculateStopDistanceMetres(1.0, 10.0, 0.06, 0.02);
-        double atTwoMPS = ConfigDriveDistanceCommand.calculateStopDistanceMetres(2.0, 10.0, 0.06, 0.02);
+        double atOneMPS = DriveDistanceCommand.calculateStopDistanceMetres(1.0, 10.0, 0.06, 0.02);
+        double atTwoMPS = DriveDistanceCommand.calculateStopDistanceMetres(2.0, 10.0, 0.06, 0.02);
 
         assertTrue(atTwoMPS > atOneMPS);
     }
 
     @Test
     void calculateStopDistanceClampsNegativeInputs() {
-        double stopDistance = ConfigDriveDistanceCommand.calculateStopDistanceMetres(
+        double stopDistance = DriveDistanceCommand.calculateStopDistanceMetres(
                 -1.0,
                 -2.0,
                 -0.1,

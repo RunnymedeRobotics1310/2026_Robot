@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class AutoConfigParserTest {
@@ -22,14 +24,13 @@ class AutoConfigParserTest {
 
     @Test
     void validateAutoConfigAcceptsValidDriveConfig() {
-        AutoStep step = new AutoStep();
-        step.type = AutoStep.StepType.drive;
-        step.mode = AutoStep.DriveMode.distance;
-        step.direction = 0;
-        step.speedMPS = 1.0;
-        step.distanceMetres = 1.2;
-        step.headingDegrees = 0;
-        step.timeoutSeconds = 3.0;
+        Map<String, Object> step = new HashMap<>();
+        step.put("type", "drive_distance");
+        step.put("direction", 0.0);
+        step.put("speedMPS", 1.0);
+        step.put("distanceMetres", 1.2);
+        step.put("headingDegrees", 0.0);
+        step.put("timeoutSeconds", 3.0);
 
         AutoConfig config = new AutoConfig();
         config.name = "test_auto";
@@ -42,15 +43,15 @@ class AutoConfigParserTest {
 
     @Test
     void validateAutoConfigRejectsNestedParallel() {
-        AutoStep nested = new AutoStep();
-        nested.type = AutoStep.StepType.parallel;
-        nested.endCondition = AutoStep.ParallelEndCondition.all;
-        nested.commands = List.of(buildDelayStep(0.5), buildDelayStep(0.5));
+        Map<String, Object> nested = new HashMap<>();
+        nested.put("type", "parallel");
+        nested.put("endCondition", "all");
+        nested.put("commands", List.of(buildDelayStep(0.5), buildDelayStep(0.5)));
 
-        AutoStep parent = new AutoStep();
-        parent.type = AutoStep.StepType.parallel;
-        parent.endCondition = AutoStep.ParallelEndCondition.all;
-        parent.commands = List.of(buildDelayStep(0.5), nested);
+        Map<String, Object> parent = new HashMap<>();
+        parent.put("type", "parallel");
+        parent.put("endCondition", "all");
+        parent.put("commands", List.of(buildDelayStep(0.5), nested));
 
         AutoConfig config = new AutoConfig();
         config.name = "nested_parallel";
@@ -65,11 +66,11 @@ class AutoConfigParserTest {
 
     @Test
     void validateAutoConfigRejectsInvalidDeadlineIndex() {
-        AutoStep parallel = new AutoStep();
-        parallel.type = AutoStep.StepType.parallel;
-        parallel.endCondition = AutoStep.ParallelEndCondition.deadline;
-        parallel.deadlineIndex = 3;
-        parallel.commands = List.of(buildDelayStep(0.5), buildDelayStep(0.5));
+        Map<String, Object> parallel = new HashMap<>();
+        parallel.put("type", "parallel");
+        parallel.put("endCondition", "deadline");
+        parallel.put("deadlineIndex", 3.0);
+        parallel.put("commands", List.of(buildDelayStep(0.5), buildDelayStep(0.5)));
 
         AutoConfig config = new AutoConfig();
         config.name = "deadline_bad";
@@ -84,20 +85,19 @@ class AutoConfigParserTest {
 
     @Test
     void validateAutoConfigAcceptsDriveToPoseAndHold() {
-        AutoStep driveToPose = new AutoStep();
-        driveToPose.type = AutoStep.StepType.drive;
-        driveToPose.mode = AutoStep.DriveMode.to_pose;
-        driveToPose.speedMPS = 2.0;
-        driveToPose.xMetres = 2.4;
-        driveToPose.yMetres = 4.0;
-        driveToPose.headingDegrees = 180;
-        driveToPose.positionToleranceMetres = 0.05;
-        driveToPose.headingToleranceDegrees = 2.0;
-        driveToPose.timeoutSeconds = 6.0;
+        Map<String, Object> driveToPose = new HashMap<>();
+        driveToPose.put("type", "drive_to_pose");
+        driveToPose.put("speedMPS", 2.0);
+        driveToPose.put("xMetres", 2.4);
+        driveToPose.put("yMetres", 4.0);
+        driveToPose.put("headingDegrees", 180.0);
+        driveToPose.put("positionToleranceMetres", 0.05);
+        driveToPose.put("headingToleranceDegrees", 2.0);
+        driveToPose.put("timeoutSeconds", 6.0);
 
-        AutoStep hold = new AutoStep();
-        hold.type = AutoStep.StepType.hold;
-        hold.durationSeconds = 1.0;
+        Map<String, Object> hold = new HashMap<>();
+        hold.put("type", "hold");
+        hold.put("durationSeconds", 1.0);
 
         AutoConfig config = new AutoConfig();
         config.name = "new_types_ok";
@@ -110,45 +110,41 @@ class AutoConfigParserTest {
 
     @Test
     void validateAutoConfigAcceptsSetPoseStep() {
-        AutoStep setPose = new AutoStep();
-        setPose.type = AutoStep.StepType.set_pose;
-        setPose.xMetres = 1.5;
-        setPose.yMetres = 2.25;
-        setPose.headingDegrees = 90;
-
-        AutoStep delay = new AutoStep();
-        delay.type = AutoStep.StepType.delay;
-        delay.durationSeconds = 0.5;
+        Map<String, Object> setPose = new HashMap<>();
+        setPose.put("type", "set_pose");
+        setPose.put("xMetres", 1.5);
+        setPose.put("yMetres", 2.25);
+        setPose.put("headingDegrees", 90.0);
 
         AutoConfig config = new AutoConfig();
         config.name = "set_pose_ok";
         config.version = 1;
         config.startingHeadingDegrees = 0;
-        config.steps = List.of(setPose, delay);
+        config.steps = List.of(setPose, buildDelayStep(0.5));
 
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
     @Test
     void validateAutoConfigAcceptsDeadlineParallelWithHoldUntilInterrupted() {
-        AutoStep shooter = new AutoStep();
-        shooter.type = AutoStep.StepType.shooter;
-        shooter.action = AutoStep.ShooterAction.on_with_duration;
-        shooter.rpm = 1500;
-        shooter.hoodPosition = 0.0;
-        shooter.kickerSpeed = -0.7;
-        shooter.kickerDelaySeconds = 2.0;
-        shooter.durationSeconds = 10.0;
+        Map<String, Object> shooter = new HashMap<>();
+        shooter.put("type", "shooter");
+        shooter.put("action", "on_with_duration");
+        shooter.put("rpm", 1500.0);
+        shooter.put("hoodPosition", 0.0);
+        shooter.put("kickerSpeed", -0.7);
+        shooter.put("kickerDelaySeconds", 2.0);
+        shooter.put("durationSeconds", 10.0);
 
-        AutoStep hold = new AutoStep();
-        hold.type = AutoStep.StepType.hold;
-        hold.durationSeconds = 0.0;
+        Map<String, Object> hold = new HashMap<>();
+        hold.put("type", "hold");
+        hold.put("durationSeconds", 0.0);
 
-        AutoStep parallel = new AutoStep();
-        parallel.type = AutoStep.StepType.parallel;
-        parallel.endCondition = AutoStep.ParallelEndCondition.deadline;
-        parallel.deadlineIndex = 0;
-        parallel.commands = List.of(shooter, hold);
+        Map<String, Object> parallel = new HashMap<>();
+        parallel.put("type", "parallel");
+        parallel.put("endCondition", "deadline");
+        parallel.put("deadlineIndex", 0.0);
+        parallel.put("commands", List.of(shooter, hold));
 
         AutoConfig config = new AutoConfig();
         config.name = "deadline_hold_ok";
@@ -160,6 +156,7 @@ class AutoConfigParserTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void parseJsonParsesNewStepTypes() {
         String json = """
                 {
@@ -174,17 +171,14 @@ class AutoConfigParserTest {
                       "headingDegrees": 45
                     },
                     {
-                      "type": "drive",
-                      "mode": "velocity",
-                      "frame": "robot",
+                      "type": "drive_velocity",
                       "vxMPS": 1.0,
                       "vyMPS": 0.5,
                       "headingDegrees": 0,
-                      "durationSeconds": 1.5
+                      "timeoutSeconds": 1.5
                     },
                     {
-                      "type": "face_target",
-                      "target": "hub",
+                      "type": "face_hub",
                       "headingToleranceDegrees": 3,
                       "timeoutSeconds": 2
                     },
@@ -199,30 +193,26 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals(4, config.steps.size());
-        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
-        assertEquals(AutoStep.StepType.drive, config.steps.get(1).type);
-        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(1).mode);
-        assertEquals(AutoStep.VelocityFrame.robot, config.steps.get(1).frame);
-        assertEquals(AutoStep.StepType.face_target, config.steps.get(2).type);
-        assertEquals(AutoStep.FaceTargetType.hub, config.steps.get(2).target);
-        assertEquals(AutoStep.StepType.vision_approach_tag, config.steps.get(3).type);
+        assertEquals("set_pose", config.steps.get(0).get("type"));
+        assertEquals("drive_velocity", config.steps.get(1).get("type"));
+        assertEquals("face_hub", config.steps.get(2).get("type"));
+        assertEquals("vision_approach_tag", config.steps.get(3).get("type"));
     }
 
     @Test
-    void parseJsonMapsLegacyDriveVelocityToDriveVelocityMode() {
+    void parseJsonAcceptsDriveVelocityType() {
         String json = """
                 {
-                  "name": "legacy_velocity_alias",
+                  "name": "velocity_type",
                   "version": 1,
                   "startingHeadingDegrees": 0,
                   "steps": [
                     {
                       "type": "drive_velocity",
-                      "frame": "field",
                       "vxMPS": 0.8,
                       "vyMPS": 0.2,
                       "headingDegrees": 15,
-                      "durationSeconds": 1.2
+                      "timeoutSeconds": 1.2
                     }
                   ]
                 }
@@ -231,25 +221,28 @@ class AutoConfigParserTest {
         AutoConfig config = AutoConfigParser.parseJson(json);
         assertNotNull(config);
         assertEquals(1, config.steps.size());
-        assertEquals(AutoStep.StepType.drive, config.steps.get(0).type);
-        assertEquals(AutoStep.DriveMode.velocity, config.steps.get(0).mode);
+        assertEquals("drive_velocity", config.steps.get(0).get("type"));
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
     @Test
-    void parseJsonRejectsInvalidStepType() {
-        String invalidJson = """
+    void parseJsonAcceptsUnknownStepTypes() {
+        String json = """
                 {
-                  "name": "bad_auto",
+                  "name": "unknown_type",
                   "version": 1,
                   "startingHeadingDegrees": 0,
                   "steps": [
-                    { "type": "not_a_real_step" }
+                    { "type": "some_new_command", "param1": 42 }
                   ]
                 }
                 """;
 
-        assertNull(AutoConfigParser.parseJson(invalidJson));
+        AutoConfig config = AutoConfigParser.parseJson(json);
+        assertNotNull(config);
+        assertEquals(1, config.steps.size());
+        // Unknown types are now accepted at parse time; validation happens at creation
+        assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
     @Test
@@ -274,6 +267,7 @@ class AutoConfigParserTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void opportunisticOutpostTemplateParsesAndValidates() throws IOException {
         Path template = Path.of("src/main/deploy/autos/opportunistic_outpost_configurable.json");
         String json = Files.readString(template);
@@ -284,15 +278,15 @@ class AutoConfigParserTest {
         assertEquals(8, config.steps.size());
         assertNull(AutoConfigParser.validateAutoConfig(config));
 
-        AutoStep parallel = config.steps.get(5);
-        assertEquals(AutoStep.StepType.parallel, parallel.type);
-        assertEquals(AutoStep.ParallelEndCondition.deadline, parallel.endCondition);
-        assertEquals(0, parallel.deadlineIndex);
-        assertEquals(AutoStep.StepType.hold, parallel.commands.get(1).type);
-        assertEquals(0.0, parallel.commands.get(1).durationSeconds);
+        Map<String, Object> parallel = config.steps.get(5);
+        assertEquals("parallel", parallel.get("type"));
+        assertEquals("deadline", parallel.get("endCondition"));
+        List<Map<String, Object>> cmds = (List<Map<String, Object>>) parallel.get("commands");
+        assertEquals("hold", cmds.get(1).get("type"));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void simpleCenterTemplateParsesAndValidates() throws IOException {
         Path template = Path.of("src/main/deploy/autos/simple_center_configurable.json");
         String json = Files.readString(template);
@@ -303,16 +297,16 @@ class AutoConfigParserTest {
         assertEquals(4, config.steps.size());
         assertNull(AutoConfigParser.validateAutoConfig(config));
 
-        AutoStep first = config.steps.get(0);
-        assertEquals(AutoStep.StepType.parallel, first.type);
-        assertEquals(AutoStep.ParallelEndCondition.deadline, first.endCondition);
-        assertEquals(0, first.deadlineIndex);
-        assertEquals(AutoStep.StepType.shooter, first.commands.get(0).type);
-        assertEquals(AutoStep.StepType.hold, first.commands.get(1).type);
+        Map<String, Object> first = config.steps.get(0);
+        assertEquals("parallel", first.get("type"));
+        assertEquals("deadline", first.get("endCondition"));
+        List<Map<String, Object>> cmds = (List<Map<String, Object>>) first.get("commands");
+        assertEquals("shooter", cmds.get(0).get("type"));
+        assertEquals("hold", cmds.get(1).get("type"));
 
-        AutoStep finalStep = config.steps.get(3);
-        assertEquals(AutoStep.StepType.vision_approach_tag, finalStep.type);
-        assertTrue(finalStep.rightSide);
+        Map<String, Object> finalStep = config.steps.get(3);
+        assertEquals("vision_approach_tag", finalStep.get("type"));
+        assertEquals(true, finalStep.get("rightSide"));
     }
 
     @Test
@@ -324,7 +318,7 @@ class AutoConfigParserTest {
         assertNotNull(config);
         assertEquals("odometry_cal_straight_compact", config.name);
         assertEquals(4, config.steps.size());
-        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
+        assertEquals("set_pose", config.steps.get(0).get("type"));
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
@@ -337,7 +331,7 @@ class AutoConfigParserTest {
         assertNotNull(config);
         assertEquals("odometry_cal_spin_compact", config.name);
         assertEquals(19, config.steps.size());
-        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
+        assertEquals("set_pose", config.steps.get(0).get("type"));
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
@@ -350,14 +344,14 @@ class AutoConfigParserTest {
         assertNotNull(config);
         assertEquals("odometry_cal_turn_compact", config.name);
         assertEquals(19, config.steps.size());
-        assertEquals(AutoStep.StepType.set_pose, config.steps.get(0).type);
+        assertEquals("set_pose", config.steps.get(0).get("type"));
         assertNull(AutoConfigParser.validateAutoConfig(config));
     }
 
-    private AutoStep buildDelayStep(double durationSeconds) {
-        AutoStep step = new AutoStep();
-        step.type = AutoStep.StepType.delay;
-        step.durationSeconds = durationSeconds;
+    private Map<String, Object> buildDelayStep(double durationSeconds) {
+        Map<String, Object> step = new HashMap<>();
+        step.put("type", "delay");
+        step.put("durationSeconds", durationSeconds);
         return step;
     }
 }

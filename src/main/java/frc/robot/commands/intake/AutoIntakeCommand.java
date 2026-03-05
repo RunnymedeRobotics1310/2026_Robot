@@ -1,23 +1,30 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class ConfigIntakeCommand extends LoggingCommand {
+@AutoConfigurable(value = "intake", category = "intake",
+    description = "Control the intake motor")
+public class AutoIntakeCommand extends LoggingCommand {
 
     private final IntakeSubsystem intake;
-    private final AutoStep.IntakeAction action;
+    private final String action;
     private final double speed;
     private final double durationSeconds;
 
     private final Timer timer = new Timer();
 
-    public ConfigIntakeCommand(
+    public AutoIntakeCommand(
             IntakeSubsystem intake,
-            AutoStep.IntakeAction action,
-            double speed,
-            double durationSeconds) {
+            @ConfigParam(value = "intakeAction", options = {"on", "on_with_duration", "off"},
+                description = "Intake action") String action,
+            @ConfigParam(value = "speed", min = -1, max = 1,
+                description = "Intake motor speed") double speed,
+            @ConfigParam(value = "durationSeconds", unit = "s", min = 0, max = 15,
+                description = "Duration for on_with_duration action") double durationSeconds) {
         this.intake = intake;
         this.action = action;
         this.speed = speed;
@@ -31,7 +38,7 @@ public class ConfigIntakeCommand extends LoggingCommand {
         timer.reset();
         timer.start();
 
-        if (action == null || action == AutoStep.IntakeAction.off) {
+        if (action == null || "off".equals(action)) {
             intake.stop();
         } else {
             intake.setSpeed(speed);
@@ -40,7 +47,7 @@ public class ConfigIntakeCommand extends LoggingCommand {
 
     @Override
     public void execute() {
-        if (action != null && action != AutoStep.IntakeAction.off) {
+        if (action != null && !"off".equals(action)) {
             intake.setSpeed(speed);
         }
     }
@@ -51,22 +58,21 @@ public class ConfigIntakeCommand extends LoggingCommand {
             setFinishReason("Invalid intake action");
             return true;
         }
-        if (action == AutoStep.IntakeAction.off) {
+        if ("off".equals(action)) {
             setFinishReason("Intake off");
             return true;
         }
-        if (action == AutoStep.IntakeAction.on_with_duration && timer.hasElapsed(durationSeconds)) {
+        if ("on_with_duration".equals(action) && timer.hasElapsed(durationSeconds)) {
             setFinishReason("Duration elapsed: " + durationSeconds + "s");
             return true;
         }
-        // "on" action runs until interrupted
         return false;
     }
 
     @Override
     public void end(boolean interrupted) {
         timer.stop();
-        if (action != AutoStep.IntakeAction.on) {
+        if (!"on".equals(action)) {
             intake.stop();
         }
         logCommandEnd(interrupted);

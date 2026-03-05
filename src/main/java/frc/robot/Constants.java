@@ -131,8 +131,8 @@ public final class Constants {
      * <p>Increase/decrease these based on calibration runs (especially rotate-in-place tests) to
      * account for scrub/compliance under load.
      */
-    public static final double ODOMETRY_WHEEL_BASE_SCALE = 1.0;
-    public static final double ODOMETRY_TRACK_WIDTH_SCALE = 1.0;
+    public static final double ODOMETRY_WHEEL_BASE_SCALE = 0.995;
+    public static final double ODOMETRY_TRACK_WIDTH_SCALE = 0.995;
 
     /** Effective dimensions used by both kinematics and odometry. */
     public static final double WHEEL_BASE_METRES = MEASURED_WHEEL_BASE_METRES * ODOMETRY_WHEEL_BASE_SCALE;

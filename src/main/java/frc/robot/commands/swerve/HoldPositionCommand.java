@@ -1,14 +1,21 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.swerve;
 
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class ConfigHoldDriveCommand extends LoggingCommand {
+@AutoConfigurable(value = "hold", category = "drive",
+    description = "Hold position for a duration")
+public class HoldPositionCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;
     private final double durationSeconds;
 
-    public ConfigHoldDriveCommand(SwerveSubsystem swerve, double durationSeconds) {
+    public HoldPositionCommand(
+            SwerveSubsystem swerve,
+            @ConfigParam(value = "durationSeconds", unit = "s", min = 0, max = 15,
+                description = "Duration to hold (0 = indefinite)") double durationSeconds) {
         this.swerve = swerve;
         this.durationSeconds = durationSeconds;
         addRequirements(swerve);

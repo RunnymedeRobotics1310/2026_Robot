@@ -1,11 +1,15 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class ConfigDriveTimedCommand extends LoggingCommand {
+@AutoConfigurable(value = "drive_timed", category = "drive",
+    description = "Drive at a speed for a fixed duration")
+public class DriveTimedCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;
     private final double direction;
@@ -16,12 +20,16 @@ public class ConfigDriveTimedCommand extends LoggingCommand {
     private double allianceDirection;
     private double allianceHeading;
 
-    public ConfigDriveTimedCommand(
+    public DriveTimedCommand(
             SwerveSubsystem swerve,
-            double direction,
-            double speedMPS,
-            double durationSeconds,
-            double heading) {
+            @ConfigParam(value = "direction", unit = "deg",
+                description = "Field-oriented direction of travel") double direction,
+            @ConfigParam(value = "speedMPS", unit = "m/s", min = 0, max = 5.36,
+                description = "Translation speed") double speedMPS,
+            @ConfigParam(value = "durationSeconds", unit = "s", min = 0, max = 15,
+                description = "Duration to drive") double durationSeconds,
+            @ConfigParam(value = "headingDegrees", unit = "deg",
+                description = "Robot heading to hold") double heading) {
         this.swerve = swerve;
         this.direction = direction;
         this.speedMPS = speedMPS;

@@ -25,22 +25,18 @@
       ]
     },
     {
-      "type": "drive",
-      "mode": "velocity",
-      "frame": "robot",
+      "type": "drive_velocity",
       "vxMPS": -2.0,
       "vyMPS": 0.7,
       "headingDegrees": 0,
-      "durationSeconds": 1.0
+      "timeoutSeconds": 1.0
     },
     {
-      "type": "drive",
-      "mode": "velocity",
-      "frame": "robot",
+      "type": "drive_velocity",
       "vxMPS": 0.0,
       "vyMPS": 0.0,
       "headingDegrees": 180,
-      "durationSeconds": 2.0
+      "timeoutSeconds": 2.0
     },
     {
       "type": "vision_approach_tag",

@@ -1,13 +1,17 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class ConfigDriveDistanceCommand extends LoggingCommand {
+@AutoConfigurable(value = "drive_distance", category = "drive",
+    description = "Drive a fixed distance using odometry")
+public class DriveDistanceCommand extends LoggingCommand {
 
     private static final double CONTROL_DELAY_SECONDS = 0.06;
     private static final double STOP_MARGIN_METRES = 0.02;
@@ -27,13 +31,18 @@ public class ConfigDriveDistanceCommand extends LoggingCommand {
     private Pose2d startPose;
     private double filteredMeasuredSpeedMPS;
 
-    public ConfigDriveDistanceCommand(
+    public DriveDistanceCommand(
             SwerveSubsystem swerve,
-            double direction,
-            double speedMPS,
-            double distanceMetres,
-            double heading,
-            double timeoutSeconds) {
+            @ConfigParam(value = "direction", unit = "deg",
+                description = "Field-oriented direction of travel") double direction,
+            @ConfigParam(value = "speedMPS", unit = "m/s", min = 0, max = 5.36,
+                description = "Translation speed") double speedMPS,
+            @ConfigParam(value = "distanceMetres", unit = "m", min = 0, max = 20,
+                description = "Distance to travel") double distanceMetres,
+            @ConfigParam(value = "headingDegrees", unit = "deg",
+                description = "Robot heading to hold") double heading,
+            @ConfigParam(value = "timeoutSeconds", unit = "s", min = 0, max = 15,
+                description = "Safety timeout") double timeoutSeconds) {
         this.swerve = swerve;
         this.direction = direction;
         this.speedMPS = speedMPS;
@@ -105,7 +114,7 @@ public class ConfigDriveDistanceCommand extends LoggingCommand {
         logCommandEnd(interrupted);
     }
 
-    static double calculateStopDistanceMetres(
+    public static double calculateStopDistanceMetres(
             double speedMPS,
             double effectiveDecelMPS2,
             double controlDelaySeconds,

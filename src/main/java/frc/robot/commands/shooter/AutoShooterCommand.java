@@ -1,13 +1,17 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class ConfigShooterCommand extends LoggingCommand {
+@AutoConfigurable(value = "shooter", category = "shooter",
+    description = "Control the shooter motor, hood, and kicker")
+public class AutoShooterCommand extends LoggingCommand {
 
     private final ShooterSubsystem shooter;
-    private final AutoStep.ShooterAction action;
+    private final String action;
     private final double rpm;
     private final double hoodPosition;
     private final double kickerSpeed;
@@ -17,14 +21,20 @@ public class ConfigShooterCommand extends LoggingCommand {
     private final Timer timer = new Timer();
     private boolean kickerStarted = false;
 
-    public ConfigShooterCommand(
+    public AutoShooterCommand(
             ShooterSubsystem shooter,
-            AutoStep.ShooterAction action,
-            double rpm,
-            double hoodPosition,
-            double kickerSpeed,
-            double kickerDelaySeconds,
-            double durationSeconds) {
+            @ConfigParam(value = "action", options = {"on", "on_with_duration", "off"},
+                description = "Shooter action") String action,
+            @ConfigParam(value = "rpm", unit = "rpm", min = 0, max = 6200,
+                description = "Shooter RPM") double rpm,
+            @ConfigParam(value = "hoodPosition", min = 0, max = 1,
+                description = "Hood servo position") double hoodPosition,
+            @ConfigParam(value = "kickerSpeed", min = -1, max = 1,
+                description = "Kicker motor speed") double kickerSpeed,
+            @ConfigParam(value = "kickerDelaySeconds", unit = "s", min = 0, max = 5,
+                description = "Delay before starting kicker") double kickerDelaySeconds,
+            @ConfigParam(value = "durationSeconds", unit = "s", min = 0, max = 15,
+                description = "Duration for on_with_duration action") double durationSeconds) {
         this.shooter = shooter;
         this.action = action;
         this.rpm = rpm;
@@ -42,7 +52,7 @@ public class ConfigShooterCommand extends LoggingCommand {
         timer.start();
         kickerStarted = false;
 
-        if (action == null || action == AutoStep.ShooterAction.off) {
+        if (action == null || "off".equals(action)) {
             shooter.stop();
         } else {
             shooter.setShooterVelocity(rpm);
@@ -52,7 +62,7 @@ public class ConfigShooterCommand extends LoggingCommand {
 
     @Override
     public void execute() {
-        if (action == null || action == AutoStep.ShooterAction.off) {
+        if (action == null || "off".equals(action)) {
             return;
         }
 
@@ -73,22 +83,21 @@ public class ConfigShooterCommand extends LoggingCommand {
             setFinishReason("Invalid shooter action");
             return true;
         }
-        if (action == AutoStep.ShooterAction.off) {
+        if ("off".equals(action)) {
             setFinishReason("Shooter off");
             return true;
         }
-        if (action == AutoStep.ShooterAction.on_with_duration && timer.hasElapsed(durationSeconds)) {
+        if ("on_with_duration".equals(action) && timer.hasElapsed(durationSeconds)) {
             setFinishReason("Duration elapsed: " + durationSeconds + "s");
             return true;
         }
-        // "on" action runs until interrupted
         return false;
     }
 
     @Override
     public void end(boolean interrupted) {
         timer.stop();
-        if (action != AutoStep.ShooterAction.on) {
+        if (!"on".equals(action)) {
             shooter.stop();
         }
         logCommandEnd(interrupted);

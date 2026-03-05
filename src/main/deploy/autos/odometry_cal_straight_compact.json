@@ -15,8 +15,7 @@
       "durationSeconds": 0.25
     },
     {
-      "type": "drive",
-      "mode": "distance",
+      "type": "drive_distance",
       "headingDegrees": 0,
       "speedMPS": 1.5,
       "direction": 0,

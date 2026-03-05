@@ -5,10 +5,9 @@
   "startingHeadingDegrees": 0,
   "steps": [
     {
-      "type": "drive",
+      "type": "drive_distance",
       "direction": 0,
       "speedMPS": 2,
-      "mode": "distance",
       "headingDegrees": 0,
       "distanceMetres": 1,
       "timeoutSeconds": 5

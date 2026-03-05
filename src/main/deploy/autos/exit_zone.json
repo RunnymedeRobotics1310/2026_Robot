@@ -5,13 +5,11 @@
   "startingHeadingDegrees": 180,
   "steps": [
     {
-      "type": "drive",
+      "type": "drive_timed",
       "direction": 0,
       "speedMPS": 0.5,
-      "mode": "time",
       "durationSeconds": 0.55,
-      "headingDegrees": 180,
-      "timeoutSeconds": 2.0
+      "headingDegrees": 180
     }
   ]
 }

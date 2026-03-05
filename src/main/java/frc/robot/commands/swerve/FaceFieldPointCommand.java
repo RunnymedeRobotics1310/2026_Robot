@@ -1,13 +1,17 @@
-package frc.robot.commands.auto.config;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class ConfigFaceFieldPointCommand extends LoggingCommand {
+@AutoConfigurable(value = "face_field_point", category = "drive",
+    description = "Rotate to face a field coordinate")
+public class FaceFieldPointCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;
     private final double targetXMetres;
@@ -15,11 +19,14 @@ public class ConfigFaceFieldPointCommand extends LoggingCommand {
     private final double headingToleranceDegrees;
     private Translation2d allianceTargetPoint;
 
-    public ConfigFaceFieldPointCommand(
+    public FaceFieldPointCommand(
             SwerveSubsystem swerve,
-            double targetXMetres,
-            double targetYMetres,
-            double headingToleranceDegrees) {
+            @ConfigParam(value = "targetXMetres", unit = "m", min = 0, max = 16.54,
+                description = "Target X coordinate on field") double targetXMetres,
+            @ConfigParam(value = "targetYMetres", unit = "m", min = 0, max = 8.07,
+                description = "Target Y coordinate on field") double targetYMetres,
+            @ConfigParam(value = "headingToleranceDegrees", unit = "deg", min = 0, max = 30,
+                defaultValue = 3.0, description = "Heading tolerance") double headingToleranceDegrees) {
         this.swerve = swerve;
         this.targetXMetres = targetXMetres;
         this.targetYMetres = targetYMetres;

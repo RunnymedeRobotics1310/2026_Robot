@@ -6,32 +6,26 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.swerve.DriveToTowerCommand;
-import frc.robot.commands.swerve.FaceHubCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AutoCommandFactory {
 
+    private final AutoCommandRegistry registry;
+    private final AutoCommandRegistry.SubsystemRegistry subsystems;
     private final SwerveSubsystem swerve;
-    private final ShooterSubsystem shooter;
-    private final IntakeSubsystem intake;
-    private final LimelightVisionSubsystem vision;
 
     public AutoCommandFactory(
-            SwerveSubsystem swerve,
-            ShooterSubsystem shooter,
-            IntakeSubsystem intake,
-            LimelightVisionSubsystem vision) {
+            AutoCommandRegistry registry,
+            AutoCommandRegistry.SubsystemRegistry subsystems,
+            SwerveSubsystem swerve) {
+        this.registry = registry;
+        this.subsystems = subsystems;
         this.swerve = swerve;
-        this.shooter = shooter;
-        this.intake = intake;
-        this.vision = vision;
     }
 
     public Command buildAutoCommand(AutoConfig config, double delay) {
@@ -48,7 +42,7 @@ public class AutoCommandFactory {
 
         commands.add(new SetAllianceGyroCommand(swerve, config.startingHeadingDegrees));
 
-        for (AutoStep step : config.steps) {
+        for (Map<String, Object> step : config.steps) {
             if (step == null) {
                 continue;
             }
@@ -61,105 +55,102 @@ public class AutoCommandFactory {
         return new SequentialCommandGroup(commands.toArray(new Command[0]));
     }
 
-    private Command buildStep(AutoStep step) {
-        switch (step.type) {
-            case drive:
-                return buildDriveCommand(step);
-            case set_pose:
-                return new ConfigSetPoseCommand(
-                        swerve,
-                        step.xMetres,
-                        step.yMetres,
-                        step.headingDegrees);
-            case rotate:
-                return new ConfigRotateCommand(swerve, step.headingDegrees, step.timeoutSeconds);
-            case shooter:
-                return new ConfigShooterCommand(
-                        shooter,
-                        step.action,
-                        step.rpm,
-                        step.hoodPosition,
-                        step.kickerSpeed,
-                        step.kickerDelaySeconds,
-                        step.durationSeconds);
-            case intake:
-                return new ConfigIntakeCommand(intake, step.intakeAction, step.speed, step.durationSeconds);
-            case delay:
-                return new WaitCommand(step.durationSeconds);
-            case parallel:
-                return buildParallelGroup(step);
-            case face_target:
-                return buildFaceTargetCommand(step);
-            case vision_approach_tag:
-                return new DriveToTowerCommand(swerve, vision, step.rightSide)
-                        .withTimeout(step.timeoutSeconds);
-            case hold:
-                return new ConfigHoldDriveCommand(swerve, step.durationSeconds);
-            default:
-                System.out.println("AutoCommandFactory: Unknown step type: " + step.type);
-                return null;
+    @SuppressWarnings("unchecked")
+    private Command buildStep(Map<String, Object> step) {
+        String rawType = getString(step, "type");
+        if (rawType == null) {
+            System.out.println("AutoCommandFactory: Step missing 'type'");
+            return null;
         }
+
+        // Map legacy format to new type names
+        String type = mapLegacyType(rawType, step);
+
+        // Handle structural types directly
+        if ("parallel".equals(type)) {
+            return buildParallelGroup(step);
+        }
+        if ("delay".equals(type)) {
+            double duration = getDouble(step, "durationSeconds");
+            return new WaitCommand(duration);
+        }
+
+        // Delegate to registry for all registered command types
+        if (registry.hasType(type)) {
+            Command cmd = registry.createCommand(type, step, subsystems);
+            if (cmd != null) {
+                // Apply timeout wrapping for commands that don't have internal timeout params
+                cmd = applyTimeoutIfNeeded(cmd, type, step);
+            }
+            return cmd;
+        }
+
+        System.out.println("AutoCommandFactory: Unknown step type: " + type);
+        return null;
     }
 
-    private Command buildFaceTargetCommand(AutoStep step) {
-        Command cmd;
-        if (step.target == AutoStep.FaceTargetType.hub) {
-            cmd = new FaceHubCommand(swerve);
-        } else {
-            cmd = new ConfigFaceFieldPointCommand(
-                    swerve,
-                    step.targetXMetres,
-                    step.targetYMetres,
-                    step.headingToleranceDegrees);
+    /**
+     * Map legacy JSON format type names to new registry type names.
+     */
+    private String mapLegacyType(String rawType, Map<String, Object> step) {
+        if ("drive".equals(rawType)) {
+            String mode = getString(step, "mode");
+            if ("distance".equals(mode)) {
+                return "drive_distance";
+            } else if ("time".equals(mode)) {
+                return "drive_timed";
+            } else if ("velocity".equals(mode)) {
+                return "drive_velocity";
+            } else if ("to_pose".equals(mode)) {
+                return "drive_to_pose";
+            }
         }
-        return cmd.withTimeout(step.timeoutSeconds);
+
+        if ("face_target".equals(rawType)) {
+            String target = getString(step, "target");
+            if ("hub".equals(target)) {
+                return "face_hub";
+            } else if ("point".equals(target)) {
+                return "face_field_point";
+            }
+        }
+
+        // Handle intake action field name mapping: JSON uses "action" but the
+        // ConfigParam is named "intakeAction"
+        if ("intake".equals(rawType)) {
+            if (step.containsKey("action") && !step.containsKey("intakeAction")) {
+                step.put("intakeAction", step.get("action"));
+            }
+        }
+
+        return rawType;
     }
 
-    private Command buildDriveCommand(AutoStep step) {
-        if (step.mode == AutoStep.DriveMode.distance) {
-            return new ConfigDriveDistanceCommand(
-                    swerve,
-                    step.direction,
-                    step.speedMPS,
-                    step.distanceMetres,
-                    step.headingDegrees,
-                    step.timeoutSeconds);
-        } else if (step.mode == AutoStep.DriveMode.time) {
-            return new ConfigDriveTimedCommand(
-                    swerve,
-                    step.direction,
-                    step.speedMPS,
-                    step.durationSeconds,
-                    step.headingDegrees);
-        } else if (step.mode == AutoStep.DriveMode.velocity) {
-            return new ConfigDriveVelocityCommand(
-                    swerve,
-                    step.frame,
-                    step.vxMPS,
-                    step.vyMPS,
-                    step.headingDegrees,
-                    step.durationSeconds);
-        } else {
-            return new ConfigDriveToPoseCommand(
-                    swerve,
-                    step.xMetres,
-                    step.yMetres,
-                    step.headingDegrees,
-                    step.speedMPS,
-                    step.positionToleranceMetres,
-                    step.headingToleranceDegrees,
-                    step.timeoutSeconds);
+    /**
+     * Apply .withTimeout() for command types that don't have internal timeout handling
+     * but have a timeoutSeconds field in the step config.
+     */
+    private Command applyTimeoutIfNeeded(Command cmd, String type, Map<String, Object> step) {
+        // These types handle their own timeout or don't need one
+        if ("drive_velocity".equals(type) || "face_hub".equals(type) || "vision_approach_tag".equals(type)) {
+            double timeout = getDouble(step, "timeoutSeconds");
+            if (timeout > 0) {
+                return cmd.withTimeout(timeout);
+            }
         }
+        return cmd;
     }
 
-    private Command buildParallelGroup(AutoStep step) {
-        if (step.commands == null || step.commands.isEmpty()) {
+    @SuppressWarnings("unchecked")
+    private Command buildParallelGroup(Map<String, Object> step) {
+        List<Map<String, Object>> childSteps = (List<Map<String, Object>>) step.get("commands");
+        if (childSteps == null || childSteps.isEmpty()) {
             System.out.println("AutoCommandFactory: Parallel group has no commands");
             return new WaitCommand(0);
         }
 
         List<Command> children = new ArrayList<>();
-        for (AutoStep child : step.commands) {
+        for (Map<String, Object> child : childSteps) {
             Command cmd = buildStep(child);
             if (cmd != null) {
                 children.add(cmd);
@@ -170,15 +161,38 @@ public class AutoCommandFactory {
             return new WaitCommand(0);
         }
 
+        String endCondition = getString(step, "endCondition");
         Command[] cmds = children.toArray(new Command[0]);
-        if (step.endCondition == AutoStep.ParallelEndCondition.first) {
+
+        if ("first".equals(endCondition)) {
             return new ParallelRaceGroup(cmds);
-        } else if (step.endCondition == AutoStep.ParallelEndCondition.deadline) {
-            int deadlineIndex = Math.max(0, Math.min(step.deadlineIndex, children.size() - 1));
+        } else if ("deadline".equals(endCondition)) {
+            int deadlineIndex = Math.max(0, Math.min(
+                    (int) getDouble(step, "deadlineIndex"), children.size() - 1));
             Command deadline = children.remove(deadlineIndex);
             return new ParallelDeadlineGroup(deadline, children.toArray(new Command[0]));
         } else {
             return new ParallelCommandGroup(cmds);
         }
+    }
+
+    private static String getString(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        return val != null ? String.valueOf(val) : null;
+    }
+
+    private static double getDouble(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        if (val instanceof Number n) {
+            return n.doubleValue();
+        }
+        if (val instanceof String s) {
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
     }
 }

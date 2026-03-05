@@ -2,8 +2,11 @@ package frc.robot.commands.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
+@AutoConfigurable(value = "face_hub", category = "drive",
+    description = "Rotate to face the hub")
 public class FaceHubCommand extends LoggingCommand {
 
     private final SwerveSubsystem swerve;

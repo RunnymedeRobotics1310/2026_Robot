@@ -9,6 +9,9 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.auto.config.AutoCommandFactory;
+import frc.robot.commands.auto.config.AutoCommandRegistrations;
+import frc.robot.commands.auto.config.AutoCommandRegistry;
 import frc.robot.commands.auto.config.AutoConfigNTBridge;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
@@ -38,14 +41,30 @@ public class RobotContainer {
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  private final OperatorInput operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem,
-      intakeSubsystem);
-
+  private final AutoCommandRegistry autoCommandRegistry;
+  private final AutoCommandFactory autoCommandFactory;
+  private final OperatorInput operatorInput;
   private final AutoConfigNTBridge autoConfigNTBridge = new AutoConfigNTBridge();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+  {
+    // Initialize auto command registry and factory
+    autoCommandRegistry = new AutoCommandRegistry();
+    AutoCommandRegistrations.registerAll(autoCommandRegistry);
+
+    AutoCommandRegistry.SubsystemRegistry subsystemRegistry = new AutoCommandRegistry.SubsystemRegistry();
+    subsystemRegistry.register(SwerveSubsystem.class, swerveSubsystem);
+    subsystemRegistry.register(ShooterSubsystem.class, shooterSubsystem);
+    subsystemRegistry.register(IntakeSubsystem.class, intakeSubsystem);
+    subsystemRegistry.register(LimelightVisionSubsystem.class, visionSubsystem);
+
+    autoCommandFactory = new AutoCommandFactory(autoCommandRegistry, subsystemRegistry, swerveSubsystem);
+    operatorInput = new OperatorInput(swerveSubsystem, shooterSubsystem, visionSubsystem,
+        intakeSubsystem, autoCommandFactory);
+  }
+
   public RobotContainer() {
 
     // TODO set the default commands for any subsystems
@@ -64,6 +83,7 @@ public class RobotContainer {
     operatorInput.initAutoSelectors();
 
     autoConfigNTBridge.setOnConfigsChanged(() -> operatorInput.refreshCustomAutoChooser());
+    autoConfigNTBridge.publishCommandMetadata(autoCommandRegistry.getMetadataJson());
   }
 
   /**
