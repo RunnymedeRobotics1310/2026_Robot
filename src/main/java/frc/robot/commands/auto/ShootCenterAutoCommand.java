@@ -24,7 +24,7 @@ public class ShootCenterAutoCommand extends SequentialCommandGroup {
         new DriveFieldOrientedCommand(swerve, 1, 0, 180).withTimeout(2)); // Moves toward ball pit
 
     addCommands(
-        new DriveFieldOrientedCommand(swerve, 0, -1, 180)
+        new DriveFieldOrientedCommand(swerve, 0, -1.5, 180)
             .withTimeout(3)
             .alongWith(
                 new LazyIntakeCommand(intake).withTimeout(3))); // Goes into ball pit and intakes
