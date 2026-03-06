@@ -103,7 +103,7 @@ public final class Constants {
     public static final double MAX_SHOOTER_RPM = 6000;
     public static final double KP = 0.0003;
     public static final double KI = 0;
-    public static final double KD = 0;
+    public static final double KD = 0; // keep this at zero
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -0.6;
