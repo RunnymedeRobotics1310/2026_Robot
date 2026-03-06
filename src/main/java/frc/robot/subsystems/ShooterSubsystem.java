@@ -1,21 +1,17 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.AGITATOR_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.KFF;
-import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.KP;
-import static frc.robot.Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_CAN_ID;
-import static frc.robot.Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_CAN_ID;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
+
+import static frc.robot.Constants.ShooterConstants.*;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -26,6 +22,8 @@ public class ShooterSubsystem extends SubsystemBase {
   private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
   private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
+
+  private final PIDController shooterController = new PIDController(KP, KI, KD, 20.0/1000);
 
   private double targetShooterVelocity;
 
@@ -51,7 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
     targetShooterVelocity = target;
     double currentSpeed = getShooterVelocity();
     double error = (target - currentSpeed); // Normalize error
-    primaryShooterMotor.set((target * KFF) + (error * KP));
+
+//    primaryShooterMotor.set((target * KFF) + (error * KP));
+    primaryShooterMotor.set((target * KFF) + shooterController.calculate(currentSpeed, target));
   }
 
   public void setShooterSpeed(double speed) {
