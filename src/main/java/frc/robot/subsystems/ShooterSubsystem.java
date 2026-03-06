@@ -72,8 +72,8 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param value a value between 0.0 and 1.0
    */
   public void setHood(double value) {
-    hoodServo.set(1 - value); // FIXME: Maybe take out the 1 - part later
-    Telemetry.shooter.hoodAngle = 1 - value;
+    Telemetry.shooter.hoodAngle = value;
+    hoodServo.set(1 - value);
   }
 
   public double calculateShootingAngle(double distanceMeters) {
