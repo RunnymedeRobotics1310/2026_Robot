@@ -43,6 +43,8 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
+    Telemetry.intake.topRollerSpeed = topRollerSpeed;
+    Telemetry.intake.bottomRollerSpeed = bottomRollerSpeed;
     topRollerMotor.set(topRollerSpeed);
     bottomRollerMotor.set(bottomRollerSpeed);
   }

@@ -107,7 +107,7 @@ public class LightingSubsystem extends SubsystemBase {
       } else if (/* Telemetry.climb.climbEncoder > 0 */ false) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
-      } else if (intake.topRollerSpeed > 0) {
+      } else if (intake.topRollerSpeed != 0) {
         blink(yellowLEDPatern, 0.5);
 
       } else if (shooterCount > 0) { // shooterAtSpeed
@@ -123,7 +123,7 @@ public class LightingSubsystem extends SubsystemBase {
       }
     } else { // disabled
 
-      if (swerve.hasVisPose) visPoseCount = 10;
+      if (swerve.hasVisPose) visPoseCount = 20;
 
       if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);

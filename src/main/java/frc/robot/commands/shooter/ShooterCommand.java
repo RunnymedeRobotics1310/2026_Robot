@@ -1,24 +1,11 @@
 package frc.robot.commands.shooter;
 
-import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
-import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
-import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
-import static frc.robot.Constants.ShooterConstants.Y_INT_SUPER_FAR;
-
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+
+import static frc.robot.Constants.ShooterConstants.*;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -28,6 +15,7 @@ public class ShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
 
   private final Timer timer = new Timer();
+  private boolean firstShoot = false;
 
   /**
    * Creates a new ExampleCommand.
@@ -88,11 +76,10 @@ public class ShooterCommand extends LoggingCommand {
   }
 
   public void shooting(double distance) {
-    double shooterSpeed = calculateShootingSpeed(distance);
-    shooterSubsystem.setShooterVelocity(shooterSpeed + 80.0);
+    double targetSpeed = calculateShootingSpeed(distance);
+    shooterSubsystem.setShooterVelocity(targetSpeed);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
-    boolean atSpeed = Math.abs(currentVelocity - shooterSpeed) < ACCPETED_SHOOTER_ERROR;
-    boolean firstShoot = false;
+    boolean atSpeed = (targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
 
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
@@ -110,12 +97,13 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
 
-    } else if (timer.get() < 1.0 && timer.get() > 0.02 && firstShoot == true) {
+    } else if (timer.get() < 1.0 && /*timer.get() > 0.02 && */ firstShoot) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
+      firstShoot = false;
     }
 
-    // shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
