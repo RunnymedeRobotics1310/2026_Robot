@@ -105,7 +105,7 @@ public final class Constants {
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -0.6;
-    public static final double ACCPETED_SHOOTER_ERROR = 65.0;
+    public static final double ACCPETED_SHOOTER_ERROR = 50.0;
 
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_SUPER_FAR = 2867.33;
