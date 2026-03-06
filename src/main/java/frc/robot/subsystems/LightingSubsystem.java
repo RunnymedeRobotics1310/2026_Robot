@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.wpilibj.util.Color.kBlack;
-import static edu.wpi.first.wpilibj.util.Color.kBlue;
 import static edu.wpi.first.wpilibj.util.Color.kDarkViolet;
 import static edu.wpi.first.wpilibj.util.Color.kFirstBlue;
 import static edu.wpi.first.wpilibj.util.Color.kFirstRed;
@@ -14,11 +12,10 @@ import static edu.wpi.first.wpilibj.util.Color.kOrangeRed;
 import static edu.wpi.first.wpilibj.util.Color.kPink;
 import static edu.wpi.first.wpilibj.util.Color.kRed;
 import static edu.wpi.first.wpilibj.util.Color.kViolet;
-import static edu.wpi.first.wpilibj.util.Color.kWhite;
 import static edu.wpi.first.wpilibj.util.Color.kYellow;
 
-import static edu.wpi.first.units.Units.*;
-import static edu.wpi.first.wpilibj.util.Color.*;
+import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.telemetry.Telemetry.*;
 
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.*;
@@ -31,7 +28,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
-import frc.robot.telemetry.Telemetry;
+import frc.robot.telemetry.Telemetry.*;
 
 public class LightingSubsystem extends SubsystemBase {
 
@@ -48,10 +45,7 @@ public class LightingSubsystem extends SubsystemBase {
       kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(kYellow);
   public static final LEDPattern greenLedPattern = LEDPattern.solid(kGreen);
-  public static final LEDPattern whiteLedPattern = LEDPattern.solid(kWhite);
   public static final LEDPattern purpleLedPattern = LEDPattern.solid(kDarkViolet);
-  public static final LEDPattern redLedPattern = LEDPattern.solid(kRed);
-  public static final LEDPattern blueLedPattern = LEDPattern.solid(kBlue);
   public static final LEDPattern orangeLedPattern = LEDPattern.solid(kOrangeRed);
   public static final LEDPattern pinkLedPattern = LEDPattern.solid(kPink);
 
@@ -59,6 +53,8 @@ public class LightingSubsystem extends SubsystemBase {
 
   // Blink Constants
   private final Timer blinkTimer = new Timer();
+  private int visPoseCount = 0;
+  private int shooterCount = 0;
   private boolean isAllianceColor = false;
 
   public LightingSubsystem() {
@@ -78,50 +74,72 @@ public class LightingSubsystem extends SubsystemBase {
       alliancePattern = LEDPattern.solid(kFirstBlue);
 
     if (DriverStation.isEnabled()) {
+      if (shooter.targetShooterRPM > 0) {
+      if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM) < ACCPETED_SHOOTER_ERROR)
+        shooterCount = 10;
+      } else {
+        shooterCount = 0;
+      }
       // if climbing
       // if aligned to climb
       // if climb is up
+      // if intake running
       // if ready to shoot
       // if in range
-      // if intake running
       // else DEFAULT PATTERN (based on alliance?)
+
       if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
+
       } else if (/* Telemetry.climb.level == 2 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kViolet)
             .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
             .applyTo(ledBuffer);
+
       } else if (/* Telemetry.climb.level == 1 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kDarkViolet)
             .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
             .applyTo(ledBuffer);
+
       } else if (/* Telemetry.climb.alignedToTower */ false) {
         greenLedPattern.applyTo(ledBuffer);
+
       } else if (/* Telemetry.climb.climbEncoder > 0 */ false) {
         blink(LEDPattern.solid(kViolet), 0.25);
-      } else if (/* Telemetry.shooter.atSpeed */ false) {
+
+      } else if (intake.topRollerSpeed > 0) {
+        blink(yellowLEDPatern, 0.5);
+
+      } else if (shooterCount > 0) { // shooterAtSpeed
+        shooterCount--;
         yellowLEDPatern.applyTo(ledBuffer);
-      } else if (/* Telemetry.swerve.distanceToHub <= Constants.Swerve.MAX_SHOOTER_DIST */ false) {
+
+      } else if (drive.distanceToHub <= SUPER_FAR_SHOOTING_DISTANCE && false) {
         orangeLedPattern.applyTo(ledBuffer);
 
-      } else if (Telemetry.intake.isHopperFull) {
-        pinkLedPattern.applyTo(ledBuffer);
-      } else if (/* Telemetry.intake.intakeSpeed > 0 */ false) {
-        blink(yellowLEDPatern, 0.5);
       } else {
         alliancePattern.applyTo(ledBuffer);
+
       }
-    } else {
+    } else { // disabled
+
+      if (swerve.hasVisPose) visPoseCount = 10;
+
       if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
-      } else if (Telemetry.healthyRobot == Telemetry.AlertLevel.ERROR) {
+
+      } else if (healthyRobot == AlertLevel.ERROR) {
         orangeLedPattern.blink(Second.of(0.1)).applyTo(ledBuffer);
-      } else if (Telemetry.healthyRobot == Telemetry.AlertLevel.WARNING) {
+
+      } else if (healthyRobot == AlertLevel.WARNING) {
         LEDPattern.solid(kGreenYellow).blink(Second.of(0.1)).applyTo(ledBuffer);
-      } else if (Telemetry.swerve.hasVisPose) {
+
+      } else if (visPoseCount > 0) { // hasVisPose
+        visPoseCount--;
         greenLedPattern.applyTo(ledBuffer);
+
       } else {
-        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, kBlack)
+        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kRed, new Color(15, 0, 0))
             .scrollAtAbsoluteSpeed(MetersPerSecond.of(.1310), kLedSpacing)
             .applyTo(ledBuffer);
       }

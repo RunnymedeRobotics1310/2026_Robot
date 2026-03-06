@@ -14,10 +14,10 @@ public class IntakeTelemetry {
   public boolean enabled = true;
 
   /** The top intake roller speed */
-  public double topRollerSpeed = Double.MIN_VALUE;
+  public double topRollerSpeed = 0;
 
   /** the bottom intake roller speed */
-  public double bottomRollerSpeed = Double.MIN_VALUE;
+  public double bottomRollerSpeed = 0;
 
   /** Whether the door is at the lower limit or not */
   public boolean isDoorClosed = false;
