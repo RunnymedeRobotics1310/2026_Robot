@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
@@ -47,6 +46,7 @@ public class ShooterCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     timer.reset();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -92,6 +92,7 @@ public class ShooterCommand extends LoggingCommand {
     shooterSubsystem.setShooterVelocity(shooterSpeed + 80.0);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
     boolean atSpeed = Math.abs(currentVelocity - shooterSpeed) < ACCPETED_SHOOTER_ERROR;
+    boolean firstShoot = false;
 
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
@@ -105,17 +106,16 @@ public class ShooterCommand extends LoggingCommand {
     }
 
     if (atSpeed) {
+      firstShoot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
-      timer.start();
-    } else if (timer.get() < 1.0 && timer.get() > 0.05) {
+
+    } else if (timer.get() < 1.0 && timer.get() > 0.02 && firstShoot == true) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
-      timer.stop();
-      timer.reset();
     }
 
-    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    // shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
