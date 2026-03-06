@@ -140,6 +140,10 @@ public class OperatorInput extends SubsystemBase {
     return operatorController.getBButton();
   }
 
+  public boolean aggravateJackson() {
+    return operatorController.getXButton();
+  }
+
   public boolean isReverseIntake() {
     return operatorController.getAButton();
   }

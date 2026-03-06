@@ -4,6 +4,8 @@ import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
+
 public class IntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
@@ -48,7 +50,7 @@ public class IntakeCommand extends LoggingCommand {
 
     if (intakeCheck) {
       intakeSubsystem.setRollerSpeeds(-1, -0.8);
-      intakeSubsystem.setDoorSetpoint(30);
+      intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       //      shooter.setAgitatorSpeed(Constants.ShooterConstants.AGITATOR_RUNSPEED);
     } else {
       intakeSubsystem.setRollerSpeeds(0, 0);

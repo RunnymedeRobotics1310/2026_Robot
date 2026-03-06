@@ -4,6 +4,7 @@ import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ShooterSubsystem;
 
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 public class DefaultShooterCommand extends LoggingCommand {
@@ -21,6 +22,7 @@ public class DefaultShooterCommand extends LoggingCommand {
 
         if (oi.isStopFlywheel()) shooter.setShooterSpeed(-0.01);
         if (oi.isReverseKicker()) shooter.setKickerSpeed(-KICKER_RUNSPEED);
+        if (oi.aggravateJackson()) shooter.setAgitatorSpeed(AGITATOR_RUNSPEED);
 
     }
 

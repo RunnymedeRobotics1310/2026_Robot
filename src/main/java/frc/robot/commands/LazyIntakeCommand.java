@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import frc.robot.subsystems.IntakeSubsystem;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
+
 public class LazyIntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
@@ -27,7 +29,7 @@ public class LazyIntakeCommand extends LoggingCommand {
     // only when you press a button
 
     intakeSubsystem.setRollerSpeeds(-1, -0.8);
-    intakeSubsystem.setDoorSetpoint(25);
+    intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
   }
 
   // Returns true when the command should end.

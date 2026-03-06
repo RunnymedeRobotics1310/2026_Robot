@@ -1,8 +1,12 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
+
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 /** An example command that uses an example subsystem. */
 public class LazyShooterCommand extends LoggingCommand {
@@ -44,10 +48,9 @@ public class LazyShooterCommand extends LoggingCommand {
 
         shooterSubsystem.setHood(hoodAngle);
         shooterSubsystem.setShooterVelocity(speed);
-        if (timer.hasElapsed(2.0)) {
-            shooterSubsystem.setKickerSpeed(-0.7);
-        } else {
-            shooterSubsystem.setKickerSpeed(0);
+        shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+        if (timer.hasElapsed(0.5)) {
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
         }
 
     }

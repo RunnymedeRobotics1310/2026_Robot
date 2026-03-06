@@ -97,7 +97,7 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
 
-    } else if (timer.get() < 1.0 && /*timer.get() > 0.02 && */ firstShoot) {
+    } else if (timer.get() < 1.0 && firstShoot) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
