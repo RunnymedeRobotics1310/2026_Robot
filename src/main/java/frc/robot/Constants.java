@@ -47,7 +47,7 @@ public final class Constants {
 
   public static class OperatorConstants {
     public static final int DRIVER_CONTROLLER_PORT = 0;
-    public static final int OPERATOR_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
     public static final double CONTROLLER_DEADBAND = .15;
 
     public static final double GENERAL_SPEED_FACTOR = .5;
@@ -74,7 +74,8 @@ public final class Constants {
       SIMPLE_CENTER,
       OPPORTUNISTIC_OUTPOST,
       SHOOT_CENTER,
-      LEFT_SHOOT_CLIMB
+      LEFT_SHOOT_CLIMB,
+      RIGHT_SHOOT_CLIMB
     }
 
     public enum Delay {
@@ -289,8 +290,11 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 
     public static final int INTAKE_SPEED = -1;
-    public static final double INTAKE_DOOR_ANGLE = 30;
-    public static final double DOOR_KP = 0.01;
+    public static final double INTAKE_DOOR_ANGLE = 25.0;
+    public static final double DOOR_KP =
+        0.01; // Making this big so it go weeeee, the last kp was 0.01
+    public static final double DOOR_KI = 0;
+    public static final double DOOR_KD = 0;
     public static final double DOOR_ENCODERS_TO_DEGREES = 360 / 90;
   }
 }

@@ -1,11 +1,11 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
+
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ShooterSubsystem;
-
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 public class DefaultShooterCommand extends LoggingCommand {
 
@@ -15,6 +15,7 @@ public class DefaultShooterCommand extends LoggingCommand {
     public DefaultShooterCommand(ShooterSubsystem shooter, OperatorInput oi) {
         this.shooter = shooter;
         this.oi = oi;
+        addRequirements(shooter);
     }
 
     @Override

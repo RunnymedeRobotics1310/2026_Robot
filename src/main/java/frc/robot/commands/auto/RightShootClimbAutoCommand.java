@@ -1,7 +1,5 @@
 package frc.robot.commands.auto;
 
-import static frc.robot.telemetry.Telemetry.shooter;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.swerve.*;
@@ -9,9 +7,9 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
-public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
+public class RightShootClimbAutoCommand extends SequentialCommandGroup {
 
-  public LeftShootClimbAutoCommand(
+  public RightShootClimbAutoCommand(
       SwerveSubsystem swerve,
       ShooterSubsystem shooter,
       LimelightVisionSubsystem vision,
@@ -25,8 +23,8 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
 
     addCommands(new ShooterCommand(shooter, swerve).withTimeout(10));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, 0, -1, 180).withTimeout(1.5));
+    addCommands(new DriveFieldOrientedCommand(swerve, 0, 1, 180).withTimeout(1.5));
 
-    addCommands(new DriveToTowerCommand(swerve, vision, false));
+    addCommands(new DriveToTowerCommand(swerve, vision, true));
   }
 }

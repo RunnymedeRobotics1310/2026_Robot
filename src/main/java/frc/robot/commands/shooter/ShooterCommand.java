@@ -1,11 +1,11 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-
-import static frc.robot.Constants.ShooterConstants.*;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -15,7 +15,7 @@ public class ShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
 
   private final Timer timer = new Timer();
-  private boolean firstShoot = false;
+  private boolean firstShoot;
 
   /**
    * Creates a new ExampleCommand.
@@ -27,6 +27,7 @@ public class ShooterCommand extends LoggingCommand {
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
     this.swerveSubsystem = swerveSubsystem;
+    firstShoot = true;
   }
 
   // Called when the command is initially scheduled.
@@ -97,11 +98,10 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
 
-    } else if (timer.get() < 1.0 && firstShoot) {
+    } else if (timer.get() < 0.8 && firstShoot) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
-      firstShoot = false;
     }
 
      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
