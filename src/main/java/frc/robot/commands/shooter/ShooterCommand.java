@@ -1,7 +1,6 @@
 package frc.robot.commands.shooter;
 
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
@@ -107,18 +106,16 @@ public class ShooterCommand extends LoggingCommand {
       }
     }
 
-    // if (atSpeed) {
-    // firstShoot = true;
-    // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    // timer.reset();
-
-    // } else if (/* timer.get() < 0.8 && */ firstShoot == true) {
+    if (atSpeed == true) {
+      firstShoot = true;
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+      // timer.reset();
+    }
+    // /* timer.get() < 0.8 && */
+    // } else if (firstShoot == true) {
     // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     // } else {
-    // // shooterSubsystem.setKickerSpeed(0);
+    // shooterSubsystem.setKickerSpeed(0);
     // }
-    if (timer.hasElapsed(0.5))
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
