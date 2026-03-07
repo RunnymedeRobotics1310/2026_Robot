@@ -290,7 +290,7 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 
     public static final int INTAKE_SPEED = -1;
-    public static final double INTAKE_DOOR_ANGLE = 30.0;
+    public static final double INTAKE_DOOR_ANGLE = 40.0;
     public static final double DOOR_KP =
         0.01; // Making this big so it go weeeee, the last kp was 0.01
     public static final double DOOR_KI = 0;
