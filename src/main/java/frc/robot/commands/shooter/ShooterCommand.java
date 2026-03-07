@@ -107,17 +107,18 @@ public class ShooterCommand extends LoggingCommand {
       }
     }
 
-    if (atSpeed) {
-      firstShoot = true;
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      timer.reset();
+    // if (atSpeed) {
+    // firstShoot = true;
+    // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    // timer.reset();
 
-    } else if (timer.get() < 0.8 && firstShoot == true) {
+    // } else if (/* timer.get() < 0.8 && */ firstShoot == true) {
+    // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    // } else {
+    // // shooterSubsystem.setKickerSpeed(0);
+    // }
+    if (timer.hasElapsed(0.5))
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    } else {
-      shooterSubsystem.setKickerSpeed(0);
-    }
-
     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
