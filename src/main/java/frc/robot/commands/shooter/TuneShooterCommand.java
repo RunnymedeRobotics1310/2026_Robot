@@ -7,14 +7,13 @@ import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class TuneShooterCommand extends LoggingCommand {
 
-  private final ShooterSubsystem shooterSubsystem;
+  private final HopperSubsystem hopperSubsystem;
 
   private final SwerveSubsystem swerveSubsystem;
 
@@ -27,16 +26,15 @@ public class TuneShooterCommand extends LoggingCommand {
   /**
    * Creates a new ExampleCommand.
    *
-   * @param shooterSubsystem The subsystem used by this command.
+   * @param hopperSubsystem The subsystem used by this command.
    */
   public TuneShooterCommand(
-      ShooterSubsystem shooterSubsystem,
+      HopperSubsystem hopperSubsystem,
       OperatorInput operatorInput,
-      SwerveSubsystem swerveSubsystem,
-      IntakeSubsystem intakeSubsystem) {
+      SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem, swerveSubsystem, intakeSubsystem);
-    this.shooterSubsystem = shooterSubsystem;
+    addRequirements(hopperSubsystem, swerveSubsystem);
+    this.hopperSubsystem = hopperSubsystem;
     this.operatorInput = operatorInput;
     this.swerveSubsystem = swerveSubsystem;
   }
@@ -64,25 +62,25 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     if (shoot) {
-      shooterSubsystem.setShooterVelocity(testShooterSpeed);
+      hopperSubsystem.setShooterVelocity(testShooterSpeed);
 
     } else if (operatorInput.getDriverController().getBButton()) {
-      shooterSubsystem.setShooterSpeed(1);
+      hopperSubsystem.setShooterSpeed(1);
     } else {
-      shooterSubsystem.setShooterSpeed(0.0);
+      hopperSubsystem.setShooterSpeed(0.0);
     }
 
     if (currentPOV == 270) {
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+      hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+      hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     } else {
-      shooterSubsystem.setKickerSpeed(0.0);
-      shooterSubsystem.setAgitatorSpeed(0.0);
+      hopperSubsystem.setKickerSpeed(0.0);
+      hopperSubsystem.setAgitatorSpeed(0.0);
     }
 
     if (currentPOV == 90) {
       double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
-      shooterSubsystem.setHood(Math.abs(joystick));
+      hopperSubsystem.setHood(Math.abs(joystick));
     }
 
     lastPov = currentPOV;
@@ -98,6 +96,6 @@ public class TuneShooterCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
-    shooterSubsystem.stop();
+    hopperSubsystem.stop();
   }
 }

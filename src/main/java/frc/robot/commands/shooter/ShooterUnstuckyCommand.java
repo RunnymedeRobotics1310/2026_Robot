@@ -1,16 +1,16 @@
 package frc.robot.commands.shooter;
 
 import frc.robot.commands.LoggingCommand;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 
 
 public class ShooterUnstuckyCommand extends LoggingCommand {
 
-    private final ShooterSubsystem shooterSubsystem;
+    private final HopperSubsystem hopperSubsystem;
 
-    public ShooterUnstuckyCommand(ShooterSubsystem shooterSubsystem){
-        addRequirements(shooterSubsystem);
-        this.shooterSubsystem = shooterSubsystem;
+    public ShooterUnstuckyCommand(HopperSubsystem hopperSubsystem){
+        addRequirements(hopperSubsystem);
+        this.hopperSubsystem = hopperSubsystem;
     }
 
     @Override
@@ -29,11 +29,11 @@ public class ShooterUnstuckyCommand extends LoggingCommand {
     @Override
     public void end(boolean interrupted) {
         logCommandEnd(interrupted);
-        shooterSubsystem.stop();
+        hopperSubsystem.stop();
     }
 
     public void unstuckShooter(){
-        shooterSubsystem.setKickerSpeed(1);
+        hopperSubsystem.setKickerSpeed(1);
     }
 
 
