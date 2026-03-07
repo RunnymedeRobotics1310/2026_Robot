@@ -57,7 +57,7 @@ public class IntakeCommand extends LoggingCommand {
     //        }
 
     if (intakeCheck) {
-      intakeSubsystem.setRollerSpeeds(-1, -0.8);
+      intakeSubsystem.setRollerSpeeds(-1, -1);
       intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       firstIntake = true;
       timer.reset();
@@ -87,6 +87,7 @@ public class IntakeCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     intakeSubsystem.rollerStop();
+    firstIntake = false;
     timer.reset();
     timer.stop();
   }
