@@ -27,7 +27,7 @@ public class ShooterCommand extends LoggingCommand {
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
     this.swerveSubsystem = swerveSubsystem;
-    firstShoot = true;
+    firstShoot = false;
   }
 
   // Called when the command is initially scheduled.
@@ -104,6 +104,6 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(0);
     }
 
-     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
   }
 }
