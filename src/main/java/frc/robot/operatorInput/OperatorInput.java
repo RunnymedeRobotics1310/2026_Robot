@@ -63,8 +63,11 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::shootFromAnywhere).whileTrue(new ShooterCommand(shooter, swerve));
 
     // Auto align to climb
-    new Trigger(driverController::getAButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, !false));
+    new Trigger(driverController::getXButton)
+            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+
+    new Trigger(driverController::getBButton)
+        .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     // not included here:
     //   intake - left trigger
@@ -89,8 +92,8 @@ public class OperatorInput extends SubsystemBase {
     //   reverse intake
     //   stop shooter
 
-    new Trigger(driverController::getXButton)
-        .onTrue(new TuneShooterCommand(shooter, this, swerve, intake));
+//    new Trigger(driverController::getXButton)
+//        .onTrue(new TuneShooterCommand(shooter, this, swerve, intake));
   }
 
   public boolean isCancel() {
@@ -224,7 +227,7 @@ public class OperatorInput extends SubsystemBase {
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
       case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
-      case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, delay);
+      case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, shooter, vision, delay);
 
       default -> new InstantCommand();
     };

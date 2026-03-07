@@ -11,8 +11,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.telemetry.Telemetry;
+
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -325,7 +328,16 @@ public class SwerveSubsystem extends SubsystemBase {
     Pose2d pose = getPose();
     Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+      pose = new Pose2d(Constants.FieldConstants.FIELD_EXTENT_METRES_X - pose.getX(), pose.getY(), pose.getRotation());
+//      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+    }
+
+    if (pose.getX() > 4) {
+      if (pose.getY() < FIELD_EXTENT_METRES_Y/2) {
+        hubPose = new Translation2d(hubPose.getX(), 3);
+      } else {
+        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y-3);
+      }
     }
 
     double dx, dy;

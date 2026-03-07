@@ -22,6 +22,7 @@ public class DriveToTowerCommand extends LoggingCommand {
   private final int tXOffset;
   private int theta = 0;
 
+
   public DriveToTowerCommand(
       SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean isRightSide) {
     super();
@@ -78,11 +79,11 @@ public class DriveToTowerCommand extends LoggingCommand {
     if (Math.abs(tX + tXOffset) > 10) {
       vX = 0;
     } else {
-      vX = 0.2;
+      vX = 0.4;
     }
 
     // align to tag
-    vY = -0.065 * (tX + tXOffset);
+    vY = -0.1 * (tX + tXOffset);
 
     double omega = swerve.computeOmega(theta);
     swerve.driveRobotOriented(vX, vY, omega);
