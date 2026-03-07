@@ -9,10 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
-import frc.robot.commands.auto.ExitZoneAutoCommand;
-import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
-import frc.robot.commands.auto.ShootCenterAutoCommand;
-import frc.robot.commands.auto.SimpleCenterAutoCommand;
+import frc.robot.commands.auto.*;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
@@ -194,6 +191,8 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
     autoPatternChooser.addOption("Shoot Center", Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
+    autoPatternChooser.addOption(
+        "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -225,6 +224,7 @@ public class OperatorInput extends SubsystemBase {
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
       case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
+      case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, delay);
 
       default -> new InstantCommand();
     };

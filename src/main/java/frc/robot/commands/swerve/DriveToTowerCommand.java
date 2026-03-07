@@ -11,8 +11,8 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = -13; // robot left
-  private static final int RIGHT_TOWER_TX_OFFSET = 23; // robot right
+  private static final int LEFT_TOWER_TX_OFFSET = 23; // robot left
+  private static final int RIGHT_TOWER_TX_OFFSET = -13; // robot right
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;

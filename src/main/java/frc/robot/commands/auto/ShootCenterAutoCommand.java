@@ -14,17 +14,17 @@ public class ShootCenterAutoCommand extends SequentialCommandGroup {
 
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    addCommands(new SetAllianceGyroCommand(swerve, 180));
+    addCommands(new SetAllianceGyroCommand(swerve, 0));
 
     addCommands(
-        new DriveFieldOrientedCommand(swerve, 0, 1, 180)
+        new DriveFieldOrientedCommand(swerve, 0, -1, 0)
             .withTimeout(0.3)); // Moves away from side of trench
 
     addCommands(
-        new DriveFieldOrientedCommand(swerve, 1, 0, 180).withTimeout(2)); // Moves toward ball pit
+        new DriveFieldOrientedCommand(swerve, 1, 0, 0).withTimeout(2)); // Moves toward ball pit
 
     addCommands(
-        new DriveFieldOrientedCommand(swerve, 0, -1, 180)
+        new DriveFieldOrientedCommand(swerve, 0, 1, 0)
             .withTimeout(5)
             .alongWith(
                 new LazyIntakeCommand(intake).withTimeout(5.3))); // Goes into ball pit and intakes
