@@ -18,7 +18,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final DigitalInput doorClosedLimit = new DigitalInput(DOOR_CLOSED_LIMIT_DIO_PORT);
 
-  private boolean doorState = false;
   private double doorSetpoint = 0;
 
   //  private final DigitalInput beamBreak = new DigitalInput(-1);
@@ -57,10 +56,6 @@ public class IntakeSubsystem extends SubsystemBase {
     return doorMotor.getEncoder().getPosition() * DOOR_ENCODERS_TO_DEGREES;
   }
 
-  public void setDoorState(boolean extended) {
-    doorState = extended;
-  }
-
   public void setDoorSetpoint(double setpoint) {
     doorSetpoint = setpoint;
   }
@@ -71,10 +66,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public boolean getDoorClosed() {
     return !doorClosedLimit.get();
-  }
-
-  public boolean getDoorState() {
-    return doorState;
   }
 
   public void setRollers(boolean roll) {
@@ -105,6 +96,5 @@ public class IntakeSubsystem extends SubsystemBase {
   public void stop() {
     setRollerSpeeds(0, 0);
     setDoorSpeed(0);
-    setDoorState(false);
   }
 }

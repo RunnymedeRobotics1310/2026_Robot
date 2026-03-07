@@ -20,7 +20,7 @@ public class TuneShooterCommand extends LoggingCommand {
 
   private final OperatorInput operatorInput;
 
-  private double testShooterSpeed;
+  private double testShooterSpeed = 3000;
 
   private int lastPov = -1;
 
@@ -73,11 +73,11 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     if (currentPOV == 270) {
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+//      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
-      shooterSubsystem.setAgitatorSpeed(0.0);
+//      shooterSubsystem.setAgitatorSpeed(0.0);
     }
 
     if (currentPOV == 90) {
