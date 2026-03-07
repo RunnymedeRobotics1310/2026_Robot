@@ -6,19 +6,19 @@ import frc.robot.commands.swerve.DriveRobotOrientedAtHeadingCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.NullDriveCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class SimpleCenterAutoCommand extends SequentialCommandGroup {
   //
   public SimpleCenterAutoCommand(
-      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+          SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
 
     addCommands(new SetAllianceGyroCommand(swerve, 0));
 
     addCommands(
-        new LazyShooterCommand(shooter, 2800, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
+        new LazyShooterCommand(hopper, 2800, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
 
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -2, 0.7, 0).withTimeout(1));
 

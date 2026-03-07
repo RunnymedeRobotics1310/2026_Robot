@@ -5,12 +5,12 @@ import frc.robot.commands.LazyIntakeCommand;
 import frc.robot.commands.swerve.DriveFieldOrientedCommand;
 import frc.robot.commands.swerve.NullDriveCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class ShootCenterAutoCommand extends SequentialCommandGroup {
 
-  public ShootCenterAutoCommand(SwerveSubsystem swerve, IntakeSubsystem intake, double delay) {
+  public ShootCenterAutoCommand(SwerveSubsystem swerve, HopperSubsystem hopper, double delay) {
 
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
@@ -27,6 +27,6 @@ public class ShootCenterAutoCommand extends SequentialCommandGroup {
         new DriveFieldOrientedCommand(swerve, 0, 1, 0)
             .withTimeout(5)
             .alongWith(
-                new LazyIntakeCommand(intake).withTimeout(5.3))); // Goes into ball pit and intakes
+                new LazyIntakeCommand(hopper).withTimeout(5.3))); // Goes into ball pit and intakes
   }
 }

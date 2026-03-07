@@ -1,9 +1,8 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
 import frc.robot.commands.LoggingCommand;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
@@ -11,7 +10,7 @@ import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 /** An example command that uses an example subsystem. */
 public class LazyShooterCommand extends LoggingCommand {
 
-    private final ShooterSubsystem shooterSubsystem;
+    private final HopperSubsystem hopperSubsystem;
 
     private final int speed;
     private final double duration;
@@ -22,12 +21,12 @@ public class LazyShooterCommand extends LoggingCommand {
     /**
      * Creates a new ExampleCommand.
      *
-     * @param shooterSubsystem The subsystem used by this command.
+     * @param hopperSubsystem The subsystem used by this command.
      */
-    public LazyShooterCommand(ShooterSubsystem shooterSubsystem, int speed, double hoodAngle, double duration) {
+    public LazyShooterCommand(HopperSubsystem hopperSubsystem, int speed, double hoodAngle, double duration) {
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(shooterSubsystem);
-        this.shooterSubsystem = shooterSubsystem;
+        addRequirements(hopperSubsystem);
+        this.hopperSubsystem = hopperSubsystem;
         this.speed = speed;
         this.duration = duration;
         this.hoodAngle = hoodAngle;
@@ -46,11 +45,11 @@ public class LazyShooterCommand extends LoggingCommand {
     @Override
     public void execute() {
 
-        shooterSubsystem.setHood(hoodAngle);
-        shooterSubsystem.setShooterVelocity(speed);
-        shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+        hopperSubsystem.setHood(hoodAngle);
+        hopperSubsystem.setShooterVelocity(speed);
+        hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
         if (timer.hasElapsed(0.5)) {
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+            hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
         }
 
     }
@@ -65,8 +64,8 @@ public class LazyShooterCommand extends LoggingCommand {
     @Override
     public void end(boolean interrupted) {
         logCommandEnd(interrupted);
-        shooterSubsystem.stop();
-        shooterSubsystem.setHood(0);
+        hopperSubsystem.stop();
+        hopperSubsystem.setHood(0);
         timer.stop();
         timer.reset();
     }
