@@ -1,6 +1,20 @@
 package frc.robot.commands.shooter;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
+import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
+import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
+import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
+import static frc.robot.Constants.ShooterConstants.Y_INT_SUPER_FAR;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
@@ -27,7 +41,6 @@ public class ShooterCommand extends LoggingCommand {
     addRequirements(shooterSubsystem);
     this.shooterSubsystem = shooterSubsystem;
     this.swerveSubsystem = swerveSubsystem;
-    firstShoot = false;
   }
 
   // Called when the command is initially scheduled.
@@ -36,6 +49,7 @@ public class ShooterCommand extends LoggingCommand {
     logCommandStart();
     timer.reset();
     timer.start();
+    firstShoot = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -98,7 +112,7 @@ public class ShooterCommand extends LoggingCommand {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
       timer.reset();
 
-    } else if (timer.get() < 0.8 && firstShoot) {
+    } else if (timer.get() < 0.8 && firstShoot == true) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
