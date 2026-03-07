@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.*;
+import frc.robot.commands.shooter.LazyShooterCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
@@ -83,8 +84,7 @@ public class OperatorInput extends SubsystemBase {
     /* OPERATOR CONTROLS */
 
     // Shoot from set range - ends when button is released, or after 100 seconds
-    //    new Trigger(this::isCloseShoot)
-    //            .whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
+    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
 
     // not included here:
     //   manual climb
@@ -97,7 +97,8 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isCancel() {
-    return (driverController.getStartButton() && !driverController.getBackButton());
+    return ((driverController.getStartButton() && !driverController.getBackButton()
+        || operatorController.getStartButton()));
   }
 
   public boolean isZeroGyro() {
@@ -196,6 +197,8 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.addOption("Shoot Center", Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
     autoPatternChooser.addOption(
         "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
+    autoPatternChooser.addOption(
+        "Right Shoot Climb", Constants.AutoConstants.AutoPattern.RIGHT_SHOOT_CLIMB);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -228,6 +231,7 @@ public class OperatorInput extends SubsystemBase {
       case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
       case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
       case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, shooter, vision, delay);
+      case RIGHT_SHOOT_CLIMB -> new RightShootClimbAutoCommand(swerve, shooter, vision, delay);
 
       default -> new InstantCommand();
     };

@@ -1,44 +1,47 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.ShooterConstants.*;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
-import static frc.robot.Constants.ShooterConstants.*;
-
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final SparkFlex primaryShooterMotor = new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID,
-      SparkFlex.MotorType.kBrushless);
-  private final SparkFlex secondaryShooterMotor = new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID,
-      SparkFlex.MotorType.kBrushless);
+  private final SparkFlex primaryShooterMotor =
+      new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
+  private final SparkFlex secondaryShooterMotor =
+      new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
   private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
   private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
 
-  private final PIDController shooterController = new PIDController(KP, KI, KD, 20.0/1000);
+  private final PIDController shooterController = new PIDController(KP, KI, KD, 20.0 / 1000);
+
+  private final IntakeSubsystem intake;
 
   private double targetShooterVelocity;
 
   /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem() {
+  public ShooterSubsystem(IntakeSubsystem intake) {
     secondaryShooterMotor.configure(
         new SparkFlexConfig().follow(primaryShooterMotor, true),
-        ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+        ResetMode.kNoResetSafeParameters,
+        PersistMode.kPersistParameters);
+    this.intake = intake;
   }
 
   @Override
   public void periodic() {
     Telemetry.shooter.targetShooterRPM = targetShooterVelocity;
     Telemetry.shooter.currentShooterRPM = getShooterVelocity();
-
   }
 
   public double getShooterVelocity() {
@@ -50,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double currentSpeed = getShooterVelocity();
     double error = (target - currentSpeed); // Normalize error
 
-//    primaryShooterMotor.set((target * KFF) + (error * KP));
+    //    primaryShooterMotor.set((target * KFF) + (error * KP));
     primaryShooterMotor.set((target * KFF) + shooterController.calculate(currentSpeed, target));
   }
 
@@ -65,6 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setAgitatorSpeed(double speed) {
     agitatorMotor.set(speed);
+    intake.setRollerSpeeds(0, INTAKE_SPEED);
     Telemetry.shooter.agitatorSpeed = speed;
   }
 
@@ -79,8 +83,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public double calculateShootingAngle(double distanceMeters) {
     if (distanceMeters <= 5.0 && distanceMeters > 2.0) {
       return 64;
-    } else
-      return 78;
+    } else return 78;
   }
 
   public void stop() {
@@ -88,5 +91,4 @@ public class ShooterSubsystem extends SubsystemBase {
     kickerMotor.stopMotor();
     agitatorMotor.stopMotor();
   }
-
 }

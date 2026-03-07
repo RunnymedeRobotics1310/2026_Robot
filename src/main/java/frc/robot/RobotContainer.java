@@ -9,6 +9,7 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.shooter.DefaultShooterCommand;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -31,7 +32,7 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(intakeSubsystem);
 
   private final OperatorInput operatorInput =
       new OperatorInput(swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
@@ -48,6 +49,8 @@ public class RobotContainer {
 
     intakeSubsystem.setDefaultCommand(
         new IntakeCommand(intakeSubsystem, shooterSubsystem, operatorInput));
+
+    shooterSubsystem.setDefaultCommand(new DefaultShooterCommand(shooterSubsystem, operatorInput));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine

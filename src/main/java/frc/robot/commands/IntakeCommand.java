@@ -1,16 +1,21 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-
-import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
 
 public class IntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
   private final ShooterSubsystem shooter;
   private final OperatorInput oi;
+  boolean firstIntake;
+
+  private Timer timer = new Timer();
 
   public IntakeCommand(
       IntakeSubsystem intake, ShooterSubsystem shooter, OperatorInput operatorInput) {
@@ -19,12 +24,14 @@ public class IntakeCommand extends LoggingCommand {
     this.shooter = shooter;
     addRequirements(intake);
     oi = operatorInput;
+    firstIntake = false;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     logCommandStart();
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,6 +40,7 @@ public class IntakeCommand extends LoggingCommand {
     // door go out
     // spin motors
     // only when you press a button
+
     final boolean intakeCheck = oi.isIntakeDoingStuff();
 
     //        if(intakeCheck) {
@@ -51,10 +59,19 @@ public class IntakeCommand extends LoggingCommand {
     if (intakeCheck) {
       intakeSubsystem.setRollerSpeeds(-1, -0.8);
       intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+      firstIntake = true;
+      timer.reset();
       //      shooter.setAgitatorSpeed(Constants.ShooterConstants.AGITATOR_RUNSPEED);
+    } else if (oi.isReverseIntake()) {
+      intakeSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+      intakeSubsystem.setDoorSetpoint(90);
     } else {
-      intakeSubsystem.setRollerSpeeds(0, 0);
       intakeSubsystem.setDoorSetpoint(0);
+      if (timer.get() < 0.5 && firstIntake) {
+        intakeSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+      } else {
+        intakeSubsystem.setRollerSpeeds(0, 0);
+      }
       shooter.stop();
     }
   }
@@ -70,5 +87,7 @@ public class IntakeCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     intakeSubsystem.rollerStop();
+    timer.reset();
+    timer.stop();
   }
 }
