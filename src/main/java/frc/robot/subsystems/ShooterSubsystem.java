@@ -62,8 +62,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setKickerSpeed(double speed) {
-    kickerMotor.set(speed);
     Telemetry.shooter.kickerSpeed = speed;
+    kickerMotor.set(speed);
   }
 
   public void setAgitatorSpeed(double speed) {
