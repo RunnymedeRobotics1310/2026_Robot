@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve;
 import ca.team1310.swerve.RunnymedeSwerveDrive;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -176,6 +177,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getYawRate() {
     return drive.getYawRate();
+  }
+
+  /**
+   * Get the wrapped heading error (desired-current) in degrees, normalized to [-180, 180].
+   *
+   * @param desiredHeadingDegrees desired heading in degrees
+   * @return heading error in degrees
+   */
+  public double getHeadingErrorDegrees(double desiredHeadingDegrees) {
+    return MathUtil.inputModulus(desiredHeadingDegrees - drive.getYaw(), -180, 180);
   }
 
   /**
