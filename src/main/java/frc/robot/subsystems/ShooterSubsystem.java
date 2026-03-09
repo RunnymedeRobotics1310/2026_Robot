@@ -7,7 +7,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,11 +22,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
   private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
 
-  private final PIDController shooterController = new PIDController(KP, KI, KD, 20.0 / 1000);
+  private double targetShooterVelocity;
+  private double iError = 0;
 
   private final IntakeSubsystem intake;
 
-  private double targetShooterVelocity;
 
   /** Creates The Shooter Subsystem. */
   public ShooterSubsystem(IntakeSubsystem intake) {
@@ -40,8 +39,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Telemetry.shooter.targetShooterRPM = targetShooterVelocity;
     Telemetry.shooter.currentShooterRPM = getShooterVelocity();
+
+    updateShooterSpeed();
   }
 
   public double getShooterVelocity() {
@@ -49,12 +49,27 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterVelocity(double target) {
+    Telemetry.shooter.targetShooterRPM = target;
     targetShooterVelocity = target;
-    double currentSpeed = getShooterVelocity();
-    double error = (target - currentSpeed); // Normalize error
+    if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
+      iError = 0;
+    }
+//    updateShooterSpeed();
+  }
 
-    //    primaryShooterMotor.set((target * KFF) + (error * KP));
-    primaryShooterMotor.set((target * KFF) + shooterController.calculate(currentSpeed, target));
+  public void updateShooterSpeed() {
+    double currentSpeed = getShooterVelocity();
+    double error = (targetShooterVelocity - currentSpeed); // Normalize error
+    if (Math.abs(error) > I_ZONE) {
+      iError = 0;
+    } else {
+      iError += error;
+      iError = Math.min(iError, (1-error*KP)/KI);
+    }
+
+    double pidOutput = (targetShooterVelocity * KFF) + (error * KP) + (iError * KI);
+    if (targetShooterVelocity == 0) setShooterSpeed(0);
+    else setShooterSpeed(pidOutput);
   }
 
   public void setShooterSpeed(double speed) {
@@ -62,8 +77,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setKickerSpeed(double speed) {
-    kickerMotor.set(speed);
     Telemetry.shooter.kickerSpeed = speed;
+    kickerMotor.set(speed);
   }
 
   public void setAgitatorSpeed(double speed) {
@@ -87,6 +102,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void stop() {
+    setShooterVelocity(0);
     primaryShooterMotor.stopMotor();
     kickerMotor.stopMotor();
     agitatorMotor.stopMotor();

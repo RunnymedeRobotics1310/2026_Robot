@@ -72,7 +72,7 @@ public class IntakeCommand extends LoggingCommand {
       } else {
         intakeSubsystem.setRollerSpeeds(0, 0);
       }
-      shooter.stop();
+//      shooter.setAgitatorSpeed(0);
     }
   }
 

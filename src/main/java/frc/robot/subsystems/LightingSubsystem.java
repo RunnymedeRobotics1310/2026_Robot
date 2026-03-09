@@ -33,17 +33,16 @@ import frc.robot.telemetry.Telemetry.*;
 public class LightingSubsystem extends SubsystemBase {
 
   // The LED strip is plugged into a DIO port on the RoboRIO
-  private final AddressableLED ledStrip =
-      new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
+  private final AddressableLED ledStrip = new AddressableLED(Constants.LightingConstants.LED_STRING_PWM_PORT);
 
   // Buffer of data to write to the LED strip
-  private final AddressableLEDBuffer ledBuffer =
-      new AddressableLEDBuffer(Constants.LightingConstants.LED_STRING_LENGTH);
+  private final AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(
+      Constants.LightingConstants.LED_STRING_LENGTH);
 
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
   public static final Distance kLedSpacing = Meters.of(1 / 120.0);
-  public final LEDPattern scrollingRainbowLedPattern =
-      rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing);
+  public final LEDPattern scrollingRainbowLedPattern = rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5),
+      kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(kYellow);
   public static final LEDPattern greenLedPattern = LEDPattern.solid(kGreen);
   public static final LEDPattern purpleLedPattern = LEDPattern.solid(kDarkViolet);
@@ -55,7 +54,6 @@ public class LightingSubsystem extends SubsystemBase {
   // Blink Constants
   private final Timer blinkTimer = new Timer();
   private int visPoseCount = 0;
-  private int shooterCount = 0;
   private boolean isAllianceColor = false;
 
   public LightingSubsystem() {
@@ -71,15 +69,10 @@ public class LightingSubsystem extends SubsystemBase {
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       alliancePattern = LEDPattern.solid(kFirstRed);
-    } else alliancePattern = LEDPattern.solid(kFirstBlue);
+    } else
+      alliancePattern = LEDPattern.solid(kFirstBlue);
 
     if (DriverStation.isEnabled()) {
-      if (shooter.targetShooterRPM > 0) {
-        if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM) < ACCPETED_SHOOTER_ERROR)
-          shooterCount = 10;
-      } else {
-        shooterCount = 0;
-      }
       // if climbing
       // if aligned to climb
       // if climb is up
@@ -88,35 +81,29 @@ public class LightingSubsystem extends SubsystemBase {
       // if in range
       // else DEFAULT PATTERN (based on alliance?)
 
-      if (
-      /* Telemetry.climb.level == 3 */ false) {
+      if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
 
-      } else if (
-      /* Telemetry.climb.level == 2 */ false) {
+      } else if (/* Telemetry.climb.level == 2 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kViolet)
             .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
             .applyTo(ledBuffer);
 
-      } else if (
-      /* Telemetry.climb.level == 1 */ false) {
+      } else if (/* Telemetry.climb.level == 1 */ false) {
         LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kDarkViolet)
             .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
             .applyTo(ledBuffer);
 
-      } else if (
-      /* Telemetry.climb.alignedToTower */ false) {
+      } else if (/* Telemetry.climb.alignedToTower */ false) {
         greenLedPattern.applyTo(ledBuffer);
 
-      } else if (
-      /* Telemetry.climb.climbEncoder > 0 */ false) {
+      } else if (/* Telemetry.climb.climbEncoder > 0 */ false) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
       } else if (intake.topRollerSpeed != 0) {
         blink(yellowLEDPatern, 0.5);
 
-      } else if (shooterCount > 0) { // shooterAtSpeed
-        shooterCount--;
+      } else if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM) < ACCPETED_SHOOTER_ERROR && shooter.targetShooterRPM > 0) { // shooterAtSpeed
         yellowLEDPatern.applyTo(ledBuffer);
 
       } else if (drive.distanceToHub <= SUPER_FAR_SHOOTING_DISTANCE && false) {
@@ -124,13 +111,13 @@ public class LightingSubsystem extends SubsystemBase {
 
       } else {
         alliancePattern.applyTo(ledBuffer);
+
       }
     } else { // disabled
 
-      if (swerve.hasVisPose) visPoseCount = 20;
+      if (swerve.hasVisPose) visPoseCount = 25;
 
-      if (
-      /* Telemetry.climb.level == 3 */ false) {
+      if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
 
       } else if (healthyRobot == AlertLevel.ERROR) {
@@ -163,4 +150,5 @@ public class LightingSubsystem extends SubsystemBase {
     LEDPattern active = isAllianceColor ? alliancePattern : pattern;
     active.applyTo(ledBuffer);
   }
+
 }

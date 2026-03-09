@@ -65,15 +65,14 @@ public class TuneShooterCommand extends LoggingCommand {
 
     if (shoot) {
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
-
     } else if (operatorInput.getDriverController().getBButton()) {
       shooterSubsystem.setShooterSpeed(1);
     } else {
-      shooterSubsystem.setShooterSpeed(0.0);
+      shooterSubsystem.setShooterVelocity(0.0);
     }
 
     if (currentPOV == 270) {
-//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 //      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
@@ -82,7 +81,7 @@ public class TuneShooterCommand extends LoggingCommand {
 
     if (currentPOV == 90) {
       double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
-      shooterSubsystem.setHood(Math.abs(joystick));
+      shooterSubsystem.setHood(Math.abs(Math.round(joystick*10)/10.0));
     }
 
     lastPov = currentPOV;

@@ -1,24 +1,11 @@
 package frc.robot.commands.shooter;
 
-import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
-import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_CLOSE;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_MID;
-import static frc.robot.Constants.ShooterConstants.SLOPE_VALUE_SUPER_FAR;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.Y_INT_CLOSE;
-import static frc.robot.Constants.ShooterConstants.Y_INT_MID;
-import static frc.robot.Constants.ShooterConstants.Y_INT_SUPER_FAR;
-
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+
+import static frc.robot.Constants.ShooterConstants.*;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -90,11 +77,17 @@ public class ShooterCommand extends LoggingCommand {
   }
 
   public void shooting(double distance) {
+    // shooter
     double targetSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(targetSpeed);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
-    boolean atSpeed = (targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean facingHub = Math.abs((swerveSubsystem.angleToHub().getDegrees()+180) - (swerveSubsystem.getYaw()+180)) < 5;
 
+    // agitator
+    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+
+    // hood
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
@@ -106,16 +99,19 @@ public class ShooterCommand extends LoggingCommand {
       }
     }
 
-    if (atSpeed == true) {
+    // kicker
+    if ((atSpeed /*|| firstShoot*/) && facingHub) {
       firstShoot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      // timer.reset();
+//      // timer.reset();
+    } else {
+      shooterSubsystem.setKickerSpeed(0);
     }
-    // /* timer.get() < 0.8 && */
-    // } else if (firstShoot == true) {
-    // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    // } else {
-    // shooterSubsystem.setKickerSpeed(0);
-    // }
+
+//    if (timer.hasElapsed(0.5)) {
+//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+//    } else {
+//      shooterSubsystem.setKickerSpeed(0.0);
+//    }
   }
 }
