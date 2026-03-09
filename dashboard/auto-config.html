@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1310 Auto Config</title>
+  <link rel="stylesheet" href="css/auto-config.css">
+</head>
+<body>
+
+  <!-- ===== Top Bar ===== -->
+  <div class="top-bar">
+    <span class="logo">1310 Auto Config</span>
+
+    <div class="connection-group">
+      <span id="status-dot" class="status-dot"></span>
+      <input type="text" id="team-number" value="1310"
+             placeholder="Team #" title="Team number (e.g. 1310)" style="width:60px;">
+      <button id="connect-btn" class="btn btn-primary">Connect</button>
+      <span id="status-text" class="status-message">Disconnected</span>
+    </div>
+
+    <span class="spacer"></span>
+
+    <div class="action-group">
+      <span id="edit-status" class="status-message">No auto loaded</span>
+      <span id="write-status" class="status-message"></span>
+      <button id="local-folder-btn" class="btn btn-secondary">Load Local Folder</button>
+      <button id="save-btn" class="btn btn-success">Save to Robot</button>
+      <button id="save-repo-btn" class="btn btn-secondary">Save to Repo</button>
+      <button id="export-btn" class="btn btn-secondary">Export JSON</button>
+      <button id="import-btn" class="btn btn-secondary">Import JSON</button>
+      <input type="file" id="import-file" accept=".json" style="display:none">
+      <input type="file" id="local-folder-input" multiple webkitdirectory directory accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <!-- ===== Main Three-Panel Layout ===== -->
+  <div id="main-layout" class="main-layout">
+
+    <!-- Left Panel: Auto List + Palette -->
+    <div id="panel-left" class="panel panel-left">
+      <div class="panel-header">Autos & Commands</div>
+      <div class="panel-body">
+
+        <!-- Auto List -->
+        <div class="auto-list-section">
+          <div class="section-title">Saved Autos</div>
+          <input type="text" id="auto-filter" class="auto-filter" placeholder="Filter autos...">
+          <div id="auto-list"></div>
+          <div class="new-auto-row">
+            <input type="text" id="new-auto-name" placeholder="New auto name...">
+            <button id="new-auto-btn" class="btn btn-primary">+</button>
+          </div>
+        </div>
+
+        <!-- Command Palette -->
+        <div class="palette-section">
+          <div class="section-title">Command Palette</div>
+          <div id="palette"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="splitter-left" class="panel-splitter" title="Drag to resize panels"></div>
+
+    <!-- Center Panel: Sequence Editor -->
+    <div id="panel-center" class="panel panel-center">
+      <div class="panel-header">
+        <span>Sequence</span>
+        <div id="wrap-toolbar" class="wrap-toolbar" style="display:none;">
+          <span id="selection-info" class="selection-info"></span>
+          <button id="wrap-btn" class="btn btn-secondary" style="font-size:11px; padding:3px 8px;">Wrap in Parallel</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="sequence-toolbar">
+          <button id="undo-btn" class="btn btn-secondary" title="Undo (Ctrl/Cmd+Z)">Undo</button>
+          <button id="redo-btn" class="btn btn-secondary" title="Redo (Ctrl/Cmd+Shift+Z)">Redo</button>
+          <button id="move-up-btn" class="btn btn-secondary">Up</button>
+          <button id="move-down-btn" class="btn btn-secondary">Down</button>
+          <button id="duplicate-selected-btn" class="btn btn-secondary">Duplicate</button>
+          <button id="delete-selected-btn" class="btn btn-secondary">Delete</button>
+          <button id="clear-sequence-btn" class="btn btn-secondary">Clear</button>
+          <button id="validate-btn" class="btn btn-secondary">Validate</button>
+        </div>
+        <div id="sequence-stats" class="sequence-stats"></div>
+        <div id="sequence-editor" class="sequence-editor"></div>
+      </div>
+    </div>
+
+    <div id="splitter-right" class="panel-splitter" title="Drag to resize panels"></div>
+
+    <!-- Right Panel: Properties -->
+    <div id="panel-right" class="panel panel-right">
+      <div class="panel-header">Properties</div>
+
+      <!-- Config-level properties -->
+      <div class="config-properties">
+        <div class="section-title">Auto Config</div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="config-name" placeholder="Auto name">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="config-description" placeholder="Describe this auto..." rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Starting Heading (deg)</label>
+          <input type="number" id="config-heading" value="0" min="-180" max="360" step="1">
+          <div class="field-hint">Blue alliance field-oriented heading</div>
+        </div>
+      </div>
+
+      <!-- Step properties -->
+      <div class="panel-body">
+        <div id="properties-container">
+          <div class="properties-empty">Select a command in the sequence to edit its properties.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Load scripts in dependency order (no ES modules — works from file://) -->
+  <script src="js/ntcore-bundle.js"></script>
+  <script src="js/nt-bridge.js"></script>
+  <script src="js/command-palette.js"></script>
+  <script src="js/drag-drop.js"></script>
+  <script src="js/auto-config.js"></script>
+
+</body>
+</html>

@@ -5,9 +5,15 @@ import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAM
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
+@AutoConfigurable(
+    value = "vision_approach_tag",
+    category = "drive",
+    description = "Drive toward an AprilTag using vision")
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
@@ -22,9 +28,11 @@ public class DriveToTowerCommand extends LoggingCommand {
   private final int tXOffset;
   private int theta = 0;
 
-
   public DriveToTowerCommand(
-      SwerveSubsystem swerve, LimelightVisionSubsystem vision, boolean isRightSide) {
+      SwerveSubsystem swerve,
+      LimelightVisionSubsystem vision,
+      @ConfigParam(value = "rightSide", description = "Approach right side of tower")
+          boolean isRightSide) {
     super();
     this.swerve = swerve;
     this.vision = vision;

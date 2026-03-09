@@ -1,0 +1,12 @@
+{
+  "name": "Do Nothing",
+  "description": "Stand still for the entire autonomous period",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "delay",
+      "durationSeconds": 15.0
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "simple_center_configurable",
+  "description": "Config-driven equivalent of SimpleCenterAutoCommand",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "parallel",
+      "endCondition": "deadline",
+      "deadlineIndex": 0,
+      "commands": [
+        {
+          "type": "shooter",
+          "action": "on_with_duration",
+          "rpm": 2800,
+          "hoodPosition": 0.0,
+          "kickerSpeed": -0.7,
+          "kickerDelaySeconds": 2.0,
+          "durationSeconds": 10.0
+        },
+        {
+          "type": "hold",
+          "durationSeconds": 0
+        }
+      ]
+    },
+    {
+      "type": "drive_velocity",
+      "vxMPS": -2.0,
+      "vyMPS": 0.7,
+      "headingDegrees": 0,
+      "timeoutSeconds": 1.0
+    },
+    {
+      "type": "drive_velocity",
+      "vxMPS": 0.0,
+      "vyMPS": 0.0,
+      "headingDegrees": 180,
+      "timeoutSeconds": 2.0
+    },
+    {
+      "type": "vision_approach_tag",
+      "rightSide": true,
+      "timeoutSeconds": 12.0
+    }
+  ]
+}

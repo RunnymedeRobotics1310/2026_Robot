@@ -9,22 +9,20 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class DefaultShooterCommand extends LoggingCommand {
 
-    private final ShooterSubsystem shooter;
-    private final OperatorInput oi;
+  private final ShooterSubsystem shooter;
+  private final OperatorInput oi;
 
-    public DefaultShooterCommand(ShooterSubsystem shooter, OperatorInput oi) {
-        this.shooter = shooter;
-        this.oi = oi;
-        addRequirements(shooter);
-    }
+  public DefaultShooterCommand(ShooterSubsystem shooter, OperatorInput oi) {
+    this.shooter = shooter;
+    this.oi = oi;
+    addRequirements(shooter);
+  }
 
-    @Override
-    public void execute() {
+  @Override
+  public void execute() {
 
-        if (oi.isStopFlywheel()) shooter.setShooterSpeed(-0.01);
-        if (oi.isReverseKicker()) shooter.setKickerSpeed(-KICKER_RUNSPEED);
-        if (oi.aggravateJackson()) shooter.setAgitatorSpeed(AGITATOR_RUNSPEED);
-
-    }
-
+    if (oi.isStopFlywheel()) shooter.setShooterSpeed(-0.01);
+    if (oi.isReverseKicker()) shooter.setKickerSpeed(-KICKER_RUNSPEED);
+    if (oi.aggravateJackson()) shooter.setAgitatorSpeed(AGITATOR_RUNSPEED);
+  }
 }

@@ -1,0 +1,134 @@
+{
+  "name": "odometry_cal_turn_compact",
+  "description": "Compact mixed translation+rotation loop in both directions for odometry geometry tuning.",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "set_pose",
+      "xMetres": 0.0,
+      "yMetres": 0.0,
+      "headingDegrees": 0.0
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.25
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.6,
+      "headingDegrees": 0,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 45,
+      "speedMPS": 0.6,
+      "headingDegrees": 45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 90,
+      "speedMPS": 0.6,
+      "headingDegrees": 90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 135,
+      "speedMPS": 0.6,
+      "headingDegrees": 135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 180,
+      "speedMPS": 0.6,
+      "headingDegrees": 180,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -135,
+      "speedMPS": 0.6,
+      "headingDegrees": -135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -90,
+      "speedMPS": 0.6,
+      "headingDegrees": -90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -45,
+      "speedMPS": 0.6,
+      "headingDegrees": -45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.6,
+      "headingDegrees": 0,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -45,
+      "speedMPS": 0.6,
+      "headingDegrees": -45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -90,
+      "speedMPS": 0.6,
+      "headingDegrees": -90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": -135,
+      "speedMPS": 0.6,
+      "headingDegrees": -135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 180,
+      "speedMPS": 0.6,
+      "headingDegrees": 180,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 135,
+      "speedMPS": 0.6,
+      "headingDegrees": 135,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 90,
+      "speedMPS": 0.6,
+      "headingDegrees": 90,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "drive_timed",
+      "direction": 45,
+      "speedMPS": 0.6,
+      "headingDegrees": 45,
+      "durationSeconds": 0.6
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.5
+    }
+  ]
+}

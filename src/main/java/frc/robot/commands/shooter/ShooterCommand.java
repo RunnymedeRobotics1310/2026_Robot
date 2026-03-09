@@ -1,11 +1,11 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-
-import static frc.robot.Constants.ShooterConstants.*;
 
 /** An example command that uses an example subsystem. */
 public class ShooterCommand extends LoggingCommand {
@@ -82,7 +82,11 @@ public class ShooterCommand extends LoggingCommand {
     shooterSubsystem.setShooterVelocity(targetSpeed);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
     boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
-    boolean facingHub = Math.abs((swerveSubsystem.angleToHub().getDegrees()+180) - (swerveSubsystem.getYaw()+180)) < 5;
+    boolean facingHub =
+        Math.abs(
+                (swerveSubsystem.angleToHub().getDegrees() + 180)
+                    - (swerveSubsystem.getYaw() + 180))
+            < 5;
 
     // agitator
     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
@@ -103,15 +107,15 @@ public class ShooterCommand extends LoggingCommand {
     if ((atSpeed /*|| firstShoot*/) && facingHub) {
       firstShoot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-//      // timer.reset();
+      //      // timer.reset();
     } else {
       shooterSubsystem.setKickerSpeed(0);
     }
 
-//    if (timer.hasElapsed(0.5)) {
-//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-//    } else {
-//      shooterSubsystem.setKickerSpeed(0.0);
-//    }
+    //    if (timer.hasElapsed(0.5)) {
+    //      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    //    } else {
+    //      shooterSubsystem.setKickerSpeed(0.0);
+    //    }
   }
 }

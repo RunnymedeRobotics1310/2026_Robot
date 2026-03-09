@@ -13,8 +13,7 @@ public class DriveFieldOrientedCommand extends LoggingCommand {
   private final double heading;
   private double allianceHeading;
 
-  public DriveFieldOrientedCommand(
-      SwerveSubsystem swerve, double x, double y, double heading) {
+  public DriveFieldOrientedCommand(SwerveSubsystem swerve, double x, double y, double heading) {
     this.swerve = swerve;
     this.x = x;
     this.y = y;

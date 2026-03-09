@@ -1,0 +1,9 @@
+{
+  "name": "1310-auto-config-dashboard",
+  "version": "1.0.0",
+  "description": "FRC Team 1310 Auto Configuration Dashboard",
+  "private": true,
+  "scripts": {
+    "serve": "python3 -m http.server 8080 --directory .."
+  }
+}

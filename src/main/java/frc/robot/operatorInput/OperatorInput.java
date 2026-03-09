@@ -10,15 +10,21 @@ import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CancelCommand;
 import frc.robot.commands.auto.*;
+import frc.robot.commands.auto.ExitZoneAutoCommand;
+import frc.robot.commands.auto.OpportunisticOutpostAutoCommand;
+import frc.robot.commands.auto.SimpleCenterAutoCommand;
+import frc.robot.commands.auto.config.AutoCommandFactory;
+import frc.robot.commands.auto.config.AutoConfig;
+import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.shooter.LazyShooterCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.shooter.TuneShooterCommand;
-import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
+import java.util.List;
 
 public class OperatorInput extends SubsystemBase {
 
@@ -36,16 +42,21 @@ public class OperatorInput extends SubsystemBase {
       new SendableChooser<>();
   private final SendableChooser<Constants.AutoConstants.Delay> delayChooser =
       new SendableChooser<>();
+  private SendableChooser<String> customAutoChooser = new SendableChooser<>();
+
+  private final AutoCommandFactory autoCommandFactory;
 
   public OperatorInput(
       SwerveSubsystem swerve,
       ShooterSubsystem shooter,
       IntakeSubsystem intake,
-      LimelightVisionSubsystem vision) {
+      LimelightVisionSubsystem vision,
+      AutoCommandFactory autoCommandFactory) {
     this.swerve = swerve;
     this.shooter = shooter;
     this.intake = intake;
     this.vision = vision;
+    this.autoCommandFactory = autoCommandFactory;
   }
 
   /** Use this method to define your trigger->command mappings. */
@@ -64,11 +75,11 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::shootFromAnywhere).whileTrue(new ShooterCommand(shooter, swerve));
 
     // Auto align to climb
-//    new Trigger(driverController::getXButton)
-//            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+    //    new Trigger(driverController::getXButton)
+    //            .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
-//    new Trigger(driverController::getBButton)
-//        .onTrue(new DriveToTowerCommand(swerve, vision, true));
+    //    new Trigger(driverController::getBButton)
+    //        .onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     // not included here:
     //   intake - left trigger
@@ -194,6 +205,10 @@ public class OperatorInput extends SubsystemBase {
         "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
+    autoPatternChooser.addOption("Custom Auto", Constants.AutoConstants.AutoPattern.CUSTOM);
+
+    SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
+    refreshCustomAutoChooser();
     autoPatternChooser.addOption("Shoot Center", Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
     autoPatternChooser.addOption(
         "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
@@ -232,8 +247,50 @@ public class OperatorInput extends SubsystemBase {
       case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
       case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, shooter, vision, delay);
       case RIGHT_SHOOT_CLIMB -> new RightShootClimbAutoCommand(swerve, shooter, vision, delay);
-
+      case CUSTOM -> buildCustomAutoCommand(delay);
       default -> new InstantCommand();
     };
+  }
+
+  private Command buildCustomAutoCommand(double delay) {
+    String selectedConfig = customAutoChooser.getSelected();
+    if (selectedConfig == null || selectedConfig.isEmpty()) {
+      System.out.println("OperatorInput: No custom auto selected");
+      return new InstantCommand();
+    }
+
+    AutoConfig config = AutoConfigParser.loadAutoConfig(selectedConfig);
+    if (config == null) {
+      System.out.println("OperatorInput: Failed to load custom auto: " + selectedConfig);
+      return new InstantCommand();
+    }
+
+    System.out.println("OperatorInput: Building custom auto: " + config.name);
+    return autoCommandFactory.buildAutoCommand(config, delay);
+  }
+
+  public void refreshCustomAutoChooser() {
+    List<String> configs = AutoConfigParser.listAutoConfigs();
+
+    // SendableChooser has no removeOption/clear, so rebuild from scratch
+    customAutoChooser.close();
+    customAutoChooser = new SendableChooser<>();
+
+    boolean first = true;
+    for (String name : configs) {
+      if (first) {
+        customAutoChooser.setDefaultOption(name, name);
+        first = false;
+      } else {
+        customAutoChooser.addOption(name, name);
+      }
+    }
+
+    SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
+    System.out.println(
+        "OperatorInput: Custom auto chooser refreshed with "
+            + configs.size()
+            + " configs: "
+            + configs);
   }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "Exit Zone",
+  "description": "Drive out of the starting zone",
+  "version": 1,
+  "startingHeadingDegrees": 180,
+  "steps": [
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.5,
+      "durationSeconds": 0.55,
+      "headingDegrees": 180
+    }
+  ]
+}

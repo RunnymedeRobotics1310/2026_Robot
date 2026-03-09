@@ -1,0 +1,134 @@
+{
+  "name": "odometry_cal_spin_compact",
+  "description": "Compact in-place CW/CCW spin sequence for odometry geometry tuning.",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "set_pose",
+      "xMetres": 0.0,
+      "yMetres": 0.0,
+      "headingDegrees": 0.0
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.25
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 45,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 90,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 135,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 180,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -135,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -90,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -45,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 0,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -45,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -90,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": -135,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 180,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 135,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 90,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 45,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "drive_timed",
+      "direction": 0,
+      "speedMPS": 0.0,
+      "headingDegrees": 0,
+      "durationSeconds": 0.5
+    },
+    {
+      "type": "hold",
+      "durationSeconds": 0.5
+    }
+  ]
+}

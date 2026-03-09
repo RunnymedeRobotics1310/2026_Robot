@@ -1,6 +1,5 @@
 package frc.robot.commands.shooter;
 
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
@@ -73,15 +72,16 @@ public class TuneShooterCommand extends LoggingCommand {
 
     if (currentPOV == 270) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-//      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+      //      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
-//      shooterSubsystem.setAgitatorSpeed(0.0);
+      //      shooterSubsystem.setAgitatorSpeed(0.0);
     }
 
     if (currentPOV == 90) {
-      double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
-      shooterSubsystem.setHood(Math.abs(Math.round(joystick*10)/10.0));
+      double joystick =
+          operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
+      shooterSubsystem.setHood(Math.abs(Math.round(joystick * 10) / 10.0));
     }
 
     lastPov = currentPOV;
