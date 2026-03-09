@@ -77,11 +77,17 @@ public class ShooterCommand extends LoggingCommand {
   }
 
   public void shooting(double distance) {
+    // shooter
     double targetSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(targetSpeed);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
     boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean facingHub = Math.abs((swerveSubsystem.angleToHub().getDegrees()+180) - (swerveSubsystem.getYaw()+180)) < 5;
 
+    // agitator
+    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+
+    // hood
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
@@ -93,18 +99,15 @@ public class ShooterCommand extends LoggingCommand {
       }
     }
 
-    if (atSpeed) {
+    // kicker
+    if ((atSpeed /*|| firstShoot*/) && facingHub) {
       firstShoot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 //      // timer.reset();
+    } else {
+      shooterSubsystem.setKickerSpeed(0);
     }
-//    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
-    // /* timer.get() < 0.8 && */
-    // } else if (firstShoot == true) {
-    // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    // } else {
-    // shooterSubsystem.setKickerSpeed(0);
-    // }
+
 //    if (timer.hasElapsed(0.5)) {
 //      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 //    } else {

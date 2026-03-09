@@ -98,6 +98,6 @@ public class RunnymedeUtils {
    * @return the rounded number
    */
   public static double round(double num) {
-    return ((int) (num * 100) + 0.5) / 100.0;
+    return (int) (num * 100 + 0.5) / 100.0;
   }
 }

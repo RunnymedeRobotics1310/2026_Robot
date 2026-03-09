@@ -104,13 +104,13 @@ public final class Constants {
 
     public static final double MAX_SHOOTER_RPM = 6300;
     public static final double KP = 0.00015;
-    public static final double KI = 0.00001;
+    public static final double KI = 0.00002;
     public static final double KD = 0; // keep this at zero
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double I_ZONE = 300;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -0.6; // FIXME: remove 0 later
-    public static final double ACCPETED_SHOOTER_ERROR = 75.0;
+    public static final double ACCPETED_SHOOTER_ERROR = 50.0;
 
     // Control values
     // public static final double SLOPE_VALUE_SUPER_FAR = 479.67;
@@ -175,11 +175,11 @@ public final class Constants {
 
     public static final double SLOPE_VALUE_MID = 570.14;
     public static final double Y_INT_MID = 2816.44;
-    public static final double MEDIUM_SHOOTING_DISTANCE = 2.0;
+    public static final double MEDIUM_SHOOTING_DISTANCE = 2.15;
     public static final double MEDIUM_SHOOT_HOOD_VALUE = 0.35;
 
-    public static final double SLOPE_VALUE_CLOSE = 733.5;
-    public static final double Y_INT_CLOSE = 2882.2;
+    public static final double SLOPE_VALUE_CLOSE = 770;
+    public static final double Y_INT_CLOSE = 2600;
     public static final double CLOSE_SHOOT_HOOD_VALUE = 0.0;
 
     public static final double MAX_SHOOTING_DISTANCE = 10.0;

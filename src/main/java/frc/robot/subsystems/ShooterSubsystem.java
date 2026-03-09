@@ -49,9 +49,9 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void setShooterVelocity(double target) {
-    if (target != targetShooterVelocity) {
-      Telemetry.shooter.targetShooterRPM = target;
-      targetShooterVelocity = target;
+    Telemetry.shooter.targetShooterRPM = target;
+    targetShooterVelocity = target;
+    if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
       iError = 0;
     }
 //    updateShooterSpeed();

@@ -54,7 +54,6 @@ public class LightingSubsystem extends SubsystemBase {
   // Blink Constants
   private final Timer blinkTimer = new Timer();
   private int visPoseCount = 0;
-  private int shooterCount = 0;
   private boolean isAllianceColor = false;
 
   public LightingSubsystem() {
@@ -74,12 +73,6 @@ public class LightingSubsystem extends SubsystemBase {
       alliancePattern = LEDPattern.solid(kFirstBlue);
 
     if (DriverStation.isEnabled()) {
-      if (shooter.targetShooterRPM > 0) {
-      if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM) < ACCPETED_SHOOTER_ERROR)
-        shooterCount = 10;
-      } else {
-        shooterCount = 0;
-      }
       // if climbing
       // if aligned to climb
       // if climb is up
@@ -110,8 +103,7 @@ public class LightingSubsystem extends SubsystemBase {
       } else if (intake.topRollerSpeed != 0) {
         blink(yellowLEDPatern, 0.5);
 
-      } else if (shooterCount > 0) { // shooterAtSpeed
-        shooterCount--;
+      } else if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM) < ACCPETED_SHOOTER_ERROR && shooter.targetShooterRPM > 0) { // shooterAtSpeed
         yellowLEDPatern.applyTo(ledBuffer);
 
       } else if (drive.distanceToHub <= SUPER_FAR_SHOOTING_DISTANCE && false) {
@@ -123,7 +115,7 @@ public class LightingSubsystem extends SubsystemBase {
       }
     } else { // disabled
 
-      if (swerve.hasVisPose) visPoseCount = 20;
+      if (swerve.hasVisPose) visPoseCount = 25;
 
       if (/* Telemetry.climb.level == 3 */ false) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);

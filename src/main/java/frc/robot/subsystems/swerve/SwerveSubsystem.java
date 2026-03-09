@@ -332,11 +332,12 @@ public class SwerveSubsystem extends SubsystemBase {
 //      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
     }
 
-    if (pose.getX() > 4) {
+    // if past alliance zone, point at trench
+    if (pose.getX() > hubPose.getX()) {
       if (pose.getY() < FIELD_EXTENT_METRES_Y/2) {
-        hubPose = new Translation2d(hubPose.getX(), 3);
+        hubPose = new Translation2d(hubPose.getX(), 1.5);
       } else {
-        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y-3);
+        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y-1.5);
       }
     }
 
