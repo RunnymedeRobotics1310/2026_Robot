@@ -3,7 +3,6 @@ package frc.robot.subsystems.swerve;
 import ca.team1310.swerve.RunnymedeSwerveDrive;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,20 +19,12 @@ import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-  private static final double HEADING_RATE_DAMPING = 0.22;
-  private static final double HEADING_HOLD_ENTER_ERROR_DEGREES = 0.9;
-  private static final double HEADING_HOLD_EXIT_ERROR_DEGREES = 1.8;
-  private static final double HEADING_HOLD_MAX_RATE_DPS = 14.0;
-  private static final double HEADING_TARGET_CHANGE_RESET_DEGREES = 1.0;
-
   private final RunnymedeSwerveDrive drive;
   private final SwerveDriveSubsystemConfig config;
   private final SlewRateLimiter xLimiter;
   private final SlewRateLimiter yLimiter;
   private final SlewRateLimiter omegaLimiter;
   private final PIDController headingPIDController;
-  private boolean headingHoldSuppressed = false;
-  private double headingHoldSetpointDegrees = 0;
 
   private double distanceToHub = 0;
 
@@ -188,30 +179,6 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Get the wrapped heading error (desired-current) in degrees, normalized to [-180, 180].
-   *
-   * @param desiredHeadingDegrees desired heading in degrees
-   * @return heading error in degrees
-   */
-  public double getHeadingErrorDegrees(double desiredHeadingDegrees) {
-    return MathUtil.inputModulus(desiredHeadingDegrees - drive.getYaw(), -180, 180);
-  }
-
-  /**
-   * Get the measured translational speed of the robot in metres per second from
-   * swerve kinematics.
-   *
-   * @return translational speed in m/s
-   */
-  public double getMeasuredTranslationSpeedMPS() {
-    double[] velocity = drive.getMeasuredRobotVelocity();
-    if (velocity == null || velocity.length < 2) {
-      return 0;
-    }
-    return Math.hypot(velocity[0], velocity[1]);
-  }
-
-  /**
    * Set the gyro yaw offset of the robot, in degrees.
    *
    * @param yaw the yaw offset of the robot, in degrees
@@ -295,37 +262,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * @return the required rotation speed of the robot (omega) in rad/s
    */
   public double computeOmega(double desiredHeadingDegrees, double maxOmegaRadPerSec) {
-    double currentYaw = drive.getYaw();
-    double headingErrorDegrees = getHeadingErrorDegrees(desiredHeadingDegrees);
-    double yawRateDPS = drive.getYawRate();
-    double setpointDelta = Math.abs(MathUtil.inputModulus(
-        desiredHeadingDegrees - headingHoldSetpointDegrees, -180, 180));
-
-    if (setpointDelta > HEADING_TARGET_CHANGE_RESET_DEGREES) {
-      headingHoldSuppressed = false;
-    }
-
-    if (headingHoldSuppressed) {
-      if (Math.abs(headingErrorDegrees) <= HEADING_HOLD_EXIT_ERROR_DEGREES) {
-        return 0;
-      }
-      headingHoldSuppressed = false;
-    }
-
-    if (Math.abs(headingErrorDegrees) <= HEADING_HOLD_ENTER_ERROR_DEGREES
-        && Math.abs(yawRateDPS) <= HEADING_HOLD_MAX_RATE_DPS) {
-      headingHoldSuppressed = true;
-      headingHoldSetpointDegrees = desiredHeadingDegrees;
-      headingPIDController.reset();
-      return 0;
-    }
-
-    double omega = headingPIDController.calculate(currentYaw, desiredHeadingDegrees);
-
-    // Damping by measured yaw rate reduces turn-in overshoot on heading hold.
-    double yawRateRadPS = Units.degreesToRadians(yawRateDPS);
-    omega -= HEADING_RATE_DAMPING * yawRateRadPS;
-
+    double omega = headingPIDController.calculate(drive.getYaw(), desiredHeadingDegrees);
     return SwerveUtils.clamp(-maxOmegaRadPerSec, omega, maxOmegaRadPerSec);
   }
 

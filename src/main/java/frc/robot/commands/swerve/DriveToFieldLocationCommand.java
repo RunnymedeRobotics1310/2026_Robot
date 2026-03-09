@@ -91,30 +91,34 @@ public class DriveToFieldLocationCommand extends LoggingCommand {
     double angleDif =
         SwerveUtils.normalizeDegrees(targetHeadingDeg - currentPose.getRotation().getDegrees());
 
-    double maxOmega = Math.max(
-        (Math.toRadians(angleDif) / Math.max(dif.getNorm(), 0.05)) * transV.getNorm(), .1);
+    double maxOmega = Math.max((Math.toRadians(angleDif) / dif.getNorm()) * transV.getNorm(), .1);
     double omega = swerve.computeOmega(targetHeadingDeg, maxOmega);
+    System.out.println(maxOmega);
 
     swerve.driveFieldOriented(transV.getX(), transV.getY(), omega);
   }
 
   @Override
   public boolean isFinished() {
-    boolean atPosition =
-        SwerveUtils.isCloseEnough(
-            swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance);
-    boolean atHeading =
-        SwerveUtils.isCloseEnough(swerve.getYaw(), targetHeadingDeg, headingToleranceDegrees);
-
-    if (atPosition && atHeading) {
-      setFinishReason("Reached destination");
-      return true;
+    //        return (SwerveUtils.isCloseEnough(
+    //                swerve.getPose().getTranslation(), location.pose.getTranslation(), 0.05)
+    //                && SwerveUtils.isCloseEnough(swerve.getPose().getRotation().getDegrees(),
+    // targetHeadingDeg, 10));
+    boolean done =
+        (SwerveUtils.isCloseEnough(
+                swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance)
+            && SwerveUtils.isCloseEnough(swerve.getYaw(), targetHeadingDeg, 2));
+    if (done) {
+      System.out.println(
+          "REACHED DESTINATION: x["
+              + swerve.getPose().getX()
+              + "] y["
+              + swerve.getPose().getY()
+              + "], deg["
+              + swerve.getPose().getRotation().getDegrees()
+              + "]");
     }
-    if (timeoutSeconds > 0 && hasElapsed(timeoutSeconds)) {
-      setFinishReason("Timeout after " + timeoutSeconds + "s");
-      return true;
-    }
-    return false;
+    return done;
   }
 
   @Override
