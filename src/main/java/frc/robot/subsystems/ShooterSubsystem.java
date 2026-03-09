@@ -1,118 +1,94 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ShooterConstants.IS_HOPPER_ATTACHED;
-import static frc.robot.Constants.ShooterConstants.KFF;
-import static frc.robot.Constants.ShooterConstants.KP;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.ShooterConstants.*;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
-
+import com.revrobotics.spark.config.SparkFlexConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.Telemetry;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  private final SparkFlex shooterMotor = IS_HOPPER_ATTACHED ? new SparkFlex(30, SparkFlex.MotorType.kBrushless) : null;
-  private final SparkMax kickerMotor = IS_HOPPER_ATTACHED ? new SparkMax(33, SparkFlex.MotorType.kBrushless) : null;
-  private final Servo hoodServo = new Servo(8);
+  private final SparkFlex primaryShooterMotor =
+      new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
+  private final SparkFlex secondaryShooterMotor =
+      new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
+  private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
+  private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
+  private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
 
-  public double hubDistanceMeters = 0;
-  public double shooterAngleDegrees = 0;
-  public int shooterSpeedRpm = 0;
-  public int kickerSpeedRpm = 0;
+  private final PIDController shooterController = new PIDController(KP, KI, KD, 20.0 / 1000);
 
-  public double hubAngle = 0;
-  public double hubAngleOffset = 0;
-  private double targetMotorVelocity;
+  private final IntakeSubsystem intake;
 
-  public boolean autoAiming = false;
+  private double targetShooterVelocity;
 
   /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem() {
+  public ShooterSubsystem(IntakeSubsystem intake) {
+    secondaryShooterMotor.configure(
+        new SparkFlexConfig().follow(primaryShooterMotor, true),
+        ResetMode.kNoResetSafeParameters,
+        PersistMode.kPersistParameters);
+    this.intake = intake;
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("1310/shooter/currentmotorvelocity", getShooterVelocity());
-    SmartDashboard.putNumber("1310/shooter/targetmotorvelocity", targetMotorVelocity);
+    Telemetry.shooter.targetShooterRPM = targetShooterVelocity;
+    Telemetry.shooter.currentShooterRPM = getShooterVelocity();
   }
 
   public double getShooterVelocity() {
-    if (IS_HOPPER_ATTACHED)
-      return shooterMotor.getEncoder().getVelocity();
-    else
-      return 0;
-  }
-
-  public double getKickerVelocity() {
-    if (IS_HOPPER_ATTACHED)
-      return kickerMotor.getEncoder().getVelocity();
-    else
-      return 0;
-  }
-
-  public void setKickerVelocity(double setPoint) {
-    if (IS_HOPPER_ATTACHED) {
-      double currentSpeed = getKickerVelocity();
-      double error = (setPoint - currentSpeed) / MAX_SHOOTER_RPM; // Normalize error
-      kickerMotor.set((setPoint / MAX_SHOOTER_RPM) + (error * KP));
-    } else
-      System.out.println("SETTING KICKER VELOCITY TO: " + setPoint);
+    return primaryShooterMotor.getEncoder().getVelocity();
   }
 
   public void setShooterVelocity(double target) {
-    if (IS_HOPPER_ATTACHED) {
-      targetMotorVelocity = target;
-      double currentSpeed = getShooterVelocity();
-      double error = (target - currentSpeed); // Normalize error
-      shooterMotor.set((target * KFF) + (error * KP));
-    } else
-      System.out.println("SETTING SHOOTER VELOCITY TO: " + target);
+    targetShooterVelocity = target;
+    double currentSpeed = getShooterVelocity();
+    double error = (target - currentSpeed); // Normalize error
+
+    //    primaryShooterMotor.set((target * KFF) + (error * KP));
+    primaryShooterMotor.set((target * KFF) + shooterController.calculate(currentSpeed, target));
   }
 
   public void setShooterSpeed(double speed) {
-    if (IS_HOPPER_ATTACHED)
-      shooterMotor.set(speed);
-    else
-      System.out.println("SETTING SHOOTER SPEED TO: " + speed);
-
+    primaryShooterMotor.set(speed);
   }
 
   public void setKickerSpeed(double speed) {
-    if (IS_HOPPER_ATTACHED)
-      kickerMotor.set(speed);
-    else
-      System.out.println("SETTING KICKER SPEED TO: " + speed);
+    kickerMotor.set(speed);
+    Telemetry.shooter.kickerSpeed = speed;
+  }
 
+  public void setAgitatorSpeed(double speed) {
+    agitatorMotor.set(speed);
+    intake.setRollerSpeeds(0, INTAKE_SPEED);
+    Telemetry.shooter.agitatorSpeed = speed;
   }
 
   /**
    * @param value a value between 0.0 and 1.0
    */
   public void setHood(double value) {
-    hoodServo.set(value);
-    SmartDashboard.putNumber("1310/shooter/hoodAngle", value);
-  }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
+    Telemetry.shooter.hoodAngle = value;
+    hoodServo.set(1 - value);
   }
 
   public double calculateShootingAngle(double distanceMeters) {
     if (distanceMeters <= 5.0 && distanceMeters > 2.0) {
       return 64;
-    } else
-      return 78;
+    } else return 78;
   }
 
   public void stop() {
-    if (IS_HOPPER_ATTACHED) {
-      shooterMotor.stopMotor();
-      kickerMotor.stopMotor();
-    } else
-      System.out.println("STOPPING SHOOTER");
+    primaryShooterMotor.stopMotor();
+    kickerMotor.stopMotor();
+    agitatorMotor.stopMotor();
   }
 }

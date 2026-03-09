@@ -58,12 +58,9 @@ public class TeleopDriveCommand extends LoggingCommand {
         final Alliance alliance = getRunnymedeAlliance();
         SmartDashboard.putString("1310/Alliance", alliance.toString());
 
-        // The coordinate system defines (0,0) as the right side of the blue alliance
-        // wall. The
-        // x-axis is positive toward the red alliance, and the y-axis is positive to the
-        // left.
-        // When the robot is on the red alliance, we need to invert inputs for the stick
-        // values
+        // The coordinate system defines (0,0) as the right side of the blue alliance wall. The
+        // x-axis is positive toward the red alliance, and the y-axis is positive to the left.
+        // When the robot is on the red alliance, we need to invert inputs for the stick values
         // to move the robot in the right direction.
         this.invert = (alliance == Alliance.Red);
     }
@@ -74,29 +71,23 @@ public class TeleopDriveCommand extends LoggingCommand {
     public void execute() {
         final boolean isZeroGyro = oi.isZeroGyro();
 
-        // With the driver standing behind the driver station glass, "forward" on the
-        // left stick is
-        // its y value, but that should convert into positive x movement on the field.
-        // The
-        // Runnymede Controller inverts stick y-axis values, so "forward" on stick is
-        // positive.
+        // With the driver standing behind the driver station glass, "forward" on the left stick is
+        // its y value, but that should convert into positive x movement on the field. The
+        // Runnymede Controller inverts stick y-axis values, so "forward" on stick is positive.
         // Thus, positive y stick axis maps to positive x translation on the field.
         final double vX = oi.getDriverControllerAxis(LEFT, Y);
 
-        // Left and right movement on the left stick (the stick's x-axis) maps to the
-        // y-axis on the
-        // field. Left on the stick (negative x) maps to positive y on the field, and
-        // vice versa.
+        // Left and right movement on the left stick (the stick's x-axis) maps to the y-axis on the
+        // field. Left on the stick (negative x) maps to positive y on the field, and vice versa.
         // Thus, negative x stick axis maps to positive y translation on the field.
         final double vY = -oi.getDriverControllerAxis(LEFT, X);
 
-        // Left and right on the right stick will change the direction the robot is
-        // facing - its
-        // heading. Positive x values on the stick translate to clockwise motion, and
-        // vice versa.
+        // Left and right on the right stick will change the direction the robot is facing - its
+        // heading. Positive x values on the stick translate to clockwise motion, and vice versa.
         // The coordinate system has positive motion as CCW.
         // Therefore, negative x stick value maps to positive rotation on the field.
-        final double ccwRotAngularVelPct = -oi.getDriverControllerAxis(RIGHT, X) * 0.25; // TODO: put this in constants?
+        final double ccwRotAngularVelPct =
+                -oi.getDriverControllerAxis(RIGHT, X) * 0.65; // TODO: put this in constants?
 
         final boolean rotate180Val = oi.getRotate180Val();
 

@@ -1,6 +1,7 @@
 package frc.robot.telemetry;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RunnymedeUtils;
 
 import static frc.robot.telemetry.Telemetry.PREFIX;
 
@@ -39,6 +40,8 @@ public class DriveTelemetry {
    */
   public double fieldOrientedDeltaToPoseHeading = Double.MIN_VALUE;
 
+  public double distanceToHub = Double.MIN_VALUE;
+
   void post() {
 
     if (enabled) {
@@ -61,6 +64,9 @@ public class DriveTelemetry {
               fieldOrientedDeltaToPoseY,
               fieldOrientedDeltaToPoseHeading);
       SmartDashboard.putString(PREFIX + "Drive/distance_to_pose", delta);
+
+
+      SmartDashboard.putNumber(PREFIX +  "Drive/DistanceToHub", RunnymedeUtils.round(distanceToHub));
     }
   }
 }

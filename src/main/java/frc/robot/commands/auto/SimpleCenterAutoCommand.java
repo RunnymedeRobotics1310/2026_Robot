@@ -11,22 +11,19 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class SimpleCenterAutoCommand extends SequentialCommandGroup {
+  //
+  public SimpleCenterAutoCommand(
+      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
 
-    public SimpleCenterAutoCommand(SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+    addCommands(new SetAllianceGyroCommand(swerve, 0));
 
-        addCommands(new SetAllianceGyroCommand(swerve, 0));
+    addCommands(
+        new LazyShooterCommand(shooter, 2800, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
 
-    addCommands(new LazyShooterCommand(shooter, 2800, 0, 10)
-            .deadlineFor(new NullDriveCommand(swerve)));
+    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -2, 0.7, 0).withTimeout(1));
 
-    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -2, 0.7, 0)
-                .withTimeout(1));
+    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180).withTimeout(2));
 
-        addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180)
-                .withTimeout(2));
-
-        addCommands(new DriveToTowerCommand(swerve, vision, true));
-
-    }
-
+    addCommands(new DriveToTowerCommand(swerve, vision, true));
+  }
 }

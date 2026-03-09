@@ -1,6 +1,5 @@
 package frc.robot.commands.auto.config;
 
-import frc.robot.commands.intake.AutoIntakeCommand;
 import frc.robot.commands.shooter.AutoShooterCommand;
 import frc.robot.commands.swerve.DriveDistanceCommand;
 import frc.robot.commands.swerve.DriveRobotOrientedAtHeadingCommand;
@@ -27,6 +26,5 @@ public class AutoCommandRegistrations {
         registry.register(FaceHubCommand.class);
         registry.register(DriveToTowerCommand.class);
         registry.register(AutoShooterCommand.class);
-        registry.register(AutoIntakeCommand.class);
     }
 }

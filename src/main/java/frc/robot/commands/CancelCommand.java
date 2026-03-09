@@ -20,15 +20,14 @@ public class CancelCommand extends LoggingCommand {
      * that safely stops the robot from moving.
      */
     public CancelCommand(
-            OperatorInput operatorInput, SwerveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem,
-            IntakeSubsystem intakeSubsystem) {
+            OperatorInput operatorInput, SwerveSubsystem driveSubsystem, ShooterSubsystem shooterSubsystem, IntakeSubsystem intakeSubsystem) {
 
         this.operatorInput = operatorInput;
         this.driveSubsystem = driveSubsystem;
         this.shooterSubsystem = shooterSubsystem;
         this.intakeSubsystem = intakeSubsystem;
 
-        addRequirements(driveSubsystem, shooterSubsystem, intakeSubsystem);
+        addRequirements(driveSubsystem, shooterSubsystem);
     }
 
     @Override

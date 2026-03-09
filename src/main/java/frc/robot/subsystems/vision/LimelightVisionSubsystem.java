@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.TimestampedDoubleArray;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.telemetry.Telemetry;
@@ -35,7 +34,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
     // Initialize the NT subscribers for whichever of MT1/2 is used
     primaryMegaTag = primary.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
-    secondaryMegaTag = secondary.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
+    secondaryMegaTag =
+        secondary.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[0]);
 
     // inputs/configs
     primary.getEntry("pipeline").setNumber(visionConfig.pipelineAprilTagDetect());
@@ -137,7 +137,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     if (tagId > 0) {
       index = botPose.getTagIndex(tagId);
     }
-    return -botPose.getTagTxnc(index);
+    return botPose.getTagTxnc(index);
   }
 
   public double heightOfTarget(int tagId, String limelightName) {
@@ -176,7 +176,6 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    * @param limelightName the limelight you want to check
    * @return If tagId is visible or not
    */
-
   public boolean isTagInView(int tagId, String limelightName) {
     LimelightBotPose botPose = getBotPose(limelightName);
     return botPose.getTagIndex(tagId) != -1;

@@ -13,30 +13,19 @@ public class ShooterTelemetry {
 
   public boolean enabled = true;
 
-  /** The top intake roller speed */
-  public double topRollerSpeed = Double.MIN_VALUE;
-
-  /** the bottom intake roller speed */
-  public double bottomRollerSpeed = Double.MIN_VALUE;
-
-  /** Whether the arm is extended or not */
-  public boolean isArmExtended = false;
-
-  /** Whether the hopper is full or not */
-  public boolean isHopperFull = false;
-
-  /// Whether the shooter is shooting or now */
-  public static boolean isShooting = false;
+  public double targetShooterRPM;
+  public double currentShooterRPM;
+  public double kickerSpeed;
+  public double hoodAngle;
+  public double agitatorSpeed;
 
   void post() {
 
     if (enabled) {
-      SmartDashboard.putNumber(
-          PREFIX + "Intake/TopRollerSpeed", RunnymedeUtils.round(topRollerSpeed));
-      SmartDashboard.putNumber(
-          PREFIX + "Intake/BottomRollerSpeed", RunnymedeUtils.round(bottomRollerSpeed));
-      SmartDashboard.putBoolean(PREFIX + "Intake/ArmExtended", isArmExtended);
-      SmartDashboard.putBoolean(PREFIX + "Intake/HopperFull", isHopperFull);
+      SmartDashboard.putNumber(PREFIX + "Shooter/TargetShooterRPM", (int) targetShooterRPM);
+      SmartDashboard.putNumber(PREFIX + "Shooter/CurrentShooterRPM", (int) currentShooterRPM);
+      SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", RunnymedeUtils.round(kickerSpeed));
+      SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", RunnymedeUtils.round(hoodAngle));
     }
   }
 }

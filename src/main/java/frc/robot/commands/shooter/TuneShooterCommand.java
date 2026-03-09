@@ -1,10 +1,13 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -17,7 +20,7 @@ public class TuneShooterCommand extends LoggingCommand {
 
   private final OperatorInput operatorInput;
 
-  private double testShooterSpeed;
+  private double testShooterSpeed = 3000;
 
   private int lastPov = -1;
 
@@ -26,11 +29,13 @@ public class TuneShooterCommand extends LoggingCommand {
    *
    * @param shooterSubsystem The subsystem used by this command.
    */
-  public TuneShooterCommand(ShooterSubsystem shooterSubsystem,
+  public TuneShooterCommand(
+      ShooterSubsystem shooterSubsystem,
       OperatorInput operatorInput,
-      SwerveSubsystem swerveSubsystem) {
+      SwerveSubsystem swerveSubsystem,
+      IntakeSubsystem intakeSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(shooterSubsystem);
+    addRequirements(shooterSubsystem, swerveSubsystem, intakeSubsystem);
     this.shooterSubsystem = shooterSubsystem;
     this.operatorInput = operatorInput;
     this.swerveSubsystem = swerveSubsystem;
@@ -45,10 +50,8 @@ public class TuneShooterCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    boolean YButton = operatorInput.getDriverController().getYButton();
+    boolean shoot = operatorInput.getDriverController().getLeftTriggerAxis() > 0.5;
     int currentPOV = operatorInput.getDriverController().getPOV();
-    double distance = swerveSubsystem.distanceToHub();
-    SmartDashboard.putNumber("1310/shooter/distanceToHub", distance);
 
     if (currentPOV == 0 && lastPov == -1) {
       testShooterSpeed = Math.min(testShooterSpeed + 50, MAX_SHOOTER_RPM);
@@ -60,11 +63,9 @@ public class TuneShooterCommand extends LoggingCommand {
       SmartDashboard.putNumber("1310/shooter/testrpm", testShooterSpeed);
     }
 
-    if (YButton) {
+    if (shoot) {
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
-      // shooterSubsystem.setShooterSpeed(testShooterSpeed);
-      SmartDashboard.putNumber("1310/shooter/currentspeed",
-          shooterSubsystem.getShooterVelocity());
+
     } else if (operatorInput.getDriverController().getBButton()) {
       shooterSubsystem.setShooterSpeed(1);
     } else {
@@ -72,25 +73,25 @@ public class TuneShooterCommand extends LoggingCommand {
     }
 
     if (currentPOV == 270) {
-      shooterSubsystem.setKickerSpeed(-0.7);
+//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+//      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0.0);
+//      shooterSubsystem.setAgitatorSpeed(0.0);
     }
 
-    // hood control
     if (currentPOV == 90) {
-      shooterSubsystem.setHood(operatorInput.getDriverController().getLeftTriggerAxis());
+      double joystick = operatorInput.getDriverControllerAxis(OperatorInput.Stick.RIGHT, OperatorInput.Axis.Y);
+      shooterSubsystem.setHood(Math.abs(joystick));
     }
 
     lastPov = currentPOV;
-
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
-
   }
 
   // Called once the command ends or is interrupted.
