@@ -65,11 +65,10 @@ public class TuneShooterCommand extends LoggingCommand {
 
     if (shoot) {
       shooterSubsystem.setShooterVelocity(testShooterSpeed);
-
     } else if (operatorInput.getDriverController().getBButton()) {
       shooterSubsystem.setShooterSpeed(1);
     } else {
-      shooterSubsystem.setShooterSpeed(0.0);
+      shooterSubsystem.setShooterVelocity(0.0);
     }
 
     if (currentPOV == 270) {

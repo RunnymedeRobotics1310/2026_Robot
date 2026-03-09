@@ -80,7 +80,7 @@ public class ShooterCommand extends LoggingCommand {
     double targetSpeed = calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(targetSpeed);
     double currentVelocity = shooterSubsystem.getShooterVelocity();
-    boolean atSpeed = (targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
 
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
@@ -93,22 +93,22 @@ public class ShooterCommand extends LoggingCommand {
       }
     }
 
-//    if (atSpeed == true) {
-//      firstShoot = true;
-//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    if (atSpeed) {
+      firstShoot = true;
+      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 //      // timer.reset();
-//    }
-    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    }
+//    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     // /* timer.get() < 0.8 && */
     // } else if (firstShoot == true) {
     // shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     // } else {
     // shooterSubsystem.setKickerSpeed(0);
     // }
-    if (timer.hasElapsed(0.5)) {
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    } else {
-      shooterSubsystem.setKickerSpeed(0.0);
-    }
+//    if (timer.hasElapsed(0.5)) {
+//      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+//    } else {
+//      shooterSubsystem.setKickerSpeed(0.0);
+//    }
   }
 }
