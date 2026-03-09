@@ -16,6 +16,7 @@ public class ShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
 
   private final Timer timer = new Timer();
+  private boolean firstShot = false;
 
   /**
    * Creates a new ExampleCommand.
@@ -35,6 +36,7 @@ public class ShooterCommand extends LoggingCommand {
     logCommandStart();
     timer.reset();
     timer.start();
+    firstShot = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -86,7 +88,8 @@ public class ShooterCommand extends LoggingCommand {
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if (atSpeed && facingHub) {
+    if ((atSpeed || firstShot) && facingHub) {
+      firstShot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);

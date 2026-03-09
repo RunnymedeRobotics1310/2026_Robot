@@ -20,6 +20,8 @@ public class DefaultShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
   private final OperatorInput oi;
 
+  private boolean firstShot = false;
+
   public DefaultShooterCommand(ShooterSubsystem shooter, SwerveSubsystem swerve, OperatorInput oi) {
     this.shooterSubsystem = shooter;
     this.swerveSubsystem = swerve;
@@ -32,6 +34,7 @@ public class DefaultShooterCommand extends LoggingCommand {
 
     if (oi.shootFromAnywhere()) shooting();
     else {
+      firstShot = false;
       shooterSubsystem.setHood(0);
       shooterSubsystem.stop();
     }
@@ -71,7 +74,8 @@ public class DefaultShooterCommand extends LoggingCommand {
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if (atSpeed && facingHub) {
+    if ((atSpeed || firstShot) && facingHub) {
+      firstShot = true;
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
       shooterSubsystem.setKickerSpeed(0);
