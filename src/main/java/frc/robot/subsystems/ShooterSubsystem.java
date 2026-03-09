@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.revrobotics.PersistMode;
@@ -82,7 +81,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void setAgitatorSpeed(double speed) {
     agitatorMotor.set(speed);
-    intake.setRollerSpeeds(0, INTAKE_SPEED);
     Telemetry.shooter.agitatorSpeed = speed;
   }
 
@@ -98,6 +96,20 @@ public class ShooterSubsystem extends SubsystemBase {
     if (distanceMeters <= 5.0 && distanceMeters > 2.0) {
       return 64;
     } else return 78;
+  }
+
+  public double calculateShootingSpeed(double distanceMeters) {
+    double shooterSpeed = 0;
+    if (distanceMeters < MAX_SHOOTING_DISTANCE) {
+      if (distanceMeters >= SUPER_FAR_SHOOTING_DISTANCE) {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
+      } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
+      } else {
+        shooterSpeed = (distanceMeters * SLOPE_VALUE_CLOSE) + Y_INT_CLOSE;
+      }
+    }
+    return shooterSpeed;
   }
 
   public void stop() {

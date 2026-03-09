@@ -77,10 +77,10 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    intakeSubsystem.setDefaultCommand(
-        new IntakeCommand(intakeSubsystem, shooterSubsystem, operatorInput));
+    intakeSubsystem.setDefaultCommand(new IntakeCommand(intakeSubsystem, operatorInput));
 
-    shooterSubsystem.setDefaultCommand(new DefaultShooterCommand(shooterSubsystem, operatorInput));
+    shooterSubsystem.setDefaultCommand(
+        new DefaultShooterCommand(shooterSubsystem, swerveSubsystem, operatorInput));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine

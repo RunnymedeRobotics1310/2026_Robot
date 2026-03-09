@@ -2,6 +2,7 @@ package frc.robot.commands.shooter;
 
 import static frc.robot.Constants.ShooterConstants.*;
 
+import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -15,7 +16,6 @@ public class ShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
 
   private final Timer timer = new Timer();
-  private boolean firstShoot;
 
   /**
    * Creates a new ExampleCommand.
@@ -35,15 +35,12 @@ public class ShooterCommand extends LoggingCommand {
     logCommandStart();
     timer.reset();
     timer.start();
-    firstShoot = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = swerveSubsystem.distanceToHub();
-    log("Speed: " + shooterSubsystem.getShooterVelocity());
-    shooting(distance);
+    shooting();
   }
 
   // Returns true when the command should end.
@@ -62,31 +59,11 @@ public class ShooterCommand extends LoggingCommand {
     timer.reset();
   }
 
-  public double calculateShootingSpeed(double distanceMeters) {
-    double shooterSpeed = 0;
-    if (distanceMeters < MAX_SHOOTING_DISTANCE) {
-      if (distanceMeters >= SUPER_FAR_SHOOTING_DISTANCE) {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
-      } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
-      } else {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_CLOSE) + Y_INT_CLOSE;
-      }
-    }
-    return shooterSpeed;
-  }
-
-  public void shooting(double distance) {
+  public void shooting() {
     // shooter
-    double targetSpeed = calculateShootingSpeed(distance);
+    double distance = swerveSubsystem.distanceToHub();
+    double targetSpeed = shooterSubsystem.calculateShootingSpeed(distance);
     shooterSubsystem.setShooterVelocity(targetSpeed);
-    double currentVelocity = shooterSubsystem.getShooterVelocity();
-    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
-    boolean facingHub =
-        Math.abs(
-                (swerveSubsystem.angleToHub().getDegrees() + 180)
-                    - (swerveSubsystem.getYaw() + 180))
-            < 5;
 
     // agitator
     shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
@@ -97,25 +74,22 @@ public class ShooterCommand extends LoggingCommand {
         shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
       } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
         shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
-
-      } else {
-        shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
       }
+    } else {
+      shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
     }
 
     // kicker
-    if ((atSpeed /*|| firstShoot*/) && facingHub) {
-      firstShoot = true;
+    double currentVelocity = shooterSubsystem.getShooterVelocity();
+    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean facingHub =
+        SwerveUtils.isCloseEnough(
+            swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
+
+    if (atSpeed && facingHub) {
       shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-      //      // timer.reset();
     } else {
       shooterSubsystem.setKickerSpeed(0);
     }
-
-    //    if (timer.hasElapsed(0.5)) {
-    //      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    //    } else {
-    //      shooterSubsystem.setKickerSpeed(0.0);
-    //    }
   }
 }

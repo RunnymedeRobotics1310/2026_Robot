@@ -1,7 +1,5 @@
 package frc.robot.commands.auto;
 
-import static frc.robot.telemetry.Telemetry.shooter;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.swerve.*;

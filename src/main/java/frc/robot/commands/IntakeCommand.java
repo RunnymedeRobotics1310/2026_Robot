@@ -6,22 +6,18 @@ import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
 public class IntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
-  private final ShooterSubsystem shooter;
   private final OperatorInput oi;
   boolean firstIntake;
 
   private Timer timer = new Timer();
 
-  public IntakeCommand(
-      IntakeSubsystem intake, ShooterSubsystem shooter, OperatorInput operatorInput) {
+  public IntakeCommand(IntakeSubsystem intake, OperatorInput operatorInput) {
     super();
     intakeSubsystem = intake;
-    this.shooter = shooter;
     addRequirements(intake);
     oi = operatorInput;
     firstIntake = false;
@@ -43,28 +39,11 @@ public class IntakeCommand extends LoggingCommand {
 
     final boolean intakeCheck = oi.isIntakeDoingStuff();
 
-    //        if(intakeCheck) {
-    //            intakeSubsystem.setRollers(true);
-    //            intakeSubsystem.setDoorState(true);
-    //
-    //        } else {
-    //            intakeSubsystem.rollerStop();
-    //            intakeSubsystem.setDoorState(false);
-    //        }
-    //
-    //        if (oi.isReverseIntake()) {
-    //          intakeSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
-    //        }
-
     if (intakeCheck) {
       intakeSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
       intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       firstIntake = true;
       timer.reset();
-      //      shooter.setAgitatorSpeed(Constants.ShooterConstants.AGITATOR_RUNSPEED);
-    } else if (oi.isReverseIntake()) {
-      intakeSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
-      intakeSubsystem.setDoorSetpoint(90);
     } else {
       intakeSubsystem.setDoorSetpoint(0);
       if (timer.get() < 0.5 && firstIntake) {
@@ -72,8 +51,12 @@ public class IntakeCommand extends LoggingCommand {
       } else {
         intakeSubsystem.setRollerSpeeds(0, 0);
       }
-      //      shooter.setAgitatorSpeed(0);
     }
+
+    // operator overrides
+    if (oi.isIntakeForwards()) intakeSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+    if (oi.isIntakeReverse()) intakeSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+    if (oi.isOpenDoor()) intakeSubsystem.setDoorSetpoint(90);
   }
 
   // Returns true when the command should end.
