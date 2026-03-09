@@ -7,7 +7,9 @@ import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-@AutoConfigurable(value = "drive_velocity", category = "drive",
+@AutoConfigurable(
+    value = "drive_velocity",
+    category = "drive",
     description = "Drive robot-oriented at a heading until interrupted")
 public class DriveRobotOrientedAtHeadingCommand extends LoggingCommand {
 
@@ -19,12 +21,10 @@ public class DriveRobotOrientedAtHeadingCommand extends LoggingCommand {
 
   public DriveRobotOrientedAtHeadingCommand(
       SwerveSubsystem swerve,
-      @ConfigParam(value = "vxMPS", unit = "m/s",
-          description = "Forward velocity") double x,
-      @ConfigParam(value = "vyMPS", unit = "m/s",
-          description = "Left velocity") double y,
-      @ConfigParam(value = "headingDegrees", unit = "deg",
-          description = "Robot heading to hold") double heading) {
+      @ConfigParam(value = "vxMPS", unit = "m/s", description = "Forward velocity") double x,
+      @ConfigParam(value = "vyMPS", unit = "m/s", description = "Left velocity") double y,
+      @ConfigParam(value = "headingDegrees", unit = "deg", description = "Robot heading to hold")
+          double heading) {
     this.swerve = swerve;
     this.x = x;
     this.y = y;

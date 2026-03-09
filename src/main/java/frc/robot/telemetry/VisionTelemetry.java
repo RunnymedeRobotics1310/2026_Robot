@@ -1,10 +1,10 @@
 package frc.robot.telemetry;
 
+import static frc.robot.telemetry.Telemetry.PREFIX;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.vision.VisionTelemetryLevel;
-
-import static frc.robot.telemetry.Telemetry.PREFIX;
 
 /**
  * @author JZ

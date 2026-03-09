@@ -1,15 +1,14 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
-
 import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
+
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class LazyIntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
 
-  public LazyIntakeCommand(
-      IntakeSubsystem intake) {
+  public LazyIntakeCommand(IntakeSubsystem intake) {
     super();
     intakeSubsystem = intake;
     addRequirements(intake);

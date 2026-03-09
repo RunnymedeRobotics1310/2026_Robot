@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swerve;
 
+import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
+
 import ca.team1310.swerve.RunnymedeSwerveDrive;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
@@ -16,8 +18,6 @@ import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.telemetry.Telemetry;
 
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
-
 public class SwerveSubsystem extends SubsystemBase {
 
   private final RunnymedeSwerveDrive drive;
@@ -31,17 +31,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
     this.drive =
-            new LimelightAwareSwerveDrive(
-                    config.coreConfig(), config.gyroConfig(), config.limelightConfig());
+        new LimelightAwareSwerveDrive(
+            config.coreConfig(), config.gyroConfig(), config.limelightConfig());
     Telemetry.swerve = drive.getSwerveTelemetry();
     this.config = config;
     this.xLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.yLimiter = new SlewRateLimiter(this.config.translationConfig().maxAccelMPS2());
     this.omegaLimiter = new SlewRateLimiter(config.rotationConfig().maxAccelerationRadPS2());
-    headingPIDController = new PIDController(
-        config.rotationConfig().headingP(),
-        config.rotationConfig().headingI(),
-        config.rotationConfig().headingD());
+    headingPIDController =
+        new PIDController(
+            config.rotationConfig().headingP(),
+            config.rotationConfig().headingI(),
+            config.rotationConfig().headingD());
     headingPIDController.enableContinuousInput(-180, 180);
     headingPIDController.setTolerance(1);
     Telemetry.drive.enabled = config.telemetryEnabled();
@@ -69,10 +70,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafely(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
-    omega = SwerveUtils.clamp(
-        -config.rotationConfig().maxRotVelocityRadPS(),
-        omega,
-        config.rotationConfig().maxRotVelocityRadPS());
+    omega =
+        SwerveUtils.clamp(
+            -config.rotationConfig().maxRotVelocityRadPS(),
+            omega,
+            config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -91,10 +93,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private void driveSafelyFieldOriented(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
-    omega = SwerveUtils.clamp(
-        -config.rotationConfig().maxRotVelocityRadPS(),
-        omega,
-        config.rotationConfig().maxRotVelocityRadPS());
+    omega =
+        SwerveUtils.clamp(
+            -config.rotationConfig().maxRotVelocityRadPS(),
+            omega,
+            config.rotationConfig().maxRotVelocityRadPS());
     omega = omegaLimiter.calculate(omega);
 
     if (this.config.enabled()) {
@@ -190,8 +193,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Get the measured translational speed of the robot in metres per second from
-   * swerve kinematics.
+   * Get the measured translational speed of the robot in metres per second from swerve kinematics.
    *
    * @return translational speed in m/s
    */
@@ -351,18 +353,24 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public Rotation2d angleToHub() {
     Pose2d pose = getPose();
-    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    Translation2d hubPose =
+        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      pose = new Pose2d(Constants.FieldConstants.FIELD_EXTENT_METRES_X - pose.getX(), pose.getY(), pose.getRotation());
-//      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
+      pose =
+          new Pose2d(
+              Constants.FieldConstants.FIELD_EXTENT_METRES_X - pose.getX(),
+              pose.getY(),
+              pose.getRotation());
+      //      hubPose = new Translation2d(Units.inchesToMeters(469.11),
+      // Units.inchesToMeters(158.84));
     }
 
     // if past alliance zone, point at trench
     if (pose.getX() > hubPose.getX()) {
-      if (pose.getY() < FIELD_EXTENT_METRES_Y/2) {
+      if (pose.getY() < FIELD_EXTENT_METRES_Y / 2) {
         hubPose = new Translation2d(hubPose.getX(), 1.5);
       } else {
-        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y-1.5);
+        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y - 1.5);
       }
     }
 
@@ -375,7 +383,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double calculateDistanceToHub() {
     Pose2d pose = getPose();
-    Translation2d hubPose = new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
+    Translation2d hubPose =
+        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
     }

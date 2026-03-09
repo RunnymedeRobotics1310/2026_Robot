@@ -8,12 +8,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface ConfigParam {
-    String value();
-    String description() default "";
-    String unit() default "";
-    double min() default Double.NEGATIVE_INFINITY;
-    double max() default Double.POSITIVE_INFINITY;
-    double defaultValue() default 0;
-    boolean required() default true;
-    String[] options() default {};
+  String value();
+
+  String description() default "";
+
+  String unit() default "";
+
+  double min() default Double.NEGATIVE_INFINITY;
+
+  double max() default Double.POSITIVE_INFINITY;
+
+  double defaultValue() default 0;
+
+  boolean required() default true;
+
+  String[] options() default {};
 }

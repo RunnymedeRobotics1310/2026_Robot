@@ -9,11 +9,11 @@ import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.shooter.DefaultShooterCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoCommandRegistrations;
 import frc.robot.commands.auto.config.AutoCommandRegistry;
 import frc.robot.commands.auto.config.AutoConfigNTBridge;
+import frc.robot.commands.shooter.DefaultShooterCommand;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;

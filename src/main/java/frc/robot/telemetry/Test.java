@@ -2,14 +2,15 @@ package frc.robot.telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import frc.robot.commands.test.SystemTestCommand;
+
+// import frc.robot.commands.test.SystemTestCommand;
 
 public class Test {
 
   Test() {}
 
   public boolean enabled;
-//  public SystemTestCommand.Motor selectedMotor;
+  //  public SystemTestCommand.Motor selectedMotor;
   public double motorSpeed = -1310.0;
   public double motor2Speed = -1310.0;
   public Rotation2d angle = null;
@@ -17,9 +18,9 @@ public class Test {
   void post() {
     SmartDashboard.putBoolean(Telemetry.PREFIX + "Test Mode/Enabled", enabled);
     if (enabled) {
-//      SmartDashboard.putString(
-//          Telemetry.PREFIX + "Test Mode/Motor",
-//          selectedMotor == null ? "" : selectedMotor.toString());
+      //      SmartDashboard.putString(
+      //          Telemetry.PREFIX + "Test Mode/Motor",
+      //          selectedMotor == null ? "" : selectedMotor.toString());
       SmartDashboard.putString(
           Telemetry.PREFIX + "Test Mode/Motor Speed",
           String.format("%.1f", motorSpeed * 100) + " %");

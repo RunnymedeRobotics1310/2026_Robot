@@ -27,7 +27,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final IntakeSubsystem intake;
 
-
   /** Creates The Shooter Subsystem. */
   public ShooterSubsystem(IntakeSubsystem intake) {
     secondaryShooterMotor.configure(
@@ -54,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
     if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
       iError = 0;
     }
-//    updateShooterSpeed();
+    //    updateShooterSpeed();
   }
 
   public void updateShooterSpeed() {
@@ -64,7 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
       iError = 0;
     } else {
       iError += error;
-      iError = Math.min(iError, (1-error*KP)/KI);
+      iError = Math.min(iError, (1 - error * KP) / KI);
     }
 
     double pidOutput = (targetShooterVelocity * KFF) + (error * KP) + (iError * KI);

@@ -15,168 +15,172 @@ import java.util.Set;
 
 public class AutoConfigNTBridge {
 
-    private final NetworkTable table;
-    private final StringArrayPublisher availableAutosPub;
-    private final StringArrayPublisher deployAutosPub;
-    private final StringArrayPublisher runtimeAutosPub;
-    private final StringPublisher bridgeVersionPub;
-    private final StringPublisher lastWriteStatusPub;
-    private final StringPublisher commandMetadataPub;
-    private final StringSubscriber writeConfigSub;
-    private final StringSubscriber deleteConfigSub;
-    private final Map<String, StringPublisher> configPublishers = new HashMap<>();
+  private final NetworkTable table;
+  private final StringArrayPublisher availableAutosPub;
+  private final StringArrayPublisher deployAutosPub;
+  private final StringArrayPublisher runtimeAutosPub;
+  private final StringPublisher bridgeVersionPub;
+  private final StringPublisher lastWriteStatusPub;
+  private final StringPublisher commandMetadataPub;
+  private final StringSubscriber writeConfigSub;
+  private final StringSubscriber deleteConfigSub;
+  private final Map<String, StringPublisher> configPublishers = new HashMap<>();
 
-    private Runnable onConfigsChanged;
+  private Runnable onConfigsChanged;
 
-    public AutoConfigNTBridge() {
-        table = NetworkTableInstance.getDefault()
-                .getTable("SmartDashboard")
-                .getSubTable("1310")
-                .getSubTable("autoconfig");
+  public AutoConfigNTBridge() {
+    table =
+        NetworkTableInstance.getDefault()
+            .getTable("SmartDashboard")
+            .getSubTable("1310")
+            .getSubTable("autoconfig");
 
-        availableAutosPub = table.getStringArrayTopic("availableAutos").publish();
-        deployAutosPub = table.getStringArrayTopic("deployAutos").publish();
-        runtimeAutosPub = table.getStringArrayTopic("runtimeAutos").publish();
-        bridgeVersionPub = table.getStringTopic("bridgeVersion").publish();
-        lastWriteStatusPub = table.getStringTopic("lastWriteStatus").publish();
-        commandMetadataPub = table.getStringTopic("commandMetadata").publish();
-        writeConfigSub = table.getStringTopic("writeConfig").subscribe("");
-        deleteConfigSub = table.getStringTopic("deleteConfig").subscribe("");
+    availableAutosPub = table.getStringArrayTopic("availableAutos").publish();
+    deployAutosPub = table.getStringArrayTopic("deployAutos").publish();
+    runtimeAutosPub = table.getStringArrayTopic("runtimeAutos").publish();
+    bridgeVersionPub = table.getStringTopic("bridgeVersion").publish();
+    lastWriteStatusPub = table.getStringTopic("lastWriteStatus").publish();
+    commandMetadataPub = table.getStringTopic("commandMetadata").publish();
+    writeConfigSub = table.getStringTopic("writeConfig").subscribe("");
+    deleteConfigSub = table.getStringTopic("deleteConfig").subscribe("");
 
-        bridgeVersionPub.set("2");
+    bridgeVersionPub.set("2");
 
-        // Initial publish of available configs
-        refreshAvailableAutos();
+    // Initial publish of available configs
+    refreshAvailableAutos();
+  }
+
+  public void publishCommandMetadata(String json) {
+    commandMetadataPub.set(json);
+  }
+
+  public void setOnConfigsChanged(Runnable callback) {
+    this.onConfigsChanged = callback;
+  }
+
+  public void periodic() {
+    // Process every queued write request so repeated identical writes are not dropped.
+    TimestampedString[] writeQueue = writeConfigSub.readQueue();
+    for (TimestampedString update : writeQueue) {
+      if (!update.value.isEmpty()) {
+        handleWriteConfig(update.value);
+      }
     }
 
-    public void publishCommandMetadata(String json) {
-        commandMetadataPub.set(json);
+    // Process every queued delete request so repeated identical deletes are not dropped.
+    TimestampedString[] deleteQueue = deleteConfigSub.readQueue();
+    for (TimestampedString update : deleteQueue) {
+      if (!update.value.isEmpty()) {
+        handleDeleteConfig(update.value);
+      }
+    }
+  }
+
+  private void handleWriteConfig(String json) {
+    if (!DriverStation.isDisabled()) {
+      lastWriteStatusPub.set("Error: Config changes are only allowed while Disabled");
+      return;
     }
 
-    public void setOnConfigsChanged(Runnable callback) {
-        this.onConfigsChanged = callback;
+    AutoConfig config = AutoConfigParser.parseJson(json);
+    if (config == null) {
+      lastWriteStatusPub.set("Error: Invalid JSON");
+      return;
+    }
+    String validationError = AutoConfigParser.validateAutoConfig(config);
+    if (validationError != null) {
+      lastWriteStatusPub.set("Error: " + validationError);
+      return;
     }
 
-    public void periodic() {
-        // Process every queued write request so repeated identical writes are not dropped.
-        TimestampedString[] writeQueue = writeConfigSub.readQueue();
-        for (TimestampedString update : writeQueue) {
-            if (!update.value.isEmpty()) {
-                handleWriteConfig(update.value);
-            }
-        }
-
-        // Process every queued delete request so repeated identical deletes are not dropped.
-        TimestampedString[] deleteQueue = deleteConfigSub.readQueue();
-        for (TimestampedString update : deleteQueue) {
-            if (!update.value.isEmpty()) {
-                handleDeleteConfig(update.value);
-            }
-        }
+    String safeName = AutoConfigParser.sanitizeConfigName(config.name);
+    if (safeName == null) {
+      lastWriteStatusPub.set("Error: Invalid config name");
+      return;
     }
 
-    private void handleWriteConfig(String json) {
-        if (!DriverStation.isDisabled()) {
-            lastWriteStatusPub.set("Error: Config changes are only allowed while Disabled");
-            return;
-        }
+    String result = AutoConfigParser.saveAutoConfig(safeName, json);
+    lastWriteStatusPub.set(result);
 
-        AutoConfig config = AutoConfigParser.parseJson(json);
-        if (config == null) {
-            lastWriteStatusPub.set("Error: Invalid JSON");
-            return;
-        }
-        String validationError = AutoConfigParser.validateAutoConfig(config);
-        if (validationError != null) {
-            lastWriteStatusPub.set("Error: " + validationError);
-            return;
-        }
+    if (result.startsWith("ok")) {
+      refreshAvailableAutos();
+      publishConfig(safeName, json);
+      if (onConfigsChanged != null) {
+        onConfigsChanged.run();
+      }
+    }
+  }
 
-        String safeName = AutoConfigParser.sanitizeConfigName(config.name);
-        if (safeName == null) {
-            lastWriteStatusPub.set("Error: Invalid config name");
-            return;
-        }
-
-        String result = AutoConfigParser.saveAutoConfig(safeName, json);
-        lastWriteStatusPub.set(result);
-
-        if (result.startsWith("ok")) {
-            refreshAvailableAutos();
-            publishConfig(safeName, json);
-            if (onConfigsChanged != null) {
-                onConfigsChanged.run();
-            }
-        }
+  private void handleDeleteConfig(String name) {
+    if (!DriverStation.isDisabled()) {
+      lastWriteStatusPub.set("Error: Config changes are only allowed while Disabled");
+      return;
     }
 
-    private void handleDeleteConfig(String name) {
-        if (!DriverStation.isDisabled()) {
-            lastWriteStatusPub.set("Error: Config changes are only allowed while Disabled");
-            return;
-        }
-
-        String safeName = AutoConfigParser.sanitizeConfigName(name);
-        if (safeName == null) {
-            lastWriteStatusPub.set("Error: Invalid config name");
-            return;
-        }
-
-        boolean deleted = AutoConfigParser.deleteAutoConfig(safeName);
-        if (deleted) {
-            lastWriteStatusPub.set("ok");
-            // Remove the config topic publisher
-            StringPublisher pub = configPublishers.remove(safeName);
-            if (pub != null) {
-                pub.close();
-            }
-            refreshAvailableAutos();
-            if (onConfigsChanged != null) {
-                onConfigsChanged.run();
-            }
-        } else {
-            if (AutoConfigParser.isDeployConfig(safeName)) {
-                lastWriteStatusPub.set("Error: Deploy config is immutable: " + safeName);
-                return;
-            }
-            lastWriteStatusPub.set("Error: Config not found: " + safeName);
-        }
+    String safeName = AutoConfigParser.sanitizeConfigName(name);
+    if (safeName == null) {
+      lastWriteStatusPub.set("Error: Invalid config name");
+      return;
     }
 
-    private void refreshAvailableAutos() {
-        List<String> configs = AutoConfigParser.listAutoConfigs();
-        List<String> deployConfigs = AutoConfigParser.listDeployAutoConfigs();
-        List<String> runtimeConfigs = AutoConfigParser.listRuntimeAutoConfigs();
-        Set<String> configSet = new HashSet<>(configs);
+    boolean deleted = AutoConfigParser.deleteAutoConfig(safeName);
+    if (deleted) {
+      lastWriteStatusPub.set("ok");
+      // Remove the config topic publisher
+      StringPublisher pub = configPublishers.remove(safeName);
+      if (pub != null) {
+        pub.close();
+      }
+      refreshAvailableAutos();
+      if (onConfigsChanged != null) {
+        onConfigsChanged.run();
+      }
+    } else {
+      if (AutoConfigParser.isDeployConfig(safeName)) {
+        lastWriteStatusPub.set("Error: Deploy config is immutable: " + safeName);
+        return;
+      }
+      lastWriteStatusPub.set("Error: Config not found: " + safeName);
+    }
+  }
 
-        // Close any stale publishers for configs that no longer exist.
-        configPublishers.entrySet().removeIf(entry -> {
-            if (!configSet.contains(entry.getKey())) {
+  private void refreshAvailableAutos() {
+    List<String> configs = AutoConfigParser.listAutoConfigs();
+    List<String> deployConfigs = AutoConfigParser.listDeployAutoConfigs();
+    List<String> runtimeConfigs = AutoConfigParser.listRuntimeAutoConfigs();
+    Set<String> configSet = new HashSet<>(configs);
+
+    // Close any stale publishers for configs that no longer exist.
+    configPublishers
+        .entrySet()
+        .removeIf(
+            entry -> {
+              if (!configSet.contains(entry.getKey())) {
                 entry.getValue().close();
                 return true;
-            }
-            return false;
-        });
+              }
+              return false;
+            });
 
-        availableAutosPub.set(configs.toArray(new String[0]));
-        deployAutosPub.set(deployConfigs.toArray(new String[0]));
-        runtimeAutosPub.set(runtimeConfigs.toArray(new String[0]));
+    availableAutosPub.set(configs.toArray(new String[0]));
+    deployAutosPub.set(deployConfigs.toArray(new String[0]));
+    runtimeAutosPub.set(runtimeConfigs.toArray(new String[0]));
 
-        // Publish each config's JSON
-        for (String name : configs) {
-            String json = AutoConfigParser.readAutoConfigJson(name);
-            if (json != null) {
-                publishConfig(name, json);
-            }
-        }
+    // Publish each config's JSON
+    for (String name : configs) {
+      String json = AutoConfigParser.readAutoConfigJson(name);
+      if (json != null) {
+        publishConfig(name, json);
+      }
     }
+  }
 
-    private void publishConfig(String name, String json) {
-        StringPublisher pub = configPublishers.get(name);
-        if (pub == null) {
-            pub = table.getSubTable("configs").getStringTopic(name).publish();
-            configPublishers.put(name, pub);
-        }
-        pub.set(json);
+  private void publishConfig(String name, String json) {
+    StringPublisher pub = configPublishers.get(name);
+    if (pub == null) {
+      pub = table.getSubTable("configs").getStringTopic(name).publish();
+      configPublishers.put(name, pub);
     }
+    pub.set(json);
+  }
 }

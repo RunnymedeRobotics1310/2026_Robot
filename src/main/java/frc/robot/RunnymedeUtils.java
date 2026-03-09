@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.Objects;
 
 public class RunnymedeUtils {
@@ -94,6 +93,7 @@ public class RunnymedeUtils {
 
   /**
    * Rounds a number to 2 decimal places
+   *
    * @param num the number you want to round
    * @return the rounded number
    */

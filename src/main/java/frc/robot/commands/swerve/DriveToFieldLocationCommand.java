@@ -12,7 +12,9 @@ import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-@AutoConfigurable(value = "drive_to_pose", category = "drive",
+@AutoConfigurable(
+    value = "drive_to_pose",
+    category = "drive",
     description = "Drive to a field pose using odometry")
 public class DriveToFieldLocationCommand extends LoggingCommand {
 
@@ -28,33 +30,68 @@ public class DriveToFieldLocationCommand extends LoggingCommand {
     this(swerve, pose, 0.05, 2.0, 0);
   }
 
-  public DriveToFieldLocationCommand(
-      SwerveSubsystem swerve, Pose2d pose, double toleranceM) {
+  public DriveToFieldLocationCommand(SwerveSubsystem swerve, Pose2d pose, double toleranceM) {
     this(swerve, pose, toleranceM, 2.0, 0);
   }
 
   public DriveToFieldLocationCommand(
       SwerveSubsystem swerve,
-      @ConfigParam(value = "xMetres", unit = "m", min = 0, max = 16.54,
-          description = "Target X position on field") double xMetres,
-      @ConfigParam(value = "yMetres", unit = "m", min = 0, max = 8.07,
-          description = "Target Y position on field") double yMetres,
-      @ConfigParam(value = "headingDegrees", unit = "deg",
-          description = "Target heading at destination") double headingDegrees,
-      @ConfigParam(value = "positionToleranceMetres", unit = "m", min = 0, max = 1,
-          defaultValue = 0.05, description = "Position tolerance") double positionToleranceMetres,
-      @ConfigParam(value = "headingToleranceDegrees", unit = "deg", min = 0, max = 30,
-          defaultValue = 3.0, description = "Heading tolerance") double headingToleranceDegrees,
-      @ConfigParam(value = "timeoutSeconds", unit = "s", min = 0, max = 15,
-          description = "Safety timeout") double timeoutSeconds) {
-    this(swerve, new Pose2d(xMetres, yMetres, Rotation2d.fromDegrees(headingDegrees)),
-        positionToleranceMetres, headingToleranceDegrees, timeoutSeconds);
+      @ConfigParam(
+              value = "xMetres",
+              unit = "m",
+              min = 0,
+              max = 16.54,
+              description = "Target X position on field")
+          double xMetres,
+      @ConfigParam(
+              value = "yMetres",
+              unit = "m",
+              min = 0,
+              max = 8.07,
+              description = "Target Y position on field")
+          double yMetres,
+      @ConfigParam(
+              value = "headingDegrees",
+              unit = "deg",
+              description = "Target heading at destination")
+          double headingDegrees,
+      @ConfigParam(
+              value = "positionToleranceMetres",
+              unit = "m",
+              min = 0,
+              max = 1,
+              defaultValue = 0.05,
+              description = "Position tolerance")
+          double positionToleranceMetres,
+      @ConfigParam(
+              value = "headingToleranceDegrees",
+              unit = "deg",
+              min = 0,
+              max = 30,
+              defaultValue = 3.0,
+              description = "Heading tolerance")
+          double headingToleranceDegrees,
+      @ConfigParam(
+              value = "timeoutSeconds",
+              unit = "s",
+              min = 0,
+              max = 15,
+              description = "Safety timeout")
+          double timeoutSeconds) {
+    this(
+        swerve,
+        new Pose2d(xMetres, yMetres, Rotation2d.fromDegrees(headingDegrees)),
+        positionToleranceMetres,
+        headingToleranceDegrees,
+        timeoutSeconds);
   }
 
   private DriveToFieldLocationCommand(
-      SwerveSubsystem swerve, Pose2d pose,
+      SwerveSubsystem swerve,
+      Pose2d pose,
       double tolerance,
-      double headingToleranceDegrees, double timeoutSeconds) {
+      double headingToleranceDegrees,
+      double timeoutSeconds) {
     this.swerve = swerve;
     this.location = pose;
     this.tolerance = tolerance;

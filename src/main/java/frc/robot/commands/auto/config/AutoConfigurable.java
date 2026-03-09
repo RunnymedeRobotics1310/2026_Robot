@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AutoConfigurable {
-    String value();
-    String description() default "";
-    String category() default "utility";
+  String value();
+
+  String description() default "";
+
+  String category() default "utility";
 }

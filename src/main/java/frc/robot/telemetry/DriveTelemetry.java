@@ -1,9 +1,9 @@
 package frc.robot.telemetry;
 
+import static frc.robot.telemetry.Telemetry.PREFIX;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RunnymedeUtils;
-
-import static frc.robot.telemetry.Telemetry.PREFIX;
 
 /**
  * @author Tony Field
@@ -65,8 +65,7 @@ public class DriveTelemetry {
               fieldOrientedDeltaToPoseHeading);
       SmartDashboard.putString(PREFIX + "Drive/distance_to_pose", delta);
 
-
-      SmartDashboard.putNumber(PREFIX +  "Drive/DistanceToHub", RunnymedeUtils.round(distanceToHub));
+      SmartDashboard.putNumber(PREFIX + "Drive/DistanceToHub", RunnymedeUtils.round(distanceToHub));
     }
   }
 }
