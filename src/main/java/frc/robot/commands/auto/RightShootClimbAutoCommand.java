@@ -19,9 +19,10 @@ public class RightShootClimbAutoCommand extends SequentialCommandGroup {
 
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, -1, 0, 0).withTimeout(2));
+    addCommands(new DriveFieldOrientedCommand(swerve, -2, 0, 0).withTimeout(0.8));
 
-    addCommands(new ShooterCommand(shooter, swerve).withTimeout(10));
+    addCommands(
+        new ShooterCommand(shooter, swerve).alongWith(new FaceHubCommand(swerve)).withTimeout(10));
 
     addCommands(new DriveFieldOrientedCommand(swerve, 0, 1, 180).withTimeout(1.5));
 
