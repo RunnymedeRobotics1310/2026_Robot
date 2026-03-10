@@ -1,6 +1,7 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.hopper;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
@@ -13,78 +14,127 @@ import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 
 import ca.team1310.swerve.math.SwerveMath;
 import ca.team1310.swerve.utils.SwerveUtils;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class DefaultShooterCommand extends LoggingCommand {
+public class DefaultHopperCommand extends LoggingCommand {
 
-  private final ShooterSubsystem shooterSubsystem;
+  private final HopperSubsystem hopperSubsystem;
   private final SwerveSubsystem swerveSubsystem;
   private final OperatorInput oi;
   private final ShooterTuneNTBridge bridge;
 
   private boolean firstShot = false;
+  private boolean firstIntake = false;
+  private final Timer intakeTimer = new Timer();
+
+  // Jeff's scary AI thingy
   private int logCounter = 0;
   private double lastHoodAngle = -1;
   private boolean wasKickerEnabled = false;
 
-  public DefaultShooterCommand(
-      ShooterSubsystem shooter,
+  public DefaultHopperCommand(
+      HopperSubsystem hopper,
       SwerveSubsystem swerve,
       OperatorInput oi,
       ShooterTuneNTBridge bridge) {
 
-    this.shooterSubsystem = shooter;
+    this.hopperSubsystem = hopper;
     this.swerveSubsystem = swerve;
     this.oi = oi;
     this.bridge = bridge;
-    addRequirements(shooter);
+    addRequirements(hopperSubsystem);
+  }
+
+  @Override
+  public void initialize() {
+    logCommandStart();
+    firstShot = false;
+    firstIntake = false;
+    intakeTimer.reset();
+    intakeTimer.start();
   }
 
   @Override
   public void execute() {
 
+    /* ----- INTAKE ----- */
+    if (oi.isIntakeDoingStuff()) {
+      hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+      hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+      firstIntake = true;
+      intakeTimer.reset();
+    } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
+      hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
+    } else {
+      hopperSubsystem.setDoorSetpoint(0);
+      if (intakeTimer.get() < 0.5 && firstIntake) {
+        hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+      } else {
+        hopperSubsystem.setRollerSpeeds(0, 0);
+      }
+    }
+
+    /* ----- SHOOTER ----- */
     if (oi.shootFromAnywhere()) shooting();
     else if (bridge.isDashboardConnected()) {
       handleShooterBridge();
     } else {
       firstShot = false;
-      shooterSubsystem.setHood(0);
-      shooterSubsystem.stop();
+      hopperSubsystem.setHood(0);
+      hopperSubsystem.setShooterVelocity(0);
+      hopperSubsystem.setKickerSpeed(0);
+      hopperSubsystem.setAgitatorSpeed(0);
     }
 
-    // operator overrides
-    if (oi.isRunAgitator()) shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
-    if (oi.isReverseKicker()) shooterSubsystem.setKickerSpeed(-KICKER_RUNSPEED);
-    if (oi.isStopFlywheel()) shooterSubsystem.setShooterSpeed(-0.01);
-    if (oi.isReverseFlywheel()) shooterSubsystem.setShooterSpeed(-0.1);
-    if (oi.putHoodDown()) shooterSubsystem.setHood(0);
+    /* ----- OPERATOR OVERRIDES ----- */
+    if (oi.isRunAgitator()) hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    if (oi.isReverseKicker()) hopperSubsystem.setKickerSpeed(-KICKER_RUNSPEED);
+    if (oi.isStopFlywheel()) hopperSubsystem.setShooterSpeed(-0.01);
+    if (oi.isReverseFlywheel()) hopperSubsystem.setShooterSpeed(-0.1);
+    if (oi.putHoodDown()) hopperSubsystem.setHood(0);
+
+    if (oi.isIntakeForwards()) hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+    if (oi.isIntakeReverse()) hopperSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+    if (oi.isOpenDoor()) hopperSubsystem.setDoorSetpoint(90);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    logCommandEnd(interrupted);
+    firstIntake = false;
+    firstShot = false;
+    intakeTimer.reset();
+    intakeTimer.stop();
+    hopperSubsystem.setHood(0);
+    hopperSubsystem.stop();
   }
 
   public void shooting() {
     // shooter
     double distance = swerveSubsystem.distanceToHub();
-    double targetSpeed = shooterSubsystem.calculateShootingSpeed(distance);
-    shooterSubsystem.setShooterVelocity(targetSpeed);
+    double targetSpeed = hopperSubsystem.calculateShootingSpeed(distance);
+    hopperSubsystem.setShooterVelocity(targetSpeed);
 
     // agitator
-    shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
 
     // hood
     if (distance < MAX_SHOOTING_DISTANCE) {
       if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
-        shooterSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
+        hopperSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
       } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
-        shooterSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
+        hopperSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
       }
     } else {
-      shooterSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
+      hopperSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
     }
 
     // kicker
-    double currentVelocity = shooterSubsystem.getShooterVelocity();
+    double currentVelocity = hopperSubsystem.getShooterVelocity();
     boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
     boolean facingHub =
         SwerveUtils.isCloseEnough(
@@ -92,27 +142,27 @@ public class DefaultShooterCommand extends LoggingCommand {
 
     if ((atSpeed || firstShot) && facingHub) {
       firstShot = true;
-      shooterSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+      hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
-      shooterSubsystem.setKickerSpeed(0);
+      hopperSubsystem.setKickerSpeed(0);
     }
   }
 
   private void handleShooterBridge() {
     // Dashboard shooter tuning
     double targetRPM = bridge.getTargetRPM();
-    double currentRPM = shooterSubsystem.getShooterVelocity();
+    double currentRPM = hopperSubsystem.getShooterVelocity();
     boolean shooterEnabled = bridge.isShooterEnabled();
     double hoodAngle = bridge.getHoodAngle();
 
     if (shooterEnabled) {
-      shooterSubsystem.setShooterVelocity(targetRPM);
+      hopperSubsystem.setShooterVelocity(targetRPM);
     } else {
-      shooterSubsystem.setShooterVelocity(0);
+      hopperSubsystem.setShooterVelocity(0);
     }
 
     if (hoodAngle != lastHoodAngle) {
-      shooterSubsystem.setHood(hoodAngle);
+      hopperSubsystem.setHood(hoodAngle);
       lastHoodAngle = hoodAngle;
     }
 
@@ -130,11 +180,12 @@ public class DefaultShooterCommand extends LoggingCommand {
 
     boolean kickerEnabled = bridge.isKickerEnabled();
     if (kickerEnabled) {
-      shooterSubsystem.setKickerSpeed(-bridge.getKickerSpeed());
-      shooterSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+      hopperSubsystem.setKickerSpeed(-bridge.getKickerSpeed());
+      hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+      hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
     } else if (wasKickerEnabled) {
-      shooterSubsystem.setKickerSpeed(0);
-      shooterSubsystem.setAgitatorSpeed(0);
+      hopperSubsystem.setKickerSpeed(0);
+      hopperSubsystem.setAgitatorSpeed(0);
     }
     wasKickerEnabled = kickerEnabled;
 

@@ -1,4 +1,4 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.BooleanSubscriber;

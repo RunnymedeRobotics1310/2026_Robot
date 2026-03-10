@@ -16,11 +16,10 @@ import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoConfig;
 import frc.robot.commands.auto.config.AutoConfigParser;
-import frc.robot.commands.shooter.LazyShooterCommand;
-import frc.robot.commands.shooter.TuneShooterCommand;
+import frc.robot.commands.hopper.LazyShooterCommand;
+import frc.robot.commands.hopper.TuneShooterCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 import java.util.List;
@@ -33,8 +32,7 @@ public class OperatorInput extends SubsystemBase {
       new GameController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
-  private final ShooterSubsystem shooter;
-  private final IntakeSubsystem intake;
+  private final HopperSubsystem hopper;
   private final LimelightVisionSubsystem vision;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
@@ -47,26 +45,21 @@ public class OperatorInput extends SubsystemBase {
 
   public OperatorInput(
       SwerveSubsystem swerve,
-      ShooterSubsystem shooter,
-      IntakeSubsystem intake,
+      HopperSubsystem hopper,
       LimelightVisionSubsystem vision,
       AutoCommandFactory autoCommandFactory) {
     this.swerve = swerve;
-    this.shooter = shooter;
-    this.intake = intake;
+    this.hopper = hopper;
     this.vision = vision;
     this.autoCommandFactory = autoCommandFactory;
   }
 
   /** Use this method to define your trigger->command mappings. */
   public void configureButtonBindings(
-      SwerveSubsystem swerve,
-      ShooterSubsystem shooter,
-      IntakeSubsystem intake,
-      LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
 
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
-    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, shooter, intake));
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, hopper));
 
     /* DRIVER CONTROLS */
 
@@ -92,7 +85,7 @@ public class OperatorInput extends SubsystemBase {
     /* OPERATOR CONTROLS */
 
     // Shoot from set range - ends when button is released, or after 100 seconds
-    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(shooter, 3000, 0, 100));
+    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3400, 0, 100));
 
     // not included here:
     //   manual climb
@@ -100,8 +93,7 @@ public class OperatorInput extends SubsystemBase {
     //   reverse intake
     //   stop shooter
 
-    new Trigger(driverController::getXButton)
-        .onTrue(new TuneShooterCommand(shooter, this, swerve, intake));
+    new Trigger(driverController::getXButton).onTrue(new TuneShooterCommand(hopper, this, swerve));
   }
 
   public boolean isCancel() {
@@ -264,11 +256,11 @@ public class OperatorInput extends SubsystemBase {
 
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
-      case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, shooter, vision);
-      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, shooter, vision);
-      case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, intake, delay);
-      case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, shooter, vision, delay);
-      case RIGHT_SHOOT_CLIMB -> new RightShootClimbAutoCommand(swerve, shooter, vision, delay);
+      case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, hopper, vision);
+      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, hopper, vision);
+      case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, hopper, delay);
+      case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, hopper, vision, delay);
+      case RIGHT_SHOOT_CLIMB -> new RightShootClimbAutoCommand(swerve, hopper, vision, delay);
       case CUSTOM -> buildCustomAutoCommand(delay);
       default -> new InstantCommand();
     };

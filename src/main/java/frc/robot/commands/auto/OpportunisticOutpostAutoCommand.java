@@ -3,16 +3,16 @@ package frc.robot.commands.auto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.shooter.LazyShooterCommand;
+import frc.robot.commands.hopper.LazyShooterCommand;
 import frc.robot.commands.swerve.*;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
 public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
   public OpportunisticOutpostAutoCommand(
-      SwerveSubsystem swerve, ShooterSubsystem shooter, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
     addCommands(new SetAllianceGyroCommand(swerve, 0));
 
     addCommands(
@@ -26,7 +26,7 @@ public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
     addCommands(new FaceHubCommand(swerve));
     addCommands(
-        new LazyShooterCommand(shooter, 1500, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
+        new LazyShooterCommand(hopper, 1500, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
 
     addCommands(
         new DriveToFieldLocationCommand(swerve, new Pose2d(2.4, 4, Rotation2d.fromDegrees(180))));

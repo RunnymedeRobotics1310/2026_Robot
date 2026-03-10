@@ -1,31 +1,41 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class HopperSubsystem extends SubsystemBase {
 
   private final SparkFlex primaryShooterMotor =
       new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
   private final SparkFlex secondaryShooterMotor =
       new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
   private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
-  private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
   private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
+  private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
+
+  private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(BOTTOM_ROLLER_PWM_PORT);
+  private final PWMSparkMax topRollerMotor = new PWMSparkMax(TOP_ROLLER_PWM_PORT);
+  private final SparkMax doorMotor = new SparkMax(DOOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
+
+  private final DigitalInput doorClosedLimit = new DigitalInput(DOOR_CLOSED_LIMIT_DIO_PORT);
 
   private double targetShooterVelocity;
   private double iError = 0;
+  private double doorSetpoint = 0;
 
-  /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem() {
+  public HopperSubsystem() {
     secondaryShooterMotor.configure(
         new SparkFlexConfig().follow(primaryShooterMotor, true),
         ResetMode.kNoResetSafeParameters,
@@ -35,8 +45,16 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     Telemetry.shooter.currentShooterRPM = getShooterVelocity();
+    Telemetry.intake.doorSetpoint = doorSetpoint;
+    Telemetry.intake.doorAngle = getDoorAngle();
+    Telemetry.intake.isDoorClosed = getDoorClosed();
 
     updateShooterSpeed();
+    updateDoorSpeed();
+
+    if (getDoorClosed()) {
+      doorMotor.getEncoder().setPosition(0);
+    }
   }
 
   public double getShooterVelocity() {
@@ -49,22 +67,6 @@ public class ShooterSubsystem extends SubsystemBase {
     if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
       iError = 0;
     }
-    //    updateShooterSpeed();
-  }
-
-  public void updateShooterSpeed() {
-    double currentSpeed = getShooterVelocity();
-    double error = (targetShooterVelocity - currentSpeed); // Normalize error
-    if (Math.abs(error) > I_ZONE) {
-      iError = 0;
-    } else {
-      iError += error;
-      iError = Math.min(iError, (1 - error * KP) / KI);
-    }
-
-    double pidOutput = (targetShooterVelocity * KFF) + (error * KP) + (iError * KI);
-    if (targetShooterVelocity == 0) setShooterSpeed(0);
-    else setShooterSpeed(pidOutput);
   }
 
   public void setShooterSpeed(double speed) {
@@ -89,6 +91,29 @@ public class ShooterSubsystem extends SubsystemBase {
     hoodServo.set(1 - value);
   }
 
+  public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
+    Telemetry.intake.topRollerSpeed = topRollerSpeed;
+    Telemetry.intake.bottomRollerSpeed = bottomRollerSpeed;
+    topRollerMotor.set(topRollerSpeed);
+    bottomRollerMotor.set(bottomRollerSpeed);
+  }
+
+  public void setDoorSetpoint(double setpoint) {
+    doorSetpoint = setpoint;
+  }
+
+  public double getDoorAngle() {
+    return doorMotor.getEncoder().getPosition() * DOOR_ENCODERS_TO_DEGREES;
+  }
+
+  public void setDoorSpeed(double doorSpeed) {
+    doorMotor.set(doorSpeed);
+  }
+
+  public boolean getDoorClosed() {
+    return !doorClosedLimit.get();
+  }
+
   public double calculateShootingAngle(double distanceMeters) {
     if (distanceMeters <= 5.0 && distanceMeters > 2.0) {
       return 64;
@@ -109,10 +134,39 @@ public class ShooterSubsystem extends SubsystemBase {
     return shooterSpeed;
   }
 
+  private void updateShooterSpeed() {
+    double currentSpeed = getShooterVelocity();
+    double error = (targetShooterVelocity - currentSpeed); // Normalize error
+    if (Math.abs(error) > I_ZONE) {
+      iError = 0;
+    } else {
+      iError += error;
+      iError = Math.min(iError, (1 - error * KP) / KI);
+    }
+
+    double pidOutput = (targetShooterVelocity * KFF) + (error * KP) + (iError * KI);
+    if (targetShooterVelocity == 0) setShooterSpeed(0);
+    else setShooterSpeed(pidOutput);
+  }
+
+  private void updateDoorSpeed() {
+    double error = doorSetpoint - getDoorAngle();
+
+    setDoorSpeed(error * DOOR_KP);
+
+    if (doorSetpoint == 0 && !getDoorClosed()) {
+      setDoorSpeed(-0.1);
+    }
+  }
+
   public void stop() {
     setShooterVelocity(0);
+    setDoorSetpoint(0);
+
     primaryShooterMotor.stopMotor();
     kickerMotor.stopMotor();
     agitatorMotor.stopMotor();
+    setRollerSpeeds(0, 0);
+    setDoorSpeed(0);
   }
 }
