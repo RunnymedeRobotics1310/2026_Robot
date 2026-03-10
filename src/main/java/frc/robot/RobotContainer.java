@@ -8,17 +8,16 @@ import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
 import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoCommandRegistrations;
 import frc.robot.commands.auto.config.AutoCommandRegistry;
 import frc.robot.commands.auto.config.AutoConfigNTBridge;
-import frc.robot.commands.shooter.DefaultShooterCommand;
+import frc.robot.commands.hopper.DefaultHopperCommand;
+import frc.robot.commands.hopper.ShooterTuneNTBridge;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -35,13 +34,13 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(intakeSubsystem);
+  private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
 
   private final AutoCommandRegistry autoCommandRegistry;
   private final AutoCommandFactory autoCommandFactory;
   private final OperatorInput operatorInput;
   private final AutoConfigNTBridge autoConfigNTBridge = new AutoConfigNTBridge();
+  private final ShooterTuneNTBridge shooterTuneNTBridge = new ShooterTuneNTBridge();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -53,19 +52,13 @@ public class RobotContainer {
     AutoCommandRegistry.SubsystemRegistry subsystemRegistry =
         new AutoCommandRegistry.SubsystemRegistry();
     subsystemRegistry.register(SwerveSubsystem.class, swerveSubsystem);
-    subsystemRegistry.register(ShooterSubsystem.class, shooterSubsystem);
-    subsystemRegistry.register(IntakeSubsystem.class, intakeSubsystem);
+    subsystemRegistry.register(HopperSubsystem.class, hopperSubsystem);
     subsystemRegistry.register(LimelightVisionSubsystem.class, visionSubsystem);
 
     autoCommandFactory =
         new AutoCommandFactory(autoCommandRegistry, subsystemRegistry, swerveSubsystem);
     operatorInput =
-        new OperatorInput(
-            swerveSubsystem,
-            shooterSubsystem,
-            intakeSubsystem,
-            visionSubsystem,
-            autoCommandFactory);
+        new OperatorInput(swerveSubsystem, hopperSubsystem, visionSubsystem, autoCommandFactory);
   }
 
   public RobotContainer() {
@@ -77,15 +70,13 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    intakeSubsystem.setDefaultCommand(
-        new IntakeCommand(intakeSubsystem, shooterSubsystem, operatorInput));
-
-    shooterSubsystem.setDefaultCommand(new DefaultShooterCommand(shooterSubsystem, operatorInput));
+    hopperSubsystem.setDefaultCommand(
+        new DefaultHopperCommand(
+            hopperSubsystem, swerveSubsystem, operatorInput, shooterTuneNTBridge));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
-    operatorInput.configureButtonBindings(
-        swerveSubsystem, shooterSubsystem, intakeSubsystem, visionSubsystem);
+    operatorInput.configureButtonBindings(swerveSubsystem, hopperSubsystem, visionSubsystem);
     operatorInput.initAutoSelectors();
 
     autoConfigNTBridge.setOnConfigsChanged(() -> operatorInput.refreshCustomAutoChooser());

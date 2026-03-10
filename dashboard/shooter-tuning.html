@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1310 Shooter Tuning</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-card: #0f3460;
+      --bg-input: #1a1a3e;
+      --accent: #e94560;
+      --accent-hover: #ff6b81;
+      --text-primary: #eee;
+      --text-secondary: #aab;
+      --border: #2a2a4e;
+      --success: #2ecc71;
+      --error: #e74c3c;
+      --radius: 6px;
+    }
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+    }
+    .logo { font-weight: 700; font-size: 16px; color: var(--accent); }
+    .status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--error); display: inline-block;
+    }
+    .status-dot.connected { background: var(--success); }
+    .status-message { color: var(--text-secondary); font-size: 13px; }
+    input[type="text"], input[type="number"] {
+      background: var(--bg-input); border: 1px solid var(--border);
+      color: var(--text-primary); padding: 4px 8px; border-radius: var(--radius);
+      font-size: 13px;
+    }
+    .btn {
+      padding: 5px 14px; border: none; border-radius: var(--radius);
+      cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+
+    /* Feedback bar */
+    .feedback-bar {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 16px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .feedback-item {
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    .feedback-label {
+      font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .feedback-value {
+      font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .feedback-unit {
+      font-size: 13px; color: var(--text-secondary);
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 0 24px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .card h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    /* Feedback card */
+    .rpm-value {
+      font-size: 48px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .rpm-unit { font-size: 16px; color: var(--text-secondary); margin-left: 4px; }
+    .at-speed-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px; font-size: 14px;
+    }
+    .at-speed-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--error);
+    }
+    .at-speed-dot.at-speed { background: var(--success); }
+
+    /* Controls */
+    .control-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .control-row label { min-width: 50px; font-size: 13px; color: var(--text-secondary); }
+    input[type="range"] {
+      flex: 1; accent-color: var(--accent);
+    }
+    .value-display {
+      min-width: 50px; text-align: right;
+      font-variant-numeric: tabular-nums; font-size: 13px;
+    }
+
+    /* Toggle button */
+    .toggle-btn {
+      padding: 8px 20px; border: 2px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-input); color: var(--text-secondary);
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      transition: all 0.15s ease;
+    }
+    .toggle-btn.active {
+      background: var(--success); color: #fff; border-color: var(--success);
+    }
+
+    /* Recordings */
+    .recordings-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+    }
+    .recordings-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+    }
+    .recordings-header h2 {
+      font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-secondary); margin: 0;
+    }
+    .recordings-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; font-variant-numeric: tabular-nums;
+    }
+    .recordings-table th {
+      text-align: left; padding: 6px 10px;
+      color: var(--text-secondary); border-bottom: 1px solid var(--border);
+      font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .recordings-table td {
+      padding: 5px 10px; border-bottom: 1px solid var(--border);
+    }
+    .recordings-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .recordings-table .note-input {
+      background: transparent; border: none; color: var(--text-primary);
+      font-size: 13px; width: 100%; outline: none;
+    }
+    .recordings-table .note-input:focus {
+      background: var(--bg-input); border-radius: 3px;
+    }
+    .delete-row-btn {
+      background: none; border: none; color: var(--error); cursor: pointer;
+      font-size: 16px; padding: 0 4px; opacity: 0.6;
+    }
+    .delete-row-btn:hover { opacity: 1; }
+    .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--bg-input); }
+    .btn-danger { background: var(--error); color: #fff; }
+    .btn-danger:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="logo">1310 Shooter Tuning</span>
+    <span id="status-dot" class="status-dot"></span>
+    <input type="text" id="team-number" value="1310" placeholder="Team #" style="width:60px;">
+    <button id="connect-btn" class="btn btn-primary">Connect</button>
+    <span id="status-text" class="status-message">Disconnected</span>
+  </div>
+
+  <!-- Feedback Bar -->
+  <div class="feedback-bar">
+    <div>
+      <div class="feedback-label">Current RPM</div>
+      <div class="feedback-item">
+        <span id="rpm-display" class="feedback-value">0</span>
+        <span class="feedback-unit">RPM</span>
+      </div>
+    </div>
+    <div>
+      <div class="feedback-label">Status</div>
+      <div class="at-speed-row" style="margin-top:4px;">
+        <span id="at-speed-dot" class="at-speed-dot"></span>
+        <span id="at-speed-text">Not At Speed</span>
+      </div>
+    </div>
+    <div>
+      <div class="feedback-label">Distance to Hub</div>
+      <div class="feedback-item">
+        <span id="distance-display" class="feedback-value">0.00</span>
+        <span class="feedback-unit">m</span>
+      </div>
+    </div>
+    <div>
+      <div class="feedback-label">Angle to Hub</div>
+      <div class="feedback-item">
+        <span id="angle-display" class="feedback-value">0.0</span>
+        <span class="feedback-unit">deg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="cards">
+
+    <!-- Shooter -->
+    <div class="card">
+      <h2>Shooter</h2>
+      <div class="control-row">
+        <label>RPM</label>
+        <input type="range" id="rpm-slider" min="0" max="6300" step="50" value="0">
+        <input type="number" id="rpm-input" min="0" max="6300" step="50" value="0" style="width:70px;">
+      </div>
+      <div style="text-align:center; margin-top:8px;">
+        <button id="shooter-toggle" class="toggle-btn">OFF</button>
+      </div>
+    </div>
+
+    <!-- Hood -->
+    <div class="card">
+      <h2>Hood Angle</h2>
+      <div class="control-row">
+        <label>Angle</label>
+        <input type="range" id="hood-slider" min="0" max="1" step="0.01" value="0">
+        <span id="hood-value" class="value-display">0.00</span>
+      </div>
+    </div>
+
+    <!-- Kicker -->
+    <div class="card">
+      <h2>Kicker</h2>
+      <div class="control-row">
+        <label>Speed</label>
+        <input type="range" id="kicker-slider" min="0" max="1" step="0.01" value="1">
+        <span id="kicker-value" class="value-display">-1.00</span>
+      </div>
+      <div style="display:flex; justify-content:center; gap:12px; margin-top:8px;">
+        <button id="kicker-toggle" class="toggle-btn">OFF</button>
+        <button id="auto-kicker-toggle" class="toggle-btn" title="Auto-enable kicker when shooter is at speed">AUTO</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recordings -->
+  <div class="recordings-section">
+    <div class="recordings-header">
+      <h2>Recordings</h2>
+      <label style="color:var(--text-secondary); font-size:13px;">Measured dist:</label>
+      <input type="number" id="measured-distance" min="0" step="0.01" placeholder="m" style="width:70px;">
+      <button id="record-btn" class="btn btn-primary">Record</button>
+      <button id="export-csv-btn" class="btn btn-secondary">Export CSV</button>
+      <button id="clear-recordings-btn" class="btn btn-danger">Clear All</button>
+      <span id="record-count" style="color:var(--text-secondary); font-size:13px;"></span>
+    </div>
+    <table class="recordings-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Odom Dist (m)</th>
+          <th>Measured Dist (m)</th>
+          <th>Angle (deg)</th>
+          <th>Target RPM</th>
+          <th>Hood Angle</th>
+          <th>Kicker Speed</th>
+          <th>Note</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="recordings-body"></tbody>
+    </table>
+  </div>
+
+  <script src="js/ntcore-bundle.js"></script>
+  <script src="js/shooter-tuning.js"></script>
+
+</body>
+</html>

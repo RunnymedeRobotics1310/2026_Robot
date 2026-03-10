@@ -1,24 +1,24 @@
-package frc.robot.commands.shooter;
+package frc.robot.commands.hopper;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 
 /** An example command that uses an example subsystem. */
 public class CloseShootCommand extends LoggingCommand {
 
-  private final ShooterSubsystem shooterSubsystem;
+  private final HopperSubsystem hopperSubsystem;
 
   private final Timer timer = new Timer();
 
   /**
    * Creates a new ExampleCommand.
    *
-   * @param shooterSubsystem The subsystem used by this command.
+   * @param hopperSubsystem The subsystem used by this command.
    */
-  public CloseShootCommand(ShooterSubsystem shooterSubsystem) {
-    addRequirements(shooterSubsystem);
-    this.shooterSubsystem = shooterSubsystem;
+  public CloseShootCommand(HopperSubsystem hopperSubsystem) {
+    addRequirements(hopperSubsystem);
+    this.hopperSubsystem = hopperSubsystem;
   }
 
   // Called when the command is initially scheduled.
@@ -45,20 +45,20 @@ public class CloseShootCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
-    shooterSubsystem.setHood(0);
-    shooterSubsystem.stop();
+    hopperSubsystem.setHood(0);
+    hopperSubsystem.stop();
     timer.stop();
     timer.reset();
   }
 
   public void shootClose() {
-    shooterSubsystem.setHood(0.0);
-    int targetspeed = 2900;
-    shooterSubsystem.setShooterVelocity(targetspeed);
-    if (shooterSubsystem.getShooterVelocity() > 2850) {
-      shooterSubsystem.setKickerSpeed(0.7);
+    hopperSubsystem.setHood(0.0);
+    int targetspeed = 3400;
+    hopperSubsystem.setShooterVelocity(targetspeed);
+    if (hopperSubsystem.getShooterVelocity() > 2850) {
+      hopperSubsystem.setKickerSpeed(0.7);
     } else {
-      shooterSubsystem.setKickerSpeed(0.0);
+      hopperSubsystem.setKickerSpeed(0.0);
     }
   }
 }

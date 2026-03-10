@@ -2,16 +2,16 @@ package frc.robot.commands;
 
 import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
 
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 
 public class LazyIntakeCommand extends LoggingCommand {
 
-  private final IntakeSubsystem intakeSubsystem;
+  private final HopperSubsystem hopperSubsystem;
 
-  public LazyIntakeCommand(IntakeSubsystem intake) {
+  public LazyIntakeCommand(HopperSubsystem hopper) {
     super();
-    intakeSubsystem = intake;
-    addRequirements(intake);
+    hopperSubsystem = hopper;
+    addRequirements(hopperSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -27,8 +27,8 @@ public class LazyIntakeCommand extends LoggingCommand {
     // spin motors
     // only when you press a button
 
-    intakeSubsystem.setRollerSpeeds(-1, -0.8);
-    intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+    hopperSubsystem.setRollerSpeeds(-1, -0.8);
+    hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
   }
 
   // Returns true when the command should end.
@@ -41,7 +41,7 @@ public class LazyIntakeCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
-    intakeSubsystem.setRollerSpeeds(0, 0);
-    intakeSubsystem.setDoorSetpoint(0);
+    hopperSubsystem.setRollerSpeeds(0, 0);
+    hopperSubsystem.setDoorSetpoint(0);
   }
 }
