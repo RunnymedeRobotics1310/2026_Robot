@@ -18,6 +18,7 @@ import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.subsystems.PowerMonitorSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -35,6 +36,7 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
+  private final PowerMonitorSubsystem powerMonitorSubsystem = new PowerMonitorSubsystem();
 
   private final AutoCommandRegistry autoCommandRegistry;
   private final AutoCommandFactory autoCommandFactory;

@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArraySubscriber;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +47,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Start data logging for post-match analysis
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
+
     // Instantiate our RobotContainer. This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();

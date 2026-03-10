@@ -43,6 +43,7 @@ public final class Constants {
     public static boolean coral = false;
     public static boolean climb = false;
     public static boolean pneumatics = false;
+    public static boolean power = true;
   }
 
   public static class OperatorConstants {
@@ -338,6 +339,56 @@ public final class Constants {
     // TODO: fixme: rename me
     public static final String VISION_PRIMARY_LIMELIGHT_NAME = "hopper";
     public static final String VISION_SECONDARY_LIMELIGHT_NAME = "hugh";
+  }
+
+  public static final class PowerConstants {
+
+    public static final int PDH_CAN_ID = 1;
+
+    public enum BreakerSize {
+      AMP_20(17, 20),
+      AMP_30(26, 30),
+      AMP_40(35, 40);
+
+      private final double warningAmps;
+      private final double errorAmps;
+
+      BreakerSize(double warningAmps, double errorAmps) {
+        this.warningAmps = warningAmps;
+        this.errorAmps = errorAmps;
+      }
+
+      public double warningAmps() {
+        return warningAmps;
+      }
+
+      public double errorAmps() {
+        return errorAmps;
+      }
+    }
+
+    public record PDHChannel(int port, String deviceName, BreakerSize breaker) {}
+
+    // TODO: Update port numbers to match actual PDH wiring
+    public static final PDHChannel[] MONITORED_CHANNELS = {
+      new PDHChannel(0, "FrontLeft Drive", BreakerSize.AMP_40),
+      new PDHChannel(1, "FrontLeft Angle", BreakerSize.AMP_20),
+      new PDHChannel(2, "FrontRight Drive", BreakerSize.AMP_40),
+      new PDHChannel(3, "FrontRight Angle", BreakerSize.AMP_20),
+      new PDHChannel(4, "BackRight Drive", BreakerSize.AMP_40),
+      new PDHChannel(5, "BackRight Angle", BreakerSize.AMP_20),
+      new PDHChannel(6, "BackLeft Drive", BreakerSize.AMP_40),
+      new PDHChannel(7, "BackLeft Angle", BreakerSize.AMP_20),
+      new PDHChannel(8, "Shooter Primary", BreakerSize.AMP_40),
+      new PDHChannel(9, "Shooter Secondary", BreakerSize.AMP_40),
+      new PDHChannel(10, "Intake Door", BreakerSize.AMP_20),
+    };
+
+    public static final double MAIN_BREAKER_WARNING_AMPS = 100;
+    public static final double MAIN_BREAKER_ERROR_AMPS = 110;
+    public static final double VOLTAGE_WARNING_VOLTS = 10.5;
+    public static final double VOLTAGE_CRITICAL_VOLTS = 9.0;
+    public static final double SUSTAINED_OVERCURRENT_SECONDS = 1.0;
   }
 
   public static final class IntakeConstants {
