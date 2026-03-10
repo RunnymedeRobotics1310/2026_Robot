@@ -4,6 +4,7 @@ import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.commands.shooter.ShooterTuneNTBridge;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -11,15 +12,18 @@ public class IntakeCommand extends LoggingCommand {
 
   private final IntakeSubsystem intakeSubsystem;
   private final OperatorInput oi;
+  private final ShooterTuneNTBridge shooterTuneBridge;
   boolean firstIntake;
 
   private Timer timer = new Timer();
 
-  public IntakeCommand(IntakeSubsystem intake, OperatorInput operatorInput) {
+  public IntakeCommand(
+      IntakeSubsystem intake, OperatorInput operatorInput, ShooterTuneNTBridge shooterTuneBridge) {
     super();
     intakeSubsystem = intake;
     addRequirements(intake);
     oi = operatorInput;
+    this.shooterTuneBridge = shooterTuneBridge;
     firstIntake = false;
   }
 
@@ -44,6 +48,8 @@ public class IntakeCommand extends LoggingCommand {
       intakeSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       firstIntake = true;
       timer.reset();
+    } else if (oi.shootFromAnywhere() || oi.isCloseShoot() || shooterTuneBridge.isKickerEnabled()) {
+      intakeSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
     } else {
       intakeSubsystem.setDoorSetpoint(0);
       if (timer.get() < 0.5 && firstIntake) {

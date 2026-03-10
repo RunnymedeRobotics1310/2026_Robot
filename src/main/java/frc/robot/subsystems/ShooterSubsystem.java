@@ -24,15 +24,12 @@ public class ShooterSubsystem extends SubsystemBase {
   private double targetShooterVelocity;
   private double iError = 0;
 
-  private final IntakeSubsystem intake;
-
   /** Creates The Shooter Subsystem. */
-  public ShooterSubsystem(IntakeSubsystem intake) {
+  public ShooterSubsystem() {
     secondaryShooterMotor.configure(
         new SparkFlexConfig().follow(primaryShooterMotor, true),
         ResetMode.kNoResetSafeParameters,
         PersistMode.kPersistParameters);
-    this.intake = intake;
   }
 
   @Override

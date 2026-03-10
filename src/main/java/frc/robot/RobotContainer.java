@@ -14,6 +14,7 @@ import frc.robot.commands.auto.config.AutoCommandRegistrations;
 import frc.robot.commands.auto.config.AutoCommandRegistry;
 import frc.robot.commands.auto.config.AutoConfigNTBridge;
 import frc.robot.commands.shooter.DefaultShooterCommand;
+import frc.robot.commands.shooter.ShooterTuneNTBridge;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -36,12 +37,13 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(intakeSubsystem);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
 
   private final AutoCommandRegistry autoCommandRegistry;
   private final AutoCommandFactory autoCommandFactory;
   private final OperatorInput operatorInput;
   private final AutoConfigNTBridge autoConfigNTBridge = new AutoConfigNTBridge();
+  private final ShooterTuneNTBridge shooterTuneNTBridge = new ShooterTuneNTBridge();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -77,10 +79,12 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
         new TeleopDriveCommand(swerveSubsystem, visionSubsystem, operatorInput));
 
-    intakeSubsystem.setDefaultCommand(new IntakeCommand(intakeSubsystem, operatorInput));
+    intakeSubsystem.setDefaultCommand(
+        new IntakeCommand(intakeSubsystem, operatorInput, shooterTuneNTBridge));
 
     shooterSubsystem.setDefaultCommand(
-        new DefaultShooterCommand(shooterSubsystem, swerveSubsystem, operatorInput));
+        new DefaultShooterCommand(
+            shooterSubsystem, swerveSubsystem, operatorInput, shooterTuneNTBridge));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
