@@ -106,7 +106,7 @@ public final class Constants {
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double I_ZONE = 300;
     public static final double KICKER_RUNSPEED = 1;
-    public static final double AGITATOR_RUNSPEED = -0.6; // FIXME: remove 0 later
+    public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
     public static final double ACCPETED_SHOOTER_ERROR = 50.0;
 
     // Control values
@@ -348,7 +348,7 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 
     public static final double INTAKE_SPEED = -1;
-    public static final double INTAKE_DOOR_ANGLE = 40.0;
+    public static final double INTAKE_DOOR_ANGLE = 35.0;
     public static final double DOOR_KP = 0.01;
     public static final double DOOR_KI = 0;
     public static final double DOOR_KD = 0;
