@@ -107,7 +107,7 @@ public final class Constants {
     public static final double I_ZONE = 300;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
-    public static final double ACCPETED_SHOOTER_ERROR = 50.0;
+    public static final double ACCPETED_SHOOTER_ERROR = 5.0; // could change error later
 
     // Control values
     // public static final double SLOPE_VALUE_SUPER_FAR = 479.67;

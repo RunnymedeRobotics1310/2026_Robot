@@ -169,7 +169,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     boolean atSpeed =
         shooterEnabled
             && targetRPM > 0
-            && Math.abs(targetRPM - currentRPM) < ACCPETED_SHOOTER_ERROR;
+            && Math.abs(targetRPM - currentRPM) <= ACCPETED_SHOOTER_ERROR;
     bridge.setCurrentRPM(currentRPM);
     bridge.setAtSpeed(atSpeed);
     bridge.setDistanceToHub(swerveSubsystem.distanceToHub());
