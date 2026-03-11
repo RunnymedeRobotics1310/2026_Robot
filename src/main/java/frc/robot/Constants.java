@@ -192,6 +192,8 @@ public final class Constants {
 
     public static final double SDS_MK4I_WHEEL_RADIUS_M = 0.051;
 
+    public static final double NOMINAL_VOLTAGE = 12;
+
     public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG =
@@ -219,13 +221,15 @@ public final class Constants {
             /* motor hardware type */ MotorType.NEO_SPARK_MAX,
             /* inverted? */ true,
             /* current limit (A) */ 20,
-            /* nominal voltage (V) */ 12,
+            /* nominal voltage (V) */ NOMINAL_VOLTAGE,
             /* ramp rate 0 to full power (s) */ 0.02,
             /* angle motor gear ratio */ 150.0 / 7 /* SDS MK4i 150/7:1 */,
             /* angle motor PID p */ 0.009,
             /* angle motor PID i */ 0,
             /* angle motor PID d */ 0,
-            /* angle motor PID ff */ 0,
+            /* angle motor PID kV */ 0,
+            /* angle motor PID kA */ 0,
+            /* angle motor PID kS */ 0,
             /* angle motor PID izone */ 0);
 
     private static final MotorConfig DRIVE_MOTOR_CONFIG =
@@ -233,13 +237,15 @@ public final class Constants {
             /* motor hardware type */ MotorType.NEO_SPARK_FLEX,
             /* inverted? */ false,
             /* current limit (A) */ 40,
-            /* nominal voltage (V) */ 12,
+            /* nominal voltage (V) */ NOMINAL_VOLTAGE,
             /* ramp rate 0 to full power (s) */ 0.01,
             /* drive motor gear ratio */ 6.75 /* SDS MK4i L2 --> 6.75:1 */,
             /* drive motor PID p */ 0.075,
             /* drive motor PID i */ 0,
             /* drive motor PID d */ 0,
-            /* drive motor PID ff */ 1 / TRANSLATION_CONFIG.maxModuleSpeedMPS(),
+            /* drive motor PID kV */ NOMINAL_VOLTAGE / TRANSLATION_CONFIG.maxModuleSpeedMPS(),
+            /* drive motor PID kA */ 0,
+            /* drive motor PID kS */ 0,
             /* drive motor PID izone */ 0);
 
     private static final EncoderConfig ANGLE_ENCODER_CONFIG = new EncoderConfig(false, 0.005, 5);
@@ -348,7 +354,7 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 
     public static final double INTAKE_SPEED = -1;
-    public static final double INTAKE_DOOR_ANGLE = 40.0;
+    public static final double INTAKE_DOOR_ANGLE = 30.0;
     public static final double DOOR_KP = 0.01;
     public static final double DOOR_KI = 0;
     public static final double DOOR_KD = 0;
