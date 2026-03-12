@@ -17,7 +17,7 @@ import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoConfig;
 import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.hopper.LazyShooterCommand;
-import frc.robot.commands.hopper.TuneShooterCommand;
+import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -64,11 +64,10 @@ public class OperatorInput extends SubsystemBase {
     /* DRIVER CONTROLS */
 
     // Auto align to climb
-    //    new Trigger(driverController::getXButton)
-    //            .onTrue(new DriveToTowerCommand(swerve, vision, false));
+    new Trigger(driverController::getXButton)
+        .onTrue(new DriveToTowerCommand(swerve, vision, false));
 
-    //    new Trigger(driverController::getBButton)
-    //        .onTrue(new DriveToTowerCommand(swerve, vision, true));
+    new Trigger(driverController::getBButton).onTrue(new DriveToTowerCommand(swerve, vision, true));
 
     // not included here:
     //   shoot - right trigger
@@ -93,7 +92,8 @@ public class OperatorInput extends SubsystemBase {
     //   reverse intake
     //   stop shooter
 
-    new Trigger(driverController::getXButton).onTrue(new TuneShooterCommand(hopper, this, swerve));
+    //    new Trigger(driverController::getXButton).onTrue(new TuneShooterCommand(hopper, this,
+    // swerve));
   }
 
   public boolean isCancel() {
