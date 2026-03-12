@@ -61,7 +61,8 @@ public class RobotContainer {
     autoCommandFactory =
         new AutoCommandFactory(autoCommandRegistry, subsystemRegistry, swerveSubsystem);
     operatorInput =
-        new OperatorInput(swerveSubsystem, hopperSubsystem, visionSubsystem, autoCommandFactory);
+        new OperatorInput(
+            swerveSubsystem, hopperSubsystem, visionSubsystem, climbSubsystem, autoCommandFactory);
   }
 
   public RobotContainer() {

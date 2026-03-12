@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -10,6 +11,7 @@ public class CancelCommand extends LoggingCommand {
 
   private final SwerveSubsystem driveSubsystem;
   private final HopperSubsystem hopperSubsystem;
+  private final ClimbSubsystem climbSubsystem;
 
   /**
    * Cancel the commands running on all subsystems.
@@ -20,13 +22,15 @@ public class CancelCommand extends LoggingCommand {
   public CancelCommand(
       OperatorInput operatorInput,
       SwerveSubsystem driveSubsystem,
-      HopperSubsystem hopperSubsystem) {
+      HopperSubsystem hopperSubsystem,
+      ClimbSubsystem climbSubsystem) {
 
     this.operatorInput = operatorInput;
     this.driveSubsystem = driveSubsystem;
     this.hopperSubsystem = hopperSubsystem;
+    this.climbSubsystem = climbSubsystem;
 
-    addRequirements(driveSubsystem, hopperSubsystem);
+    addRequirements(driveSubsystem, hopperSubsystem, climbSubsystem);
   }
 
   @Override
@@ -77,5 +81,6 @@ public class CancelCommand extends LoggingCommand {
     // Stop all of the robot movement
     driveSubsystem.stop();
     hopperSubsystem.stop();
+    climbSubsystem.stop();
   }
 }

@@ -19,6 +19,7 @@ import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.hopper.LazyShooterCommand;
 import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
@@ -34,6 +35,7 @@ public class OperatorInput extends SubsystemBase {
   private final SwerveSubsystem swerve;
   private final HopperSubsystem hopper;
   private final LimelightVisionSubsystem vision;
+  private final ClimbSubsystem climb;
 
   private final SendableChooser<Constants.AutoConstants.AutoPattern> autoPatternChooser =
       new SendableChooser<>();
@@ -47,10 +49,12 @@ public class OperatorInput extends SubsystemBase {
       SwerveSubsystem swerve,
       HopperSubsystem hopper,
       LimelightVisionSubsystem vision,
+      ClimbSubsystem climb,
       AutoCommandFactory autoCommandFactory) {
     this.swerve = swerve;
     this.hopper = hopper;
     this.vision = vision;
+    this.climb = climb;
     this.autoCommandFactory = autoCommandFactory;
   }
 
@@ -59,7 +63,7 @@ public class OperatorInput extends SubsystemBase {
       SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
 
     new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
-    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, hopper));
+    new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, hopper, climb));
 
     /* DRIVER CONTROLS */
 
