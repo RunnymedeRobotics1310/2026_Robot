@@ -208,6 +208,10 @@ public class OperatorInput extends SubsystemBase {
     return driverController;
   }
 
+  public GameController getOperatorController() {
+    return operatorController;
+  }
+
   public void initAutoSelectors() {
 
     SmartDashboard.putData("1310/auto/Auto Selector", autoPatternChooser);

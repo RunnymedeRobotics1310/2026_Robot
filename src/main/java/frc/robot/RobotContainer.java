@@ -8,6 +8,7 @@ import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
 import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoCommandRegistrations;
 import frc.robot.commands.auto.config.AutoCommandRegistry;
@@ -16,6 +17,7 @@ import frc.robot.commands.hopper.DefaultHopperCommand;
 import frc.robot.commands.hopper.ShooterTuneNTBridge;
 import frc.robot.commands.swerve.TeleopDriveCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -35,6 +37,7 @@ public class RobotContainer {
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
 
   private final AutoCommandRegistry autoCommandRegistry;
   private final AutoCommandFactory autoCommandFactory;
@@ -73,6 +76,8 @@ public class RobotContainer {
     hopperSubsystem.setDefaultCommand(
         new DefaultHopperCommand(
             hopperSubsystem, swerveSubsystem, operatorInput, shooterTuneNTBridge));
+
+    climbSubsystem.setDefaultCommand(new ClimbCommand(climbSubsystem, operatorInput));
 
     // Configure the trigger bindings
     // TODO pass all subsystems to the configure routine
