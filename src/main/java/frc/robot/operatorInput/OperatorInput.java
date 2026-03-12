@@ -231,7 +231,8 @@ public class OperatorInput extends SubsystemBase {
 
     SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
     refreshCustomAutoChooser();
-    autoPatternChooser.addOption("Shoot Center", Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
+    //    autoPatternChooser.addOption("Shoot Center",
+    // Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
     autoPatternChooser.addOption(
         "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
     autoPatternChooser.addOption(
