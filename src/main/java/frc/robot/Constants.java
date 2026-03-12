@@ -109,6 +109,7 @@ public final class Constants {
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
     public static final double ACCPETED_SHOOTER_ERROR = 400.0; // could change error later
 
+    // Unused values from previous calculations:
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_SUPER_FAR = 2867.33;
     public static final double SUPER_FAR_SHOOTING_DISTANCE = 3.5;
@@ -123,16 +124,25 @@ public final class Constants {
     public static final double Y_INT_CLOSE = 2600;
     public static final double CLOSE_SHOOT_HOOD_VALUE = 0.0;
 
+    // Quadratic function for close speeds
+    // FIXME: test the new values commented below (they should work better)
     public static final double A_VALUE_NO_HOOD = 1300.0;
     public static final double B_VALUE_NO_HOOD = -3661.0;
     public static final double C_VALUE_NO_HOOD = 6352.0;
 
+    // Here are the new values that should work better:
+    // public static final double A_VALUE_NO_HOOD = 350.39;
+    // public static final double B_VALUE_NO_HOOD = -496.3;
+    // public static final double C_VALUE_NO_HOOD = 3739.3;
+
+    // Cubic function for far speed
     public static final double A_VALUE_WITH_HOOD = 120.0;
     public static final double B_VALUE_WITH_HOOD = -1078.0;
     public static final double C_VALUE_WITH_HOOD = 3268.0;
     public static final double D_VALUE_WITH_HOOD = 897.0;
     public static final double HOOD_SHOOT_DISTANCE = 1.96;
 
+    // Cubic function to calculate hood values
     public static final double HOOD_A_VALUE = 0.1516;
     public static final double HOOD_B_VALUE = -1.592;
     public static final double HOOD_C_VALUE = 5.543;
