@@ -222,12 +222,12 @@ public class OperatorInput extends SubsystemBase {
 
     autoPatternChooser.setDefaultOption(
         "Do Nothing", Constants.AutoConstants.AutoPattern.DO_NOTHING);
-    autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
+    //    autoPatternChooser.addOption("Exit Zone", Constants.AutoConstants.AutoPattern.EXIT_ZONE);
     autoPatternChooser.addOption(
         "Simple Center", Constants.AutoConstants.AutoPattern.SIMPLE_CENTER);
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
-    autoPatternChooser.addOption("Custom Auto", Constants.AutoConstants.AutoPattern.CUSTOM);
+    //    autoPatternChooser.addOption("Custom Auto", Constants.AutoConstants.AutoPattern.CUSTOM);
 
     SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
     refreshCustomAutoChooser();
