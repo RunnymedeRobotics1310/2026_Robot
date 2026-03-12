@@ -24,6 +24,7 @@ public class FaceHubCommand extends LoggingCommand {
   public void execute() {
     Rotation2d hubAngle = swerve.angleToHub();
     double omega = swerve.computeOmega(hubAngle.getDegrees());
+    log("omega: " + omega);
     swerve.driveFieldOriented(0, 0, omega);
   }
 
@@ -38,5 +39,6 @@ public class FaceHubCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     swerve.stop();
+    log("stopping!!!!!");
   }
 }
