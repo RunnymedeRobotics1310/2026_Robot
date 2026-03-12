@@ -107,63 +107,7 @@ public final class Constants {
     public static final double I_ZONE = 300;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
-    public static final double ACCPETED_SHOOTER_ERROR = 5.0; // could change error later
-
-    // Control values
-    // public static final double SLOPE_VALUE_SUPER_FAR = 479.67;
-    // public static final double Y_INT_SUPER_FAR = 2867.33;
-    // public static final double SLOPE_VALUE_MID = 570.14;
-    // public static final double Y_INT_MID = 2816.44;
-    // public static final double SLOPE_VALUE_CLOSE = 733.5;
-    // public static final double Y_INT_CLOSE = 2882.2;
-
-    // Test 1 values (lower y int)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 479.67;
-    // public static final double Y_INT_SUPER_FAR = 2767.33;
-    // public static final double SLOPE_VALUE_MID = 570.14;
-    // public static final double Y_INT_MID = 2716.44;
-    // public static final double SLOPE_VALUE_CLOSE = 733.5;
-    // public static final double Y_INT_CLOSE = 2782.2;
-
-    // Test 2 values (lower slope)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 419.67;
-    // public static final double Y_INT_SUPER_FAR = 2867.33;
-    // public static final double SLOPE_VALUE_MID = 510.14;
-    // public static final double Y_INT_MID = 2816.44;
-    // public static final double SLOPE_VALUE_CLOSE = 670.5;
-    // public static final double Y_INT_CLOSE = 2882.2;
-
-    // Test 3 values (higher int)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 479.67;
-    // public static final double Y_INT_SUPER_FAR = 2967.33;
-    // public static final double SLOPE_VALUE_MID = 570.14;
-    // public static final double Y_INT_MID = 2916.44;
-    // public static final double SLOPE_VALUE_CLOSE = 733.5;
-    // public static final double Y_INT_CLOSE = 2982.2;
-
-    // Test 4 values (higher slope)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 520.67;
-    // public static final double Y_INT_SUPER_FAR = 2867.33;
-    // public static final double SLOPE_VALUE_MID = 620.14;
-    // public static final double Y_INT_MID = 2816.44;
-    // public static final double SLOPE_VALUE_CLOSE = 780.5;
-    // public static final double Y_INT_CLOSE = 2882.2;
-
-    // Test 5 values (higher slope lower y int)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 520.67;
-    // public static final double Y_INT_SUPER_FAR = 2767.33;
-    // public static final double SLOPE_VALUE_MID = 620.14;
-    // public static final double Y_INT_MID = 2716.44;
-    // public static final double SLOPE_VALUE_CLOSE = 780.5;
-    // public static final double Y_INT_CLOSE = 2782.2;
-
-    // Test values 6 (hiegher y int, lower slope)
-    // public static final double SLOPE_VALUE_SUPER_FAR = 400.67;
-    // public static final double Y_INT_SUPER_FAR = 2967.33;
-    // public static final double SLOPE_VALUE_MID = 500.14;
-    // public static final double Y_INT_MID = 2916.44;
-    // public static final double SLOPE_VALUE_CLOSE = 670.5;
-    // public static final double Y_INT_CLOSE = 2982.2;
+    public static final double ACCPETED_SHOOTER_ERROR = 400.0; // could change error later
 
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
     public static final double Y_INT_SUPER_FAR = 2867.33;
@@ -178,6 +122,21 @@ public final class Constants {
     public static final double SLOPE_VALUE_CLOSE = 770;
     public static final double Y_INT_CLOSE = 2600;
     public static final double CLOSE_SHOOT_HOOD_VALUE = 0.0;
+
+    public static final double A_VALUE_NO_HOOD = 1300.0;
+    public static final double B_VALUE_NO_HOOD = -3661.0;
+    public static final double C_VALUE_NO_HOOD = 6352.0;
+
+    public static final double A_VALUE_WITH_HOOD = 120.0;
+    public static final double B_VALUE_WITH_HOOD = -1078.0;
+    public static final double C_VALUE_WITH_HOOD = 3268.0;
+    public static final double D_VALUE_WITH_HOOD = 897.0;
+    public static final double HOOD_SHOOT_DISTANCE = 1.96;
+
+    public static final double HOOD_A_VALUE = 0.1516;
+    public static final double HOOD_B_VALUE = -1.592;
+    public static final double HOOD_C_VALUE = 5.543;
+    public static final double HOOD_D_VALUE = -5.763;
 
     public static final double MAX_SHOOTING_DISTANCE = 10.0;
   }

@@ -4,13 +4,7 @@ import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 
 import ca.team1310.swerve.math.SwerveMath;
 import ca.team1310.swerve.utils.SwerveUtils;
@@ -123,15 +117,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
 
     // hood
-    if (distance < MAX_SHOOTING_DISTANCE) {
-      if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
-      } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
-      }
-    } else {
-      hopperSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
-    }
+    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
 
     // kicker
     double currentVelocity = hopperSubsystem.getShooterVelocity();
@@ -140,7 +126,7 @@ public class DefaultHopperCommand extends LoggingCommand {
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if ((atSpeed || firstShot) && facingHub) {
+    if ((atSpeed /*|| firstShot*/) && facingHub) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {

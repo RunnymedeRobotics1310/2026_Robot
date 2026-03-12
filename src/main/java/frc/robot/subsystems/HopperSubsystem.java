@@ -1,7 +1,35 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.IntakeConstants.*;
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.IntakeConstants.BOTTOM_ROLLER_PWM_PORT;
+import static frc.robot.Constants.IntakeConstants.DOOR_CAN_ID;
+import static frc.robot.Constants.IntakeConstants.DOOR_CLOSED_LIMIT_DIO_PORT;
+import static frc.robot.Constants.IntakeConstants.DOOR_ENCODERS_TO_DEGREES;
+import static frc.robot.Constants.IntakeConstants.DOOR_KP;
+import static frc.robot.Constants.IntakeConstants.TOP_ROLLER_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
+import static frc.robot.Constants.ShooterConstants.AGITATOR_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.A_VALUE_NO_HOOD;
+import static frc.robot.Constants.ShooterConstants.A_VALUE_WITH_HOOD;
+import static frc.robot.Constants.ShooterConstants.B_VALUE_NO_HOOD;
+import static frc.robot.Constants.ShooterConstants.B_VALUE_WITH_HOOD;
+import static frc.robot.Constants.ShooterConstants.C_VALUE_NO_HOOD;
+import static frc.robot.Constants.ShooterConstants.C_VALUE_WITH_HOOD;
+import static frc.robot.Constants.ShooterConstants.D_VALUE_WITH_HOOD;
+import static frc.robot.Constants.ShooterConstants.HOOD_A_VALUE;
+import static frc.robot.Constants.ShooterConstants.HOOD_B_VALUE;
+import static frc.robot.Constants.ShooterConstants.HOOD_C_VALUE;
+import static frc.robot.Constants.ShooterConstants.HOOD_D_VALUE;
+import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.HOOD_SHOOT_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.I_ZONE;
+import static frc.robot.Constants.ShooterConstants.KFF;
+import static frc.robot.Constants.ShooterConstants.KI;
+import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_CAN_ID;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -123,15 +151,38 @@ public class HopperSubsystem extends SubsystemBase {
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
     if (distanceMeters < MAX_SHOOTING_DISTANCE) {
-      if (distanceMeters >= SUPER_FAR_SHOOTING_DISTANCE) {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_SUPER_FAR) + Y_INT_SUPER_FAR;
-      } else if (distanceMeters >= MEDIUM_SHOOTING_DISTANCE) {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_MID) + Y_INT_MID;
+
+      if (distanceMeters >= HOOD_SHOOT_DISTANCE) {
+        double aVal = A_VALUE_WITH_HOOD * Math.pow(distanceMeters, 3);
+        double bVal = B_VALUE_WITH_HOOD * Math.pow(distanceMeters, 2);
+        double cVal = C_VALUE_WITH_HOOD * distanceMeters;
+        double dVal = D_VALUE_WITH_HOOD;
+        shooterSpeed = (aVal + bVal + cVal + dVal);
       } else {
-        shooterSpeed = (distanceMeters * SLOPE_VALUE_CLOSE) + Y_INT_CLOSE;
+        double aVal = A_VALUE_NO_HOOD * Math.pow(distanceMeters, 2);
+        double bVal = B_VALUE_NO_HOOD * distanceMeters;
+        double cVal = C_VALUE_NO_HOOD;
+        shooterSpeed = (aVal + bVal + cVal);
       }
     }
+    if (shooterSpeed > MAX_SHOOTER_RPM) shooterSpeed = MAX_SHOOTER_RPM;
+    else if (shooterSpeed < 0.0) shooterSpeed = 0.0;
     return shooterSpeed;
+  }
+
+  public double calculateHoodValule(double distance) {
+    double hoodValue = 0;
+    if (distance >= HOOD_SHOOT_DISTANCE) {
+      double aVal = HOOD_A_VALUE * Math.pow(distance, 3);
+      double bVal = HOOD_B_VALUE * Math.pow(distance, 2);
+      double cVal = HOOD_C_VALUE * distance;
+      double dVal = HOOD_D_VALUE;
+      hoodValue = (aVal + bVal + cVal + dVal);
+    }
+    if (hoodValue > 1.0) hoodValue = 1.0;
+    else if (hoodValue < 0.0) hoodValue = 0.0;
+
+    return hoodValue;
   }
 
   private void updateShooterSpeed() {

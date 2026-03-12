@@ -1,6 +1,14 @@
 package frc.robot.commands.hopper;
 
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
+import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 
 import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.Timer;
@@ -56,6 +64,8 @@ public class ShooterCommand extends LoggingCommand {
     timer.reset();
   }
 
+  // public static final double ACCEPTED_THRESHOLD = 200.0;
+
   public void shooting() {
     // shooter
     double distance = swerveSubsystem.distanceToHub();
@@ -79,11 +89,12 @@ public class ShooterCommand extends LoggingCommand {
     // kicker
     double currentVelocity = hopperSubsystem.getShooterVelocity();
     boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    // boolean overThreshold = Math.abs(targetSpeed - currentVelocity) < ACCEPTED_THRESHOLD;
     boolean facingHub =
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if ((atSpeed || firstShot) && facingHub) {
+    if (atSpeed /*|| firstShot)*/ && facingHub) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
