@@ -1,7 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
-
 import ca.team1310.swerve.RunnymedeSwerveDrive;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
@@ -14,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.telemetry.Telemetry;
 
@@ -356,23 +353,22 @@ public class SwerveSubsystem extends SubsystemBase {
     Translation2d hubPose =
         new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      pose =
-          new Pose2d(
-              Constants.FieldConstants.FIELD_EXTENT_METRES_X - pose.getX(),
-              pose.getY(),
-              pose.getRotation());
-      //      hubPose = new Translation2d(Units.inchesToMeters(469.11),
-      // Units.inchesToMeters(158.84));
+      //      pose =
+      //          new Pose2d(
+      //              Constants.FieldConstants.FIELD_EXTENT_METRES_X - pose.getX(),
+      //              pose.getY(),
+      //              pose.getRotation());
+      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
     }
 
     // if past alliance zone, point at trench
-    if (pose.getX() > hubPose.getX()) {
-      if (pose.getY() < FIELD_EXTENT_METRES_Y / 2) {
-        hubPose = new Translation2d(hubPose.getX(), 1.5);
-      } else {
-        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y - 1.5);
-      }
-    }
+    //    if (pose.getX() > hubPose.getX()) {
+    //      if (pose.getY() < FIELD_EXTENT_METRES_Y / 2) {
+    //        hubPose = new Translation2d(hubPose.getX(), 1.5);
+    //      } else {
+    //        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y - 1.5);
+    //      }
+    //    }
 
     double dx, dy;
     dx = hubPose.getX() - pose.getX();
