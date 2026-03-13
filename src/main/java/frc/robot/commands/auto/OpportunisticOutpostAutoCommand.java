@@ -28,7 +28,7 @@ public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
     addCommands(new DriveFieldOrientedCommand(swerve, 0, 0, 180).withTimeout(1));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, -2, -2, 180).withTimeout(0.9));
+    addCommands(new DriveFieldOrientedCommand(swerve, -2, -1.8, 180).withTimeout(1.5));
 
     addCommands(new NullDriveCommand(swerve).withTimeout(5));
 

@@ -143,7 +143,11 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isRunAgitator() {
-    return operatorController.getLeftTriggerAxis() > 0.5;
+    return !isShift() && operatorController.getLeftTriggerAxis() > 0.5;
+  }
+
+  public boolean isStopAgitator() {
+    return isShift() && operatorController.getLeftTriggerAxis() > 0.5;
   }
 
   public boolean isCloseShoot() {
