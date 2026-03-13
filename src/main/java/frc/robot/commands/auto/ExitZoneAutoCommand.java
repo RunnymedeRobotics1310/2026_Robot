@@ -1,8 +1,6 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RunnymedeUtils;
 import frc.robot.commands.swerve.DriveRobotOrientedAtHeadingCommand;
 import frc.robot.commands.swerve.NullDriveCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
@@ -13,15 +11,8 @@ public class ExitZoneAutoCommand extends SequentialCommandGroup {
   public ExitZoneAutoCommand(SwerveSubsystem swerve, double delay) {
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    double allianceOffset = 0;
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      allianceOffset = 180;
-    }
-
     addCommands(new SetAllianceGyroCommand(swerve, 180));
 
-    addCommands(
-        new DriveRobotOrientedAtHeadingCommand(swerve, 0.50, 0.00, 180 + allianceOffset)
-            .withTimeout(0.55));
+    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0.50, 0.00, 180).withTimeout(0.55));
   }
 }

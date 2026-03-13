@@ -266,7 +266,8 @@ public class OperatorInput extends SubsystemBase {
     return switch (autoPatternChooser.getSelected()) {
       case EXIT_ZONE -> new ExitZoneAutoCommand(swerve, delay);
       case SIMPLE_CENTER -> new SimpleCenterAutoCommand(swerve, hopper, vision);
-      case OPPORTUNISTIC_OUTPOST -> new OpportunisticOutpostAutoCommand(swerve, hopper, vision);
+      case OPPORTUNISTIC_OUTPOST ->
+          new OpportunisticOutpostAutoCommand(swerve, hopper, vision, delay);
       case SHOOT_CENTER -> new ShootCenterAutoCommand(swerve, hopper, delay);
       case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, hopper, vision, delay);
       case RIGHT_SHOOT_CLIMB -> new RightShootClimbAutoCommand(swerve, hopper, vision, delay);

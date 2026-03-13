@@ -1,7 +1,5 @@
 package frc.robot.commands.auto;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.hopper.ShooterCommand;
 import frc.robot.commands.swerve.*;
@@ -12,8 +10,14 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
 
   public OpportunisticOutpostAutoCommand(
-      SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
+      SwerveSubsystem swerve,
+      HopperSubsystem hopper,
+      LimelightVisionSubsystem vision,
+      double delay) {
     addCommands(new SetAllianceGyroCommand(swerve, 0));
+    addCommands(new SetPoseCommand(swerve, 3.4, 2.2, 0));
+
+    addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
     addCommands(new DriveFieldOrientedCommand(swerve, -2, 0, 0).withTimeout(0.8));
 
@@ -22,14 +26,13 @@ public class OpportunisticOutpostAutoCommand extends SequentialCommandGroup {
             .alongWith(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
             .withTimeout(10));
 
-    addCommands(
-        new DriveToFieldLocationCommand(swerve, new Pose2d(0.8, 0.6, Rotation2d.fromDegrees(0))));
+    addCommands(new DriveFieldOrientedCommand(swerve, -1.2, -2, 0).withTimeout(0.7));
 
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -0.5, 0, 0).withTimeout(1));
 
     addCommands(new NullDriveCommand(swerve).withTimeout(3));
 
-    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 1, 1.6, 0).withTimeout(2));
+    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 2, 1.6, 0).withTimeout(1));
 
     addCommands(
         new ShooterCommand(hopper, swerve)
