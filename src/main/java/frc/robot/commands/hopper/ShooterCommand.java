@@ -74,6 +74,7 @@ public class ShooterCommand extends LoggingCommand {
 
     // agitator
     hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    hopperSubsystem.setRollerSpeeds(0, KICKER_RUNSPEED);
 
     // hood
     if (distance < MAX_SHOOTING_DISTANCE) {
