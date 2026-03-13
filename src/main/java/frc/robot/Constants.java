@@ -317,7 +317,7 @@ public final class Constants {
   public static final class IntakeConstants {
 
     public static final int DOOR_CAN_ID = 41;
-    public static final int TOP_ROLLER_PWM_PORT = 3;
+    public static final int TOP_ROLLER_CAN_ID = 42;
     public static final int BOTTOM_ROLLER_PWM_PORT = 1;
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
 

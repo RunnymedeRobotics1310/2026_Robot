@@ -1,11 +1,6 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.IntakeConstants.BOTTOM_ROLLER_PWM_PORT;
-import static frc.robot.Constants.IntakeConstants.DOOR_CAN_ID;
-import static frc.robot.Constants.IntakeConstants.DOOR_CLOSED_LIMIT_DIO_PORT;
-import static frc.robot.Constants.IntakeConstants.DOOR_ENCODERS_TO_DEGREES;
-import static frc.robot.Constants.IntakeConstants.DOOR_KP;
-import static frc.robot.Constants.IntakeConstants.TOP_ROLLER_PWM_PORT;
+import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_PWM_PORT;
 import static frc.robot.Constants.ShooterConstants.A_VALUE_NO_HOOD;
@@ -54,7 +49,8 @@ public class HopperSubsystem extends SubsystemBase {
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
 
   private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(BOTTOM_ROLLER_PWM_PORT);
-  private final PWMSparkMax topRollerMotor = new PWMSparkMax(TOP_ROLLER_PWM_PORT);
+  private final SparkMax topRollerMotor =
+      new SparkMax(TOP_ROLLER_CAN_ID, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax doorMotor = new SparkMax(DOOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
 
   private final DigitalInput doorClosedLimit = new DigitalInput(DOOR_CLOSED_LIMIT_DIO_PORT);
