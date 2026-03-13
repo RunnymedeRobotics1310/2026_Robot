@@ -151,7 +151,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isStopFlywheel() {
-    return operatorController.getYButton();
+    return !isShift() && operatorController.getYButton();
   }
 
   public boolean isReverseFlywheel() {
@@ -159,7 +159,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isIntakeForwards() {
-    return operatorController.getBButton();
+    return !isShift() && operatorController.getBButton();
   }
 
   public boolean isIntakeReverse() {
@@ -175,7 +175,11 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isOpenDoor() {
-    return operatorController.getPOV() == 270;
+    return isShift() && operatorController.getPOV() == 270;
+  }
+
+  public boolean isCloseDoor() {
+    return !isShift() && operatorController.getPOV() == 270;
   }
 
   public double getDriverControllerAxis(Stick stick, Axis axis) {
