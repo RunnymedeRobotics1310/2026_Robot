@@ -201,6 +201,7 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   private void updateDoorSpeed() {
+    if (doorSetpoint == -1) return;
     double error = doorSetpoint - getDoorAngle();
 
     setDoorSpeed(error * DOOR_KP);
