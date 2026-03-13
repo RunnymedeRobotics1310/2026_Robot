@@ -128,7 +128,7 @@ public final class Constants {
     // FIXME: test the new values commented below (they should work better)
     public static final double A_VALUE_NO_HOOD = 1300.0;
     public static final double B_VALUE_NO_HOOD = -3661.0;
-    public static final double C_VALUE_NO_HOOD = 6352.0;
+    public static final double C_VALUE_NO_HOOD = 6150.0; // prev value: 6352.0
 
     // Here are the new values that should work better:
     // public static final double A_VALUE_NO_HOOD = 350.39;
@@ -139,7 +139,7 @@ public final class Constants {
     public static final double A_VALUE_WITH_HOOD = 120.0;
     public static final double B_VALUE_WITH_HOOD = -1078.0;
     public static final double C_VALUE_WITH_HOOD = 3268.0;
-    public static final double D_VALUE_WITH_HOOD = 897.0;
+    public static final double D_VALUE_WITH_HOOD = 750.0; // prev value: 897.0
     public static final double HOOD_SHOOT_DISTANCE = 1.96;
 
     // Cubic function to calculate hood values
