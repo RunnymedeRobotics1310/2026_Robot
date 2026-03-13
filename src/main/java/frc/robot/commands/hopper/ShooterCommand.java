@@ -1,5 +1,6 @@
 package frc.robot.commands.hopper;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
@@ -74,7 +75,7 @@ public class ShooterCommand extends LoggingCommand {
 
     // agitator
     hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
-    hopperSubsystem.setRollerSpeeds(0, KICKER_RUNSPEED);
+    hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
 
     // hood
     if (distance < MAX_SHOOTING_DISTANCE) {

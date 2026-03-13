@@ -8,8 +8,8 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class DriveFieldOrientedCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerve;
-  private final double x;
-  private final double y;
+  private double x;
+  private double y;
   private final double heading;
   private double allianceHeading;
 
@@ -27,6 +27,8 @@ public class DriveFieldOrientedCommand extends LoggingCommand {
     double headingOffset = 0;
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       headingOffset = 180;
+      x = -x;
+      y = -y;
     }
 
     allianceHeading = heading + headingOffset;

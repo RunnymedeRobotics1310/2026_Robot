@@ -92,7 +92,10 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.putHoodDown()) hopperSubsystem.setHood(0);
 
     if (oi.isIntakeForwards()) hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
-    if (oi.isIntakeReverse()) hopperSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+    if (oi.isIntakeReverse()) {
+      hopperSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
+      hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+    }
     if (oi.isOpenDoor()) hopperSubsystem.setDoorSetpoint(40);
     if (oi.isCloseDoor() && !hopperSubsystem.getDoorClosed()) {
       hopperSubsystem.setDoorSetpoint(-1);
