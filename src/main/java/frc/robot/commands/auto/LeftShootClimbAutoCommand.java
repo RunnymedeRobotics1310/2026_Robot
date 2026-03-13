@@ -1,6 +1,8 @@
 package frc.robot.commands.auto;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RunnymedeUtils;
 import frc.robot.commands.hopper.ShooterCommand;
 import frc.robot.commands.swerve.*;
 import frc.robot.subsystems.HopperSubsystem;
@@ -14,6 +16,11 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
       HopperSubsystem hopper,
       LimelightVisionSubsystem vision,
       double delay) {
+
+    double allianceOffset = 0;
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
+      allianceOffset = 180;
+    }
 
     addCommands(new SetAllianceGyroCommand(swerve, 0));
 

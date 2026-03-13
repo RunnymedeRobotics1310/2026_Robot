@@ -12,6 +12,15 @@ public class ShootCenterAutoCommand extends SequentialCommandGroup {
 
   public ShootCenterAutoCommand(SwerveSubsystem swerve, HopperSubsystem hopper, double delay) {
 
+    /* do not use this auto in comp!!!!!!!!!!!!!!!!!!!!!!!!!
+     *
+     *
+     *
+     *
+     *
+     *
+     * */
+
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
     addCommands(new SetAllianceGyroCommand(swerve, 0));

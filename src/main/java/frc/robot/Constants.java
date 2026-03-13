@@ -334,8 +334,8 @@ public final class Constants {
     public static final int CLIMB_MOTOR_CAN_ID = 51;
     public static final int CLIMB_LOWER_LIMIT_PORT = 5;
 
-    public static final double MAX_CLIMB_POSITION = 100;
-    public static final double CLIMB_SLOW_ZONE = 10;
+    public static final double MAX_CLIMB_POSITION = 75;
+    public static final double CLIMB_SLOW_ZONE = 5;
     public static final double CLIMB_SLOW_ZONE_SPEED = 0.1;
   }
 }

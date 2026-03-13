@@ -30,7 +30,8 @@ public class ClimbCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setClimbSpeed(-input.getOperatorController().getLeftY());
+    //    climb.setClimbSpeed(input.getOperatorController().getLeftY());
+    //    log("climbEncoder: " + climb.getPos());
   }
 
   // Returns true when the command should end.
