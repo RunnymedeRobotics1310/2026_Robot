@@ -32,8 +32,7 @@ public class ClimbCommand extends LoggingCommand {
   public void execute() {
     if (input.isShift()) {
       climb.setClimbSpeed(input.getOperatorController().getLeftY());
-      log("climbEncoder: " + climb.getPos());
-    }
+    } else climb.setClimbSpeed(0);
   }
 
   // Returns true when the command should end.
