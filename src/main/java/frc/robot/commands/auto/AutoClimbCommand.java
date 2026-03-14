@@ -1,6 +1,6 @@
 package frc.robot.commands.auto;
 
-import static frc.robot.Constants.ClimbConstants.MAX_CLIMB_POSITION;
+import static frc.robot.Constants.ClimbConstants.*;
 
 import frc.robot.commands.LoggingCommand;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -13,7 +13,7 @@ public class AutoClimbCommand extends LoggingCommand {
 
   private final boolean climbGoingUp;
 
-  AutoClimbCommand(ClimbSubsystem climb, HopperSubsystem hopper, boolean climbGoingUp) {
+  public AutoClimbCommand(ClimbSubsystem climb, HopperSubsystem hopper, boolean climbGoingUp) {
     addRequirements(climb);
     addRequirements(hopper);
 
@@ -26,6 +26,7 @@ public class AutoClimbCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     hopper.setDoorSetpoint(0);
+    if (climbGoingUp) climb.zeroEncoder();
   }
 
   @Override
@@ -33,6 +34,9 @@ public class AutoClimbCommand extends LoggingCommand {
     hopper.setDoorSetpoint(0);
     if (climbGoingUp) {
       climb.setClimbSpeed(1);
+      if (climb.getPos() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
+        climb.setClimbSpeed(CLIMB_SLOW_ZONE_SPEED);
+      }
     } else {
       climb.setClimbSpeed(-1);
     }
@@ -48,7 +52,7 @@ public class AutoClimbCommand extends LoggingCommand {
     if (climbGoingUp && climb.getPos() >= MAX_CLIMB_POSITION) {
       return true;
     }
-    if (!climbGoingUp && climb.getPos() <= 0) {
+    if (!climbGoingUp && climb.getPos() <= 30) {
       return true;
     }
     return false;

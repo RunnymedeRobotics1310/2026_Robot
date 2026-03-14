@@ -90,6 +90,9 @@ public class OperatorInput extends SubsystemBase {
     // Shoot from set range - ends when button is released, or after 100 seconds
     new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3400, 0, 100));
 
+    new Trigger(this::putClimbUp).whileTrue(new AutoClimbCommand(climb, hopper, true));
+    new Trigger(this::putClimbDown).whileTrue(new AutoClimbCommand(climb, hopper, false));
+
     // not included here:
     //   manual climb
     //   reverse kicker
@@ -178,6 +181,14 @@ public class OperatorInput extends SubsystemBase {
     return isShift() && operatorController.getXButton();
   }
 
+  public boolean putClimbUp() {
+    return operatorController.getPOV() == 0;
+  }
+
+  public boolean putClimbDown() {
+    return operatorController.getPOV() == 180;
+  }
+
   public boolean isOpenDoor() {
     return isShift() && operatorController.getPOV() == 270;
   }
@@ -213,6 +224,7 @@ public class OperatorInput extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     SmartDashboard.putString("Driver Gamecontroller", driverController.toString());
   }
 

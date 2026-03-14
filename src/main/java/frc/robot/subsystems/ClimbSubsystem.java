@@ -25,33 +25,37 @@ public class ClimbSubsystem extends SubsystemBase {
 
     // climb safety
     // lower limit
-    if (climbMotor.getEncoder().getPosition() <= 0) {
-      // zero encoder
-      //      climbMotor.getEncoder().setPosition(0);
-      if (climbMotorSpeed < 0) {
-        climbMotorSpeed = 0;
-      }
-      // upper limit
-    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION) {
-      if (climbMotorSpeed > 0) {
-        climbMotorSpeed = 0;
-      }
-      // lower slow zone
-    } else if (climbMotor.getEncoder().getPosition() < CLIMB_SLOW_ZONE) {
-      if (climbMotorSpeed < -CLIMB_SLOW_ZONE_SPEED) {
-        climbMotorSpeed = -CLIMB_SLOW_ZONE_SPEED;
-      }
-      // upper slow zone
-    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
-      if (climbMotorSpeed > CLIMB_SLOW_ZONE_SPEED) {
-        climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
-      }
-    }
+    //    if (climbMotor.getEncoder().getPosition() <= 0) {
+    //      // zero encoder
+    //      //      climbMotor.getEncoder().setPosition(0);
+    //      if (climbMotorSpeed < 0) {
+    //        climbMotorSpeed = 0;
+    //      }
+    //      // upper limit
+    //    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION) {
+    //      if (climbMotorSpeed > 0) {
+    //        climbMotorSpeed = 0;
+    //      }
+    //      // lower slow zone
+    //    } else if (climbMotor.getEncoder().getPosition() < CLIMB_SLOW_ZONE) {
+    //      if (climbMotorSpeed < -CLIMB_SLOW_ZONE_SPEED) {
+    //        climbMotorSpeed = -CLIMB_SLOW_ZONE_SPEED;
+    //      }
+    //      // upper slow zone
+    //    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
+    //      if (climbMotorSpeed > CLIMB_SLOW_ZONE_SPEED) {
+    //        climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
+    //      }
+    //    }
     climbMotor.set(climbMotorSpeed);
   }
 
   public void setClimbSpeed(double speed) {
     climbMotorSpeed = speed;
+  }
+
+  public void zeroEncoder() {
+    climbMotor.getEncoder().setPosition(0);
   }
 
   public double getPos() {
