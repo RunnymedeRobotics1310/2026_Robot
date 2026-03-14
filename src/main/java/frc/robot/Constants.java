@@ -126,14 +126,14 @@ public final class Constants {
 
     // Quadratic function for close speeds
     // FIXME: test the new values commented below (they should work better)
-    public static final double A_VALUE_NO_HOOD = 1300.0;
-    public static final double B_VALUE_NO_HOOD = -3661.0;
-    public static final double C_VALUE_NO_HOOD = 6150.0; // prev value: 6352.0
+    //    public static final double A_VALUE_NO_HOOD = 1300.0;
+    //    public static final double B_VALUE_NO_HOOD = -3661.0;
+    //    public static final double C_VALUE_NO_HOOD = 6150.0; // prev value: 6352.0
 
     // Here are the new values that should work better:
-    // public static final double A_VALUE_NO_HOOD = 350.39;
-    // public static final double B_VALUE_NO_HOOD = -496.3;
-    // public static final double C_VALUE_NO_HOOD = 3739.3;
+    public static final double A_VALUE_NO_HOOD = 350.39;
+    public static final double B_VALUE_NO_HOOD = -496.3;
+    public static final double C_VALUE_NO_HOOD = 3739.3;
 
     // Cubic function for far speed
     public static final double A_VALUE_WITH_HOOD = 120.0;
