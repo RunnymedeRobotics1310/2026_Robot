@@ -1,5 +1,6 @@
 package frc.robot.commands.hopper;
 
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
@@ -43,6 +44,7 @@ public class LazyShooterCommand extends LoggingCommand {
     hopperSubsystem.setHood(hoodAngle);
     hopperSubsystem.setShooterVelocity(speed);
     hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
     if (timer.hasElapsed(0.5)) {
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     }

@@ -50,7 +50,7 @@ public class AutoClimbCommand extends LoggingCommand {
 
   @Override
   public boolean isFinished() {
-    log("CLIMB: " + climb.getPos());
+    //    log("CLIMB: " + climb.getPos());
 
     if (climbGoingUp && climb.getPos() >= MAX_CLIMB_POSITION) {
       return true;
