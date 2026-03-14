@@ -6,13 +6,15 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.ClimbConstants.*;
 
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-  //  private final SparkMax climbMotor =
-  //      new SparkMax(CLIMB_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
-  //  private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_PORT);
+  private final SparkMax climbMotor =
+      new SparkMax(CLIMB_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
+  //    private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_PORT);
 
   private double climbMotorSpeed = 0;
 
@@ -20,10 +22,11 @@ public class ClimbSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    /*
+
     // climb safety
     // lower limit
-    if (/*climbLowerLimit.get() false) {
+    if (
+    /*climbLowerLimit.get()*/ false) {
       // zero encoder
       //      climbMotor.getEncoder().setPosition(0);
       if (climbMotorSpeed < 0) {
@@ -46,7 +49,6 @@ public class ClimbSubsystem extends SubsystemBase {
       }
     }
     climbMotor.set(climbMotorSpeed);
-    */
   }
 
   public void setClimbSpeed(double speed) {
@@ -54,12 +56,12 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public double getPos() {
-    //    return climbMotor.getEncoder().getPosition();
-    return 0;
+    return climbMotor.getEncoder().getPosition();
+    //    return 0;
   }
 
   public void stop() {
     setClimbSpeed(0);
-    //    climbMotor.stopMotor();
+    climbMotor.stopMotor();
   }
 }
