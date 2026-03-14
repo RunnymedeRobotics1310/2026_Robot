@@ -45,14 +45,17 @@ public class AutoClimbCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
+    climb.stop();
   }
 
   @Override
   public boolean isFinished() {
+    log("CLIMB: " + climb.getPos());
+
     if (climbGoingUp && climb.getPos() >= MAX_CLIMB_POSITION) {
       return true;
     }
-    if (!climbGoingUp && climb.getPos() <= 30) {
+    if (!climbGoingUp && climb.getPos() <= 0) {
       return true;
     }
     return false;

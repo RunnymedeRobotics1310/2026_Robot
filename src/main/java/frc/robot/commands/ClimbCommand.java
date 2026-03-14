@@ -33,6 +33,7 @@ public class ClimbCommand extends LoggingCommand {
     if (input.isShift()) {
       climb.setClimbSpeed(input.getOperatorController().getLeftY());
     } else climb.setClimbSpeed(0);
+    log("CLIMB: " + climb.getPos());
   }
 
   // Returns true when the command should end.

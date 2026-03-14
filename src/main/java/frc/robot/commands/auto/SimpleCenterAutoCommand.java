@@ -25,10 +25,10 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -2, 0, 0).withTimeout(0.8));
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180).withTimeout(1));
 
-    addCommands(new DriveToTowerCommand(swerve, vision, false));
-
-    addCommands(new AutoClimbCommand(climb, hopper, true).withTimeout(1));
-
-    addCommands(new AutoClimbCommand(climb, hopper, false).withTimeout(1));
+    addCommands(
+        new AutoClimbCommand(climb, hopper, true)
+            .andThen(
+                new DriveToTowerCommand(swerve, vision, true)
+                    .andThen(new AutoClimbCommand(climb, hopper, false))));
   }
 }
