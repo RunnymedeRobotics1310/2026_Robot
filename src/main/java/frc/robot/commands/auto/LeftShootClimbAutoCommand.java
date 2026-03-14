@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RunnymedeUtils;
 import frc.robot.commands.hopper.ShooterCommand;
 import frc.robot.commands.swerve.*;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
@@ -15,6 +16,7 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
       SwerveSubsystem swerve,
       HopperSubsystem hopper,
       LimelightVisionSubsystem vision,
+      ClimbSubsystem climb,
       double delay) {
 
     double allianceOffset = 0;
