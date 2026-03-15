@@ -1,7 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import static frc.robot.Constants.FieldConstants.FIELD_EXTENT_METRES_Y;
-
 import ca.team1310.swerve.RunnymedeSwerveDrive;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
@@ -14,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.telemetry.Telemetry;
 
@@ -350,29 +349,24 @@ public class SwerveSubsystem extends SubsystemBase {
         xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
 
-  public Rotation2d angleToHub() {
+  /**
+   * Finds the angle to aim to to shoot - either the Hub if we're in the zone, or the side of our
+   * zone away from the hub if we're in the ball pit
+   *
+   * @return Angle to shooting destination
+   */
+  public Rotation2d angleToShootTowards() {
     Pose2d pose = getPose();
-    Translation2d hubPose =
-        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-
-      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
-    }
+    Translation2d hubPose = Constants.FieldLocation.HUB_CENTRE.getLocation();
 
     // if past alliance zone, point at trench
-
-    boolean pastHub = false;
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
-      pastHub = pose.getX() > hubPose.getX();
-    } else {
-      pastHub = pose.getX() < hubPose.getX();
-    }
+    boolean pastHub = RunnymedeUtils.isFurtherThan(pose, hubPose);
 
     if (pastHub) {
-      if (pose.getY() < FIELD_EXTENT_METRES_Y / 2) {
-        hubPose = new Translation2d(hubPose.getX(), 1.5);
+      if (RunnymedeUtils.isLeftOf(pose, hubPose)) {
+        hubPose = Constants.FieldLocation.ZONE_SHOTS_LEFT.getLocation();
       } else {
-        hubPose = new Translation2d(hubPose.getX(), FIELD_EXTENT_METRES_Y - 1.5);
+        hubPose = Constants.FieldLocation.ZONE_SHOTS_RIGHT.getLocation();
       }
     }
 

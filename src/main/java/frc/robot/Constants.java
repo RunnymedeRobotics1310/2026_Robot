@@ -18,6 +18,8 @@ import ca.team1310.swerve.gyro.config.GyroConfig;
 import ca.team1310.swerve.utils.Coordinates;
 import ca.team1310.swerve.vision.config.LimelightConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.subsystems.swerve.SwerveDriveSubsystemConfig;
 import frc.robot.subsystems.swerve.SwerveRotationConfig;
 import frc.robot.subsystems.swerve.SwerveTranslationConfig;
@@ -337,5 +339,39 @@ public final class Constants {
     public static final double MAX_CLIMB_POSITION = 129;
     public static final double CLIMB_SLOW_ZONE = 5;
     public static final double CLIMB_SLOW_ZONE_SPEED = 0.1;
+  }
+
+  public enum FieldLocation {
+    HUB_CENTRE(new Translation2d(4.626, 4.035)),
+    ZONE_SHOTS_LEFT(new Translation2d(4, FIELD_EXTENT_METRES_Y - 1.5)),
+    ZONE_SHOTS_RIGHT(new Translation2d(4, 1.5));
+
+    /**
+     * Obtain alliance specific location of a field element
+     *
+     * @return Alliance specific location
+     */
+    public Translation2d getLocation() {
+      if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
+        return blueLocation;
+      } else {
+        return redLocation;
+      }
+    }
+
+    private final Translation2d blueLocation;
+    private final Translation2d redLocation;
+
+    /**
+     * Create Field Location - Use Blue Side Measurements
+     *
+     * @param location Blue side location of the item
+     */
+    FieldLocation(Translation2d location) {
+      this.blueLocation = location;
+      this.redLocation =
+          new Translation2d(
+              FIELD_EXTENT_METRES_X - location.getX(), FIELD_EXTENT_METRES_Y - location.getY());
+    }
   }
 }
