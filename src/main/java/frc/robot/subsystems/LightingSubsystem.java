@@ -104,16 +104,19 @@ public class LightingSubsystem extends SubsystemBase {
       /* Telemetry.climb.climbEncoder > 0 */ false) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
-      } else if (intake.topRollerSpeed != 0) {
-        blink(yellowLEDPatern, 0.5);
+        //      } else if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM)
+        //              < ACCPETED_SHOOTER_ERROR
+        //          && shooter.targetShooterRPM > 0) { // shooterAtSpeed
+        //        yellowLEDPatern.applyTo(ledBuffer);
 
-      } else if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM)
-              < ACCPETED_SHOOTER_ERROR
-          && shooter.targetShooterRPM > 0) { // shooterAtSpeed
-        yellowLEDPatern.applyTo(ledBuffer);
+        //      } else if (intake.topRollerSpeed != 0) {
+        //        blink(yellowLEDPatern, 0.5);
 
       } else if (drive.distanceToHub <= SUPER_FAR_SHOOTING_DISTANCE && false) {
         orangeLedPattern.applyTo(ledBuffer);
+
+      } else if (shooter.kickerSpeed != 0) {
+        yellowLEDPatern.applyTo(ledBuffer);
 
       } else {
         alliancePattern.applyTo(ledBuffer);

@@ -63,6 +63,7 @@ public class DefaultHopperCommand extends LoggingCommand {
       intakeTimer.reset();
     } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
       hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
+      hopperSubsystem.setDoorSetpoint(0);
     } else {
       hopperSubsystem.setDoorSetpoint(0);
       if (intakeTimer.get() < 0.5 && firstIntake) {
@@ -83,6 +84,8 @@ public class DefaultHopperCommand extends LoggingCommand {
       hopperSubsystem.setKickerSpeed(0);
       hopperSubsystem.setAgitatorSpeed(0);
     }
+    //    if (oi.isIntakeDoingStuff()) hopperSubsystem.setAgitatorSpeed(0);
+    if (oi.shootFromAnywhere()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 
     /* ----- OPERATOR OVERRIDES ----- */
     if (oi.isRunAgitator()) hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);

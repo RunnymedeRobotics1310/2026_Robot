@@ -1,30 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.IntakeConstants.*;
-import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.A_VALUE_NO_HOOD;
-import static frc.robot.Constants.ShooterConstants.A_VALUE_WITH_HOOD;
-import static frc.robot.Constants.ShooterConstants.B_VALUE_NO_HOOD;
-import static frc.robot.Constants.ShooterConstants.B_VALUE_WITH_HOOD;
-import static frc.robot.Constants.ShooterConstants.C_VALUE_NO_HOOD;
-import static frc.robot.Constants.ShooterConstants.C_VALUE_WITH_HOOD;
-import static frc.robot.Constants.ShooterConstants.D_VALUE_WITH_HOOD;
-import static frc.robot.Constants.ShooterConstants.HOOD_A_VALUE;
-import static frc.robot.Constants.ShooterConstants.HOOD_B_VALUE;
-import static frc.robot.Constants.ShooterConstants.HOOD_C_VALUE;
-import static frc.robot.Constants.ShooterConstants.HOOD_D_VALUE;
-import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.HOOD_SHOOT_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.I_ZONE;
-import static frc.robot.Constants.ShooterConstants.KFF;
-import static frc.robot.Constants.ShooterConstants.KI;
-import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_PWM_PORT;
-import static frc.robot.Constants.ShooterConstants.KP;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTER_RPM;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_CAN_ID;
-import static frc.robot.Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -34,7 +11,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
@@ -44,11 +20,14 @@ public class HopperSubsystem extends SubsystemBase {
       new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
   private final SparkFlex secondaryShooterMotor =
       new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
-  private final PWMSparkMax kickerMotor = new PWMSparkMax(KICKER_MOTOR_PWM_PORT);
-  private final PWMSparkMax agitatorMotor = new PWMSparkMax(AGITATOR_PWM_PORT);
+  private final SparkMax kickerMotor =
+      new SparkMax(KICKER_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax agitatorMotor =
+      new SparkMax(AGITATOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
   private final Servo hoodServo = new Servo(HOOD_PWM_PORT);
 
-  private final PWMSparkMax bottomRollerMotor = new PWMSparkMax(BOTTOM_ROLLER_PWM_PORT);
+  private final SparkMax bottomRollerMotor =
+      new SparkMax(BOTTOM_ROLLER_CAN_ID, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax topRollerMotor =
       new SparkMax(TOP_ROLLER_CAN_ID, SparkLowLevel.MotorType.kBrushless);
   private final SparkMax doorMotor = new SparkMax(DOOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
