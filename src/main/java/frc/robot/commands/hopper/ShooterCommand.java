@@ -94,7 +94,7 @@ public class ShooterCommand extends LoggingCommand {
     // boolean overThreshold = Math.abs(targetSpeed - currentVelocity) < ACCEPTED_THRESHOLD;
     boolean facingHub =
         SwerveUtils.isCloseEnough(
-            swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
+            swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
     if (atSpeed /*|| firstShot)*/ && facingHub) {
       firstShot = true;

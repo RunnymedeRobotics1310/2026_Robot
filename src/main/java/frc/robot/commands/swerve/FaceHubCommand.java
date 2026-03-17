@@ -22,7 +22,7 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public void execute() {
-    Rotation2d hubAngle = swerve.angleToHub();
+    Rotation2d hubAngle = swerve.angleToShootTowards();
     double omega = swerve.computeOmega(hubAngle.getDegrees());
     log("omega: " + omega);
     swerve.driveFieldOriented(0, 0, omega);
@@ -30,7 +30,7 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public boolean isFinished() {
-    double error = Math.abs(swerve.angleToHub().getDegrees() - swerve.getYaw());
+    double error = Math.abs(swerve.angleToShootTowards().getDegrees() - swerve.getYaw());
     log("Error: " + error);
     return error <= 3;
   }

@@ -92,6 +92,36 @@ public class RunnymedeUtils {
   }
 
   /**
+   * Is this botPose to the left of the following location
+   *
+   * @param botPose Robot pose
+   * @param location Field location
+   * @return true if left of location, false if right.
+   */
+  public static boolean isLeftOf(Pose2d botPose, Translation2d location) {
+    if (getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
+      return botPose.getY() > location.getY();
+    } else {
+      return botPose.getY() < location.getY();
+    }
+  }
+
+  /**
+   * Is this botPose past (further away from driver station) than the following location
+   *
+   * @param botPose Robot pose
+   * @param location Field location
+   * @return true if further away from DS than the location, false if closer.
+   */
+  public static boolean isFurtherThan(Pose2d botPose, Translation2d location) {
+    if (getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
+      return botPose.getX() > location.getX();
+    } else {
+      return botPose.getX() < location.getX();
+    }
+  }
+
+  /**
    * Rounds a number to 2 decimal places
    *
    * @param num the number you want to round

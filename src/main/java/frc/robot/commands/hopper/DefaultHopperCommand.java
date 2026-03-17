@@ -135,7 +135,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
     boolean facingHub =
         SwerveUtils.isCloseEnough(
-            swerveSubsystem.angleToHub().getDegrees(), swerveSubsystem.getYaw(), 5);
+            swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
     if ((atSpeed /*|| firstShot*/) && facingHub) {
       firstShot = true;
@@ -172,7 +172,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     bridge.setDistanceToHub(swerveSubsystem.distanceToHub());
     double headingError =
         SwerveMath.normalizeDegrees(
-            swerveSubsystem.angleToHub().getDegrees() - swerveSubsystem.getYaw());
+            swerveSubsystem.angleToShootTowards().getDegrees() - swerveSubsystem.getYaw());
     bridge.setAngleToHub(headingError);
 
     boolean kickerEnabled = bridge.isKickerEnabled();
