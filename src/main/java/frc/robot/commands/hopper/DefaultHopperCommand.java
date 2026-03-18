@@ -125,7 +125,9 @@ public class DefaultHopperCommand extends LoggingCommand {
     hopperSubsystem.setShooterVelocity(targetSpeed);
 
     // agitator
-    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    //    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    hopperSubsystem.reverseAgitator(1);
+    //    hopperSubsystem.pulseAgitator(1);
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));

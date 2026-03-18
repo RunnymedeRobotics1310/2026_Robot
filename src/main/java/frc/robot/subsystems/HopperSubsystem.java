@@ -11,6 +11,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
@@ -38,11 +39,16 @@ public class HopperSubsystem extends SubsystemBase {
   private double iError = 0;
   private double doorSetpoint = 0;
 
+  private Timer agitatorTimer = new Timer();
+  private boolean agitatorState = false;
+
   public HopperSubsystem() {
     secondaryShooterMotor.configure(
         new SparkFlexConfig().follow(primaryShooterMotor, true),
         ResetMode.kNoResetSafeParameters,
         PersistMode.kPersistParameters);
+    agitatorTimer.start();
+    agitatorTimer.reset();
   }
 
   @Override
@@ -195,5 +201,31 @@ public class HopperSubsystem extends SubsystemBase {
     agitatorMotor.stopMotor();
     setRollerSpeeds(0, 0);
     setDoorSpeed(0);
+  }
+
+  public void pulseAgitator(double period) {
+    if (agitatorTimer.hasElapsed(period)) {
+      agitatorTimer.reset();
+      agitatorState = !agitatorState;
+    }
+
+    if (agitatorState) {
+      setAgitatorSpeed(AGITATOR_RUNSPEED);
+    } else {
+      setAgitatorSpeed(0);
+    }
+  }
+
+  public void reverseAgitator(double period) {
+    if (agitatorTimer.hasElapsed(period)) {
+      agitatorTimer.reset();
+      agitatorState = !agitatorState;
+    }
+
+    if (agitatorState) {
+      setAgitatorSpeed(AGITATOR_RUNSPEED);
+    } else {
+      setAgitatorSpeed(-AGITATOR_RUNSPEED);
+    }
   }
 }
