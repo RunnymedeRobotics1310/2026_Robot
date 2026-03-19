@@ -27,7 +27,7 @@ public class ClimbTelemetry {
     if (enabled) {
       SmartDashboard.putNumber(PREFIX + "Climb/ClimbPosition", round(climbPosition));
       SmartDashboard.putNumber(PREFIX + "Climb/ClimbSpeed", round(climbSpeed));
-      SmartDashboard.putBoolean(PREFIX + "Intake/LowerLimit", climbDown);
+      SmartDashboard.putBoolean(PREFIX + "Climb/LowerLimit", climbDown);
     }
   }
 }

@@ -8,6 +8,7 @@ import static frc.robot.Constants.ClimbConstants.*;
 
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
@@ -15,7 +16,7 @@ public class ClimbSubsystem extends SubsystemBase {
 
   private final SparkMax climbMotor =
       new SparkMax(CLIMB_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
-  //    private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_PORT);
+  private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_DIO_PORT);
 
   private double climbMotorSpeed = 0;
 
@@ -24,34 +25,35 @@ public class ClimbSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    // climb safety
+    /* ----- CLIMB SAFETY ----- */
     // lower limit
-    //    if (climbMotor.getEncoder().getPosition() <= 0) {
-    //      // zero encoder
-    //      //      climbMotor.getEncoder().setPosition(0);
-    //      if (climbMotorSpeed < 0) {
-    //        climbMotorSpeed = 0;
-    //      }
-    //      // upper limit
-    //    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION) {
-    //      if (climbMotorSpeed > 0) {
-    //        climbMotorSpeed = 0;
-    //      }
-    //      // lower slow zone
-    //    } else if (climbMotor.getEncoder().getPosition() < CLIMB_SLOW_ZONE) {
-    //      if (climbMotorSpeed < -CLIMB_SLOW_ZONE_SPEED) {
-    //        climbMotorSpeed = -CLIMB_SLOW_ZONE_SPEED;
-    //      }
-    //      // upper slow zone
-    //    } else if (climbMotor.getEncoder().getPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
-    //      if (climbMotorSpeed > CLIMB_SLOW_ZONE_SPEED) {
-    //        climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
-    //      }
-    //    }
-    //    System.out.println(getPos());
+    if (isClimbDown()) {
+      // zero encoder
+      zeroEncoder();
+      if (climbMotorSpeed < 0) {
+        climbMotorSpeed = 0;
+      }
+      // upper limit
+    } else if (getClimbPosition() > MAX_CLIMB_POSITION) {
+      if (climbMotorSpeed > 0) {
+        climbMotorSpeed = 0;
+      }
+      // lower slow zone
+    } else if (getClimbPosition() < CLIMB_SLOW_ZONE) {
+      if (climbMotorSpeed < -CLIMB_SLOW_ZONE_SPEED) {
+        climbMotorSpeed = -CLIMB_SLOW_ZONE_SPEED;
+      }
+      // upper slow zone
+    } else if (getClimbPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
+      if (climbMotorSpeed > CLIMB_SLOW_ZONE_SPEED) {
+        climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
+      }
+    }
     climbMotor.set(climbMotorSpeed);
+
     Telemetry.climb.climbSpeed = climbMotorSpeed;
     Telemetry.climb.climbPosition = getClimbPosition();
+    Telemetry.climb.climbDown = isClimbDown();
   }
 
   public void setClimbSpeed(double speed) {
@@ -64,7 +66,10 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public double getClimbPosition() {
     return climbMotor.getEncoder().getPosition();
-    //    return 0;
+  }
+
+  public boolean isClimbDown() {
+    return !climbLowerLimit.get();
   }
 
   public void stop() {

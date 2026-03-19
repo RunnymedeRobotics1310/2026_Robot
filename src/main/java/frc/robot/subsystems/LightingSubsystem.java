@@ -100,7 +100,7 @@ public class LightingSubsystem extends SubsystemBase {
       /* Telemetry.climb.alignedToTower */ false) {
         greenLedPattern.applyTo(ledBuffer);
 
-      } else if (climb.climbPosition > 0) {
+      } else if (!climb.climbDown) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
         // debug
