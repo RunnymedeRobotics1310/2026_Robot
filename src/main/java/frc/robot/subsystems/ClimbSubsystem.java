@@ -47,6 +47,7 @@ public class ClimbSubsystem extends SubsystemBase {
     //        climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
     //      }
     //    }
+    //    System.out.println(getPos());
     climbMotor.set(climbMotorSpeed);
   }
 

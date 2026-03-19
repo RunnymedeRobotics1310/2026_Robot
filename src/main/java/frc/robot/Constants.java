@@ -102,14 +102,14 @@ public final class Constants {
     public static final int AGITATOR_CAN_ID = 35;
 
     public static final double MAX_SHOOTER_RPM = 6300;
-    public static final double KP = 0.00015;
-    public static final double KI = 0.00002;
+    public static final double KP = 0.000015;
+    public static final double KI = 0.00001;
     public static final double KD = 0; // keep this at zero
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
     public static final double I_ZONE = 300;
     public static final double KICKER_RUNSPEED = 1;
-    public static final double AGITATOR_RUNSPEED = -0.5; // FIXME: remove 0 later
-    public static final double ACCPETED_SHOOTER_ERROR = 400.0; // could change error later
+    public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
+    public static final double ACCPETED_SHOOTER_ERROR = 100; // could change error later
 
     // Unused values from previous calculations:
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
@@ -336,7 +336,7 @@ public final class Constants {
     public static final int CLIMB_MOTOR_CAN_ID = 51;
     public static final int CLIMB_LOWER_LIMIT_PORT = 5;
 
-    public static final double MAX_CLIMB_POSITION = 129;
+    public static final double MAX_CLIMB_POSITION = 180;
     public static final double CLIMB_SLOW_ZONE = 5;
     public static final double CLIMB_SLOW_ZONE_SPEED = 0.1;
   }
