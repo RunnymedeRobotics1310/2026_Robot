@@ -1,0 +1,26 @@
+{
+  "name": "simple_center",
+  "description": "Shoot preloaded, drive back, rotate, climb",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    {
+      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "commands": [
+        { "type": "lazy_shooter", "speed": 3300, "hoodAngle": 0, "duration": 5 },
+        { "type": "null_drive" }
+      ]
+    },
+    { "type": "drive_velocity", "vxMPS": -1.0, "vyMPS": 0, "headingDegrees": 0, "timeoutSeconds": 1.6 },
+    { "type": "drive_velocity", "vxMPS": 0, "vyMPS": 0, "headingDegrees": 180, "timeoutSeconds": 1.0 },
+    {
+      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "commands": [
+        { "type": "auto_climb", "climbGoingUp": true },
+        { "type": "null_drive" }
+      ]
+    },
+    { "type": "vision_approach_tag", "rightSide": true, "timeoutSeconds": 12.0 },
+    { "type": "auto_climb", "climbGoingUp": false }
+  ]
+}

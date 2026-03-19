@@ -13,10 +13,14 @@ import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-/** An example command that uses an example subsystem. */
+@AutoConfigurable(
+    value = "shooter",
+    category = "shooter",
+    description = "Auto-aim shooter using distance to hub")
 public class ShooterCommand extends LoggingCommand {
 
   private final HopperSubsystem hopperSubsystem;

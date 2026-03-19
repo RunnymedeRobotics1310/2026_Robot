@@ -3,9 +3,15 @@ package frc.robot.commands.auto;
 import static frc.robot.Constants.ClimbConstants.*;
 
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 
+@AutoConfigurable(
+    value = "auto_climb",
+    category = "climb",
+    description = "Extend or retract the climb mechanism")
 public class AutoClimbCommand extends LoggingCommand {
 
   HopperSubsystem hopper;
@@ -13,7 +19,14 @@ public class AutoClimbCommand extends LoggingCommand {
 
   private final boolean climbGoingUp;
 
-  public AutoClimbCommand(ClimbSubsystem climb, HopperSubsystem hopper, boolean climbGoingUp) {
+  public AutoClimbCommand(
+      ClimbSubsystem climb,
+      HopperSubsystem hopper,
+      @ConfigParam(
+              value = "climbGoingUp",
+              description = "True to extend, false to retract",
+              defaultValue = 1)
+          boolean climbGoingUp) {
     addRequirements(climb);
     addRequirements(hopper);
 

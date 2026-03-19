@@ -57,6 +57,7 @@ public class RobotContainer {
     subsystemRegistry.register(SwerveSubsystem.class, swerveSubsystem);
     subsystemRegistry.register(HopperSubsystem.class, hopperSubsystem);
     subsystemRegistry.register(LimelightVisionSubsystem.class, visionSubsystem);
+    subsystemRegistry.register(ClimbSubsystem.class, climbSubsystem);
 
     autoCommandFactory =
         new AutoCommandFactory(autoCommandRegistry, subsystemRegistry, swerveSubsystem);

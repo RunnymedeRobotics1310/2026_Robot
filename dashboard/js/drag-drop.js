@@ -103,7 +103,7 @@ window.DragDrop = (function () {
       var typeDef = CP.COMMAND_TYPES[dragCommandType];
       if (typeDef) {
         var newStep = Object.assign({}, typeDef.defaultValues, { _id: CP.generateStepId() });
-        if (newStep.type === 'parallel') newStep.commands = [];
+        if (newStep.type === 'parallel' || newStep.type === 'sequential') newStep.commands = [];
         app.insertStep(dropIndex, newStep);
       }
     } else if (dragSource === 'sequence' && dragStepId) {
@@ -117,7 +117,7 @@ window.DragDrop = (function () {
   }
 
   function getDropIndex(sequenceEl, clientY) {
-    var cards = Array.from(sequenceEl.querySelectorAll('.step-card, .parallel-container'));
+    var cards = Array.from(sequenceEl.querySelectorAll('.step-card, .parallel-container, .sequential-container'));
     if (cards.length === 0) return 0;
     for (var i = 0; i < cards.length; i++) {
       var rect = cards[i].getBoundingClientRect();
@@ -130,7 +130,7 @@ window.DragDrop = (function () {
     var indicator = document.createElement('div');
     indicator.className = 'drop-indicator';
     indicator.dataset.dropIndicator = 'true';
-    var children = Array.from(sequenceEl.querySelectorAll('.step-card, .parallel-container'));
+    var children = Array.from(sequenceEl.querySelectorAll('.step-card, .parallel-container, .sequential-container'));
     if (index >= children.length) {
       sequenceEl.appendChild(indicator);
     } else {
@@ -146,6 +146,7 @@ window.DragDrop = (function () {
     var typeDef = CP.COMMAND_TYPES[step.type];
     if (!typeDef) return null;
     if (step.type === 'parallel') return createParallelContainer(step, index, isSelected);
+    if (step.type === 'sequential') return createSequentialContainer(step, index, isSelected);
 
     var isMultiSelected = app.isStepMultiSelected && app.isStepMultiSelected(step._id);
     var validationErrors = CP.validateStep(step);
@@ -298,6 +299,120 @@ window.DragDrop = (function () {
       if (dragSource === 'palette' && dragCommandType) {
         var td = CP.COMMAND_TYPES[dragCommandType];
         if (td && dragCommandType !== 'parallel') {
+          var newChild = Object.assign({}, td.defaultValues, { _id: CP.generateStepId() });
+          app.addChildToParallel(step._id, newChild);
+        }
+      } else if (dragSource === 'sequence' && dragStepId) {
+        app.moveStepIntoParallel(dragStepId, step._id);
+      }
+    });
+
+    container.appendChild(childrenContainer);
+    return container;
+  }
+
+  function createSequentialContainer(step, index, isSelected) {
+    var isMultiSelected = app.isStepMultiSelected && app.isStepMultiSelected(step._id);
+    var validationErrors = CP.validateStep(step);
+    var isInvalid = validationErrors.length > 0;
+    var container = document.createElement('div');
+    container.className =
+      'sequential-container' +
+      (isSelected ? ' selected' : '') +
+      (isMultiSelected ? ' multi-selected' : '') +
+      (isInvalid ? ' invalid' : '');
+    container.dataset.stepId = step._id;
+    container.setAttribute('draggable', 'true');
+
+    var header = document.createElement('div');
+    header.className = 'sequential-header';
+    header.innerHTML =
+      '<span class="sequential-label">' +
+      '<span class="step-number">' + (index + 1) + '</span> Sequential Group' +
+      '</span>' +
+      '<span class="step-actions" style="opacity:1;">' +
+      '<button class="step-action-btn duplicate-step" title="Duplicate">&#x29C9;</button>' +
+      '<button class="step-action-btn delete-step" title="Delete">&#x2715;</button>' +
+      '</span>';
+
+    header.addEventListener('click', function (e) {
+      if (e.target.closest('.step-action-btn')) return;
+      if ((e.ctrlKey || e.metaKey) && app.toggleStepMultiSelect) {
+        app.toggleStepMultiSelect(step._id);
+        return;
+      }
+      app.selectStep(step._id);
+    });
+    header.querySelector('.delete-step').addEventListener('click', function (e) {
+      e.stopPropagation();
+      app.deleteStep(step._id);
+    });
+    header.querySelector('.duplicate-step').addEventListener('click', function (e) {
+      e.stopPropagation();
+      app.duplicateStep(step._id);
+    });
+    container.appendChild(header);
+
+    var childrenContainer = document.createElement('div');
+    childrenContainer.className = 'sequential-children';
+
+    if (step.commands && step.commands.length > 0) {
+      step.commands.forEach(function (child, ci) {
+        var childTypeDef = CP.COMMAND_TYPES[child.type];
+        var childErrors = CP.validateStep(child);
+        var childCard = document.createElement('div');
+        childCard.className =
+          'step-card' +
+          (app.getSelectedStepId() === child._id ? ' selected' : '') +
+          (childErrors.length > 0 ? ' invalid' : '');
+        childCard.dataset.stepId = child._id;
+        childCard.dataset.parentId = step._id;
+        var childSummary = (childTypeDef ? childTypeDef.summarize(child) : '');
+        if (childErrors.length > 0) childSummary = '\u26a0 ' + childErrors[0];
+        childCard.innerHTML =
+          '<span class="step-number">' + (ci + 1) + '</span>' +
+          '<span class="step-type-badge ' + (childTypeDef ? childTypeDef.colorClass : '') + '">' + (childTypeDef ? childTypeDef.label : child.type) + '</span>' +
+          '<span class="step-summary">' + childSummary + '</span>' +
+          '<span class="step-actions">' +
+          '<button class="step-action-btn delete-step" title="Remove from group">&#x2715;</button>' +
+          '</span>';
+
+        childCard.addEventListener('click', function (e) {
+          if (e.target.closest('.step-action-btn')) return;
+          app.selectStep(child._id, step._id);
+        });
+        childCard.querySelector('.delete-step').addEventListener('click', function (e) {
+          e.stopPropagation();
+          app.deleteChildStep(step._id, child._id);
+        });
+        childrenContainer.appendChild(childCard);
+      });
+    } else {
+      var emptyHint = document.createElement('div');
+      emptyHint.style.cssText = 'padding:8px; font-size:11px; color:var(--text-muted); text-align:center;';
+      emptyHint.textContent = 'Drag commands here to build a sequential chain';
+      childrenContainer.appendChild(emptyHint);
+    }
+
+    childrenContainer.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = dragSource === 'palette' ? 'copy' : 'move';
+      childrenContainer.classList.add('drop-zone-active');
+    });
+    childrenContainer.addEventListener('dragleave', function (e) {
+      if (!childrenContainer.contains(e.relatedTarget)) {
+        childrenContainer.classList.remove('drop-zone-active');
+      }
+    });
+    childrenContainer.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      childrenContainer.classList.remove('drop-zone-active');
+
+      if (dragSource === 'palette' && dragCommandType) {
+        var td = CP.COMMAND_TYPES[dragCommandType];
+        if (td && dragCommandType !== 'parallel' && dragCommandType !== 'sequential') {
           var newChild = Object.assign({}, td.defaultValues, { _id: CP.generateStepId() });
           app.addChildToParallel(step._id, newChild);
         }

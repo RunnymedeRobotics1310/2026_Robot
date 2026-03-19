@@ -1,0 +1,26 @@
+{
+  "name": "left_shoot_climb",
+  "description": "Shoot preloaded, drive to left tower, climb",
+  "version": 1,
+  "startingHeadingDegrees": 0,
+  "steps": [
+    { "type": "drive_field_oriented", "vxMPS": -2.0, "vyMPS": 0, "headingDegrees": 0, "timeoutSeconds": 0.8 },
+    {
+      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "commands": [
+        { "type": "delay", "durationSeconds": 10.0 },
+        { "type": "shooter" },
+        {
+          "type": "sequential",
+          "commands": [
+            { "type": "face_hub" },
+            { "type": "null_drive" }
+          ]
+        }
+      ]
+    },
+    { "type": "drive_field_oriented", "vxMPS": 0, "vyMPS": -1.0, "headingDegrees": 180, "timeoutSeconds": 1.8 },
+    { "type": "drive_field_oriented", "vxMPS": -1.0, "vyMPS": 0, "headingDegrees": 180, "timeoutSeconds": 0.4 },
+    { "type": "vision_approach_tag", "rightSide": false, "timeoutSeconds": 12.0 }
+  ]
+}

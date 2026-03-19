@@ -460,6 +460,7 @@ html, body {
 .palette-icon.face_target { background: #c0392b; }
 .palette-icon.vision_approach_tag { background: #d35400; }
 .palette-icon.hold { background: #7f8c8d; }
+.palette-icon.sequential { background: #16a085; }
 
 /* ===== Center Panel ===== */
 .panel-center {
@@ -578,6 +579,7 @@ html, body {
 .step-type-badge.face_target { background: #c0392b; }
 .step-type-badge.vision_approach_tag { background: #d35400; }
 .step-type-badge.hold { background: #7f8c8d; }
+.step-type-badge.sequential { background: #16a085; }
 
 .step-card .step-summary {
   flex: 1;
@@ -667,6 +669,49 @@ html, body {
 }
 
 .parallel-container .step-card {
+  margin-bottom: 3px;
+}
+
+/* Sequential group container */
+.sequential-container {
+  background: rgba(22, 160, 133, 0.08);
+  border: 2px dashed #16a085;
+  border-radius: var(--radius);
+  padding: 8px;
+  margin-bottom: 4px;
+}
+
+.sequential-container.multi-selected {
+  box-shadow: inset 0 0 0 2px rgba(233, 69, 96, 0.45);
+}
+
+.sequential-container.invalid {
+  border-color: rgba(231, 76, 60, 0.85);
+}
+
+.sequential-container .sequential-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.sequential-container .sequential-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #16a085;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sequential-container .sequential-children {
+  padding-left: 8px;
+  border-left: 2px solid rgba(22, 160, 133, 0.3);
+}
+
+.sequential-container .step-card {
   margin-bottom: 3px;
 }
 

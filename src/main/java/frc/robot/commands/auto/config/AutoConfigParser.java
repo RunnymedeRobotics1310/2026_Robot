@@ -310,6 +310,26 @@ public class AutoConfigParser {
       return null;
     }
 
+    if ("sequential".equals(type)) {
+      Object commandsObj = step.get("commands");
+      if (!(commandsObj instanceof List)) {
+        return path + ": sequential.commands must be an array";
+      }
+      List<Map<String, Object>> commands = (List<Map<String, Object>>) commandsObj;
+      if (commands.size() < 2) {
+        return path + ": sequential.commands must contain at least 2 commands";
+      }
+      for (int i = 0; i < commands.size(); i++) {
+        String childError =
+            validateStep(
+                commands.get(i), path + ".commands[" + i + "]", allowParallel, totalStepCount);
+        if (childError != null) {
+          return childError;
+        }
+      }
+      return null;
+    }
+
     // All other types are validated at command creation time by the registry
     return null;
   }

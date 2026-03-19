@@ -384,6 +384,32 @@ window.CommandPalette = (function () {
         return out;
       },
     },
+
+    sequential: {
+      label: 'Sequential',
+      icon: 'Q',
+      colorClass: 'sequential',
+      defaultValues: { type: 'sequential', commands: [] },
+      fields: [],
+      summarize: function (v) {
+        var n = (v.commands || []).length;
+        return n + ' cmd' + (n !== 1 ? 's' : '');
+      },
+      validate: function (v) {
+        var e = [];
+        if (!v.commands || v.commands.length < 2) e.push('Sequential group needs at least 2 commands');
+        return e;
+      },
+      serialize: function (v) {
+        return {
+          type: 'sequential',
+          commands: (v.commands || []).map(function (child) {
+            var childDef = COMMAND_TYPES[child.type];
+            return childDef ? childDef.serialize(child) : child;
+          }),
+        };
+      },
+    },
   };
 
   function createPaletteItems(container) {
@@ -536,8 +562,8 @@ window.CommandPalette = (function () {
       delete step.target;
     }
 
-    // Recursively migrate parallel children
-    if (step.type === 'parallel' && Array.isArray(step.commands)) {
+    // Recursively migrate parallel/sequential children
+    if ((step.type === 'parallel' || step.type === 'sequential') && Array.isArray(step.commands)) {
       step.commands = step.commands.map(migrateStep);
     }
     return step;
@@ -587,12 +613,13 @@ window.CommandPalette = (function () {
     // Keep structural types
     var preserved = {};
     if (COMMAND_TYPES.parallel) preserved.parallel = COMMAND_TYPES.parallel;
+    if (COMMAND_TYPES.sequential) preserved.sequential = COMMAND_TYPES.sequential;
     if (COMMAND_TYPES.delay) preserved.delay = COMMAND_TYPES.delay;
 
     // Clear all non-structural types
     var keys = Object.keys(COMMAND_TYPES);
     for (var i = 0; i < keys.length; i++) {
-      if (keys[i] !== 'parallel' && keys[i] !== 'delay') {
+      if (keys[i] !== 'parallel' && keys[i] !== 'sequential' && keys[i] !== 'delay') {
         delete COMMAND_TYPES[keys[i]];
       }
     }
@@ -606,6 +633,7 @@ window.CommandPalette = (function () {
     // Re-add structural types at the end
     if (preserved.delay) COMMAND_TYPES.delay = preserved.delay;
     if (preserved.parallel) COMMAND_TYPES.parallel = preserved.parallel;
+    if (preserved.sequential) COMMAND_TYPES.sequential = preserved.sequential;
   }
 
   function _buildDynamicCommandType(meta) {
@@ -705,7 +733,7 @@ window.CommandPalette = (function () {
     var typeDef = COMMAND_TYPES[jsonStep.type];
     if (!typeDef) return jsonStep;
     var merged = Object.assign({}, typeDef.defaultValues, jsonStep);
-    if (jsonStep.type === 'parallel' && Array.isArray(jsonStep.commands)) {
+    if ((jsonStep.type === 'parallel' || jsonStep.type === 'sequential') && Array.isArray(jsonStep.commands)) {
       merged.commands = jsonStep.commands.map(deserializeStep);
     }
     return merged;

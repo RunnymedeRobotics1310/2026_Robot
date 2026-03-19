@@ -273,42 +273,42 @@ class AutoConfigParserTest {
   @Test
   @SuppressWarnings("unchecked")
   void opportunisticOutpostTemplateParsesAndValidates() throws IOException {
-    Path template = Path.of("src/main/deploy/autos/opportunistic_outpost_configurable.json");
+    Path template = Path.of("src/main/deploy/autos/opportunistic_outpost.json");
     String json = Files.readString(template);
 
     AutoConfig config = AutoConfigParser.parseJson(json);
     assertNotNull(config);
-    assertEquals("opportunistic_outpost_configurable", config.name);
+    assertEquals("opportunistic_outpost", config.name);
     assertEquals(8, config.steps.size());
     assertNull(AutoConfigParser.validateAutoConfig(config));
 
-    Map<String, Object> parallel = config.steps.get(5);
+    Map<String, Object> parallel = config.steps.get(2);
     assertEquals("parallel", parallel.get("type"));
     assertEquals("deadline", parallel.get("endCondition"));
     List<Map<String, Object>> cmds = (List<Map<String, Object>>) parallel.get("commands");
-    assertEquals("hold", cmds.get(1).get("type"));
+    assertEquals("shooter", cmds.get(1).get("type"));
   }
 
   @Test
   @SuppressWarnings("unchecked")
   void simpleCenterTemplateParsesAndValidates() throws IOException {
-    Path template = Path.of("src/main/deploy/autos/simple_center_configurable.json");
+    Path template = Path.of("src/main/deploy/autos/simple_center.json");
     String json = Files.readString(template);
 
     AutoConfig config = AutoConfigParser.parseJson(json);
     assertNotNull(config);
-    assertEquals("simple_center_configurable", config.name);
-    assertEquals(4, config.steps.size());
+    assertEquals("simple_center", config.name);
+    assertEquals(6, config.steps.size());
     assertNull(AutoConfigParser.validateAutoConfig(config));
 
     Map<String, Object> first = config.steps.get(0);
     assertEquals("parallel", first.get("type"));
     assertEquals("deadline", first.get("endCondition"));
     List<Map<String, Object>> cmds = (List<Map<String, Object>>) first.get("commands");
-    assertEquals("shooter", cmds.get(0).get("type"));
-    assertEquals("hold", cmds.get(1).get("type"));
+    assertEquals("lazy_shooter", cmds.get(0).get("type"));
+    assertEquals("null_drive", cmds.get(1).get("type"));
 
-    Map<String, Object> finalStep = config.steps.get(3);
+    Map<String, Object> finalStep = config.steps.get(4);
     assertEquals("vision_approach_tag", finalStep.get("type"));
     assertEquals(true, finalStep.get("rightSide"));
   }

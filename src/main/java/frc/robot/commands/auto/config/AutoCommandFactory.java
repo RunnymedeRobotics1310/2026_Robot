@@ -73,6 +73,9 @@ public class AutoCommandFactory {
       double duration = getDouble(step, "durationSeconds");
       return new WaitCommand(duration);
     }
+    if ("sequential".equals(type)) {
+      return buildSequentialGroup(step);
+    }
 
     // Delegate to registry for all registered command types
     if (registry.hasType(type)) {
@@ -131,13 +134,36 @@ public class AutoCommandFactory {
     // These types handle their own timeout or don't need one
     if ("drive_velocity".equals(type)
         || "face_hub".equals(type)
-        || "vision_approach_tag".equals(type)) {
+        || "vision_approach_tag".equals(type)
+        || "drive_field_oriented".equals(type)
+        || "shooter".equals(type)
+        || "null_drive".equals(type)) {
       double timeout = getDouble(step, "timeoutSeconds");
       if (timeout > 0) {
         return cmd.withTimeout(timeout);
       }
     }
     return cmd;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Command buildSequentialGroup(Map<String, Object> step) {
+    List<Map<String, Object>> childSteps = (List<Map<String, Object>>) step.get("commands");
+    if (childSteps == null || childSteps.isEmpty()) {
+      System.out.println("AutoCommandFactory: Sequential group has no commands");
+      return new WaitCommand(0);
+    }
+    List<Command> children = new ArrayList<>();
+    for (Map<String, Object> child : childSteps) {
+      Command cmd = buildStep(child);
+      if (cmd != null) {
+        children.add(cmd);
+      }
+    }
+    if (children.isEmpty()) {
+      return new WaitCommand(0);
+    }
+    return new SequentialCommandGroup(children.toArray(new Command[0]));
   }
 
   @SuppressWarnings("unchecked")

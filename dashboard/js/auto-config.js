@@ -631,7 +631,7 @@
         var typeDef = CP.COMMAND_TYPES[typeKey];
         if (typeDef && state.currentConfig) {
           var newStep = Object.assign({}, typeDef.defaultValues, { _id: CP.generateStepId() });
-          if (newStep.type === 'parallel') newStep.commands = [];
+          if (newStep.type === 'parallel' || newStep.type === 'sequential') newStep.commands = [];
           state.steps.push(newStep);
           state.selectedStepId = newStep._id;
           state.selectedParentId = null;
@@ -981,10 +981,17 @@
     state.steps = (configJson.steps || []).map(function (s) {
       var step = CP.deserializeStep(s);
       step._id = CP.generateStepId();
-      if (step.type === 'parallel' && step.commands) {
+      if ((step.type === 'parallel' || step.type === 'sequential') && step.commands) {
         step.commands = step.commands.map(function (c) {
           var child = CP.deserializeStep(c);
           child._id = CP.generateStepId();
+          if ((child.type === 'parallel' || child.type === 'sequential') && child.commands) {
+            child.commands = child.commands.map(function (gc) {
+              var grandchild = CP.deserializeStep(gc);
+              grandchild._id = CP.generateStepId();
+              return grandchild;
+            });
+          }
           return child;
         });
       }
@@ -1024,7 +1031,7 @@
       CP.validateStep(step).forEach(function (err) {
         allErrors.push('Step ' + (i + 1) + ' (' + step.type + '): ' + err);
       });
-      if (step.type === 'parallel' && step.commands) {
+      if ((step.type === 'parallel' || step.type === 'sequential') && step.commands) {
         step.commands.forEach(function (child, ci) {
           CP.validateStep(child).forEach(function (err) {
             allErrors.push('Step ' + (i + 1) + ' > ' + (ci + 1) + ' (' + child.type + '): ' + err);
@@ -1138,6 +1145,23 @@
         maxAll = Math.max(maxAll, isFinite(dInfo.max) ? dInfo.max : 0);
       });
       return { min: minAll, max: anyUnbounded ? Infinity : maxAll, unbounded: anyUnbounded };
+    }
+    if (step.type === 'sequential') {
+      var seqChildren = step.commands || [];
+      if (!seqChildren.length) return { min: 0, max: 0, unbounded: false };
+      var seqMin = 0;
+      var seqMax = 0;
+      var seqUnbounded = false;
+      seqChildren.forEach(function (child) {
+        var cd = estimateStepDuration(child);
+        seqMin += cd.min;
+        if (isFinite(cd.max)) {
+          seqMax += cd.max;
+        } else {
+          seqUnbounded = true;
+        }
+      });
+      return { min: seqMin, max: seqUnbounded ? Infinity : seqMax, unbounded: seqUnbounded };
     }
     return { min: 0, max: 0, unbounded: false };
   }
@@ -1450,12 +1474,15 @@
   // ===== Step Manipulation =====
 
   function findStepById(id) {
-    for (var i = 0; i < state.steps.length; i++) {
-      if (state.steps[i]._id === id) return state.steps[i];
-      if (state.steps[i].type === 'parallel' && state.steps[i].commands) {
-        for (var j = 0; j < state.steps[i].commands.length; j++) {
-          if (state.steps[i].commands[j]._id === id) return state.steps[i].commands[j];
-        }
+    return findStepInList(state.steps, id);
+  }
+
+  function findStepInList(steps, id) {
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i]._id === id) return steps[i];
+      if (steps[i].commands) {
+        var found = findStepInList(steps[i].commands, id);
+        if (found) return found;
       }
     }
     return null;
@@ -1469,14 +1496,20 @@
   }
 
   function findChildLocation(id) {
-    for (var i = 0; i < state.steps.length; i++) {
-      var parent = state.steps[i];
-      if (parent.type === 'parallel' && parent.commands) {
-        for (var j = 0; j < parent.commands.length; j++) {
-          if (parent.commands[j]._id === id) {
-            return { parent: parent, parentIndex: i, childIndex: j };
+    return findChildInList(state.steps, id);
+  }
+
+  function findChildInList(steps, id) {
+    for (var i = 0; i < steps.length; i++) {
+      var step = steps[i];
+      if (step.commands) {
+        for (var j = 0; j < step.commands.length; j++) {
+          if (step.commands[j]._id === id) {
+            return { parent: step, parentIndex: i, childIndex: j };
           }
         }
+        var nested = findChildInList(step.commands, id);
+        if (nested) return nested;
       }
     }
     return null;
@@ -1520,6 +1553,17 @@
     renderProperties();
   }
 
+  function deleteFromGroupChildren(steps, id) {
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i].commands) {
+        var ci = steps[i].commands.findIndex(function (c) { return c._id === id; });
+        if (ci !== -1) { steps[i].commands.splice(ci, 1); return true; }
+        if (deleteFromGroupChildren(steps[i].commands, id)) return true;
+      }
+    }
+    return false;
+  }
+
   function deleteStep(id) {
     var changed = false;
     var index = findStepIndex(id);
@@ -1527,12 +1571,7 @@
       state.steps.splice(index, 1);
       changed = true;
     } else {
-      for (var i = 0; i < state.steps.length; i++) {
-        if (state.steps[i].type === 'parallel' && state.steps[i].commands) {
-          var ci = state.steps[i].commands.findIndex(function (c) { return c._id === id; });
-          if (ci !== -1) { state.steps[i].commands.splice(ci, 1); changed = true; break; }
-        }
-      }
+      changed = deleteFromGroupChildren(state.steps, id);
     }
     if (!changed) return;
     if (state.selectedStepId === id) { state.selectedStepId = null; state.selectedParentId = null; }
@@ -1547,8 +1586,14 @@
     if (index !== -1) {
       var copy = JSON.parse(JSON.stringify(state.steps[index]));
       copy._id = CP.generateStepId();
-      if (copy.type === 'parallel' && copy.commands) {
-        copy.commands = copy.commands.map(function (c) { c._id = CP.generateStepId(); return c; });
+      if ((copy.type === 'parallel' || copy.type === 'sequential') && copy.commands) {
+        copy.commands = copy.commands.map(function (c) {
+          c._id = CP.generateStepId();
+          if ((c.type === 'parallel' || c.type === 'sequential') && c.commands) {
+            c.commands = c.commands.map(function (gc) { gc._id = CP.generateStepId(); return gc; });
+          }
+          return c;
+        });
       }
       state.steps.splice(index + 1, 0, copy);
       state.selectedStepId = copy._id;
@@ -1656,7 +1701,7 @@
     },
     addChildToParallel: function (parentId, childStep) {
       var parent = findStepById(parentId);
-      if (parent && parent.type === 'parallel') {
+      if (parent && (parent.type === 'parallel' || parent.type === 'sequential')) {
         if (!parent.commands) parent.commands = [];
         parent.commands.push(childStep);
         markDirty();
@@ -1668,9 +1713,9 @@
       var stepIndex = findStepIndex(stepId);
       if (stepIndex === -1) return;
       var step = state.steps[stepIndex];
-      if (step.type === 'parallel') return;
+      if (step.type === 'parallel' || step.type === 'sequential') return;
       var parent = findStepById(parentId);
-      if (!parent || parent.type !== 'parallel') return;
+      if (!parent || (parent.type !== 'parallel' && parent.type !== 'sequential')) return;
       state.steps.splice(stepIndex, 1);
       if (!parent.commands) parent.commands = [];
       parent.commands.push(step);

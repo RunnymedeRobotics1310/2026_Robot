@@ -5,9 +5,14 @@ import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
+import frc.robot.commands.auto.config.AutoConfigurable;
+import frc.robot.commands.auto.config.ConfigParam;
 import frc.robot.subsystems.HopperSubsystem;
 
-/** An example command that uses an example subsystem. */
+@AutoConfigurable(
+    value = "lazy_shooter",
+    category = "shooter",
+    description = "Fire at fixed speed and hood setpoint for a duration")
 public class LazyShooterCommand extends LoggingCommand {
 
   private final HopperSubsystem hopperSubsystem;
@@ -19,7 +24,28 @@ public class LazyShooterCommand extends LoggingCommand {
   private final Timer timer = new Timer();
 
   public LazyShooterCommand(
-      HopperSubsystem hopperSubsystem, int speed, double hoodAngle, double duration) {
+      HopperSubsystem hopperSubsystem,
+      @ConfigParam(
+              value = "speed",
+              unit = "rpm",
+              description = "Flywheel speed",
+              min = 0,
+              max = 6000)
+          int speed,
+      @ConfigParam(
+              value = "hoodAngle",
+              description = "Hood setpoint",
+              min = 0,
+              max = 1,
+              defaultValue = 0)
+          double hoodAngle,
+      @ConfigParam(
+              value = "duration",
+              unit = "s",
+              description = "Shoot duration",
+              min = 0,
+              max = 15)
+          double duration) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopperSubsystem);
     this.hopperSubsystem = hopperSubsystem;
