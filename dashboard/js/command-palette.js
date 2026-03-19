@@ -651,7 +651,7 @@ window.CommandPalette = (function () {
   }
 
   function _buildDynamicCommandType(meta) {
-    var defaults = { type: meta.type };
+    var defaults = { type: meta.type, timeoutSeconds: 0 };
     var fields = [];
 
     var params = meta.params || [];
@@ -679,6 +679,8 @@ window.CommandPalette = (function () {
       fields.push(field);
     }
 
+    fields.push({ key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0, max: 15, step: 0.5, hint: '0 = no timeout' });
+
     var category = meta.category || 'utility';
 
     return {
@@ -698,6 +700,7 @@ window.CommandPalette = (function () {
           }
           if (parts.length >= 3) break;
         }
+        if (v.timeoutSeconds > 0) parts.push('timeout=' + v.timeoutSeconds + 's');
         return parts.join(', ') || meta.type;
       },
       validate: function () { return []; },
@@ -707,6 +710,7 @@ window.CommandPalette = (function () {
           var key = params[k].name;
           if (v[key] !== undefined) out[key] = v[key];
         }
+        if (v.timeoutSeconds > 0) out.timeoutSeconds = v.timeoutSeconds;
         return out;
       },
     };
