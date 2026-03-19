@@ -38,11 +38,6 @@ public class ClimbSubsystem extends SubsystemBase {
       if (climbMotorSpeed > 0) {
         climbMotorSpeed = 0;
       }
-      // lower slow zone
-    } else if (getClimbPosition() < CLIMB_SLOW_ZONE) {
-      if (climbMotorSpeed < -CLIMB_SLOW_ZONE_SPEED) {
-        climbMotorSpeed = -CLIMB_SLOW_ZONE_SPEED;
-      }
       // upper slow zone
     } else if (getClimbPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
       if (climbMotorSpeed > CLIMB_SLOW_ZONE_SPEED) {
