@@ -2,7 +2,6 @@ package frc.robot.commands.hopper;
 
 import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
@@ -133,8 +132,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
 
     // kicker
-    double currentVelocity = hopperSubsystem.getShooterVelocity();
-    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
     boolean facingHub =
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
@@ -150,7 +148,7 @@ public class DefaultHopperCommand extends LoggingCommand {
   private void handleShooterBridge() {
     // Dashboard shooter tuning
     double targetRPM = bridge.getTargetRPM();
-    double currentRPM = hopperSubsystem.getShooterVelocity();
+    double currentRPM = hopperSubsystem.getRightShooterVelocity();
     boolean shooterEnabled = bridge.isShooterEnabled();
     double hoodAngle = bridge.getHoodAngle();
 
@@ -165,10 +163,7 @@ public class DefaultHopperCommand extends LoggingCommand {
       lastHoodAngle = hoodAngle;
     }
 
-    boolean atSpeed =
-        shooterEnabled
-            && targetRPM > 0
-            && Math.abs(targetRPM - currentRPM) <= ACCPETED_SHOOTER_ERROR;
+    boolean atSpeed = shooterEnabled && targetRPM > 0 && hopperSubsystem.isShooterAtSpeed();
     bridge.setCurrentRPM(currentRPM);
     bridge.setAtSpeed(atSpeed);
     bridge.setDistanceToHub(swerveSubsystem.distanceToHub());

@@ -3,12 +3,9 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.*;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,9 +14,9 @@ import frc.robot.telemetry.Telemetry;
 
 public class HopperSubsystem extends SubsystemBase {
 
-  private final SparkFlex primaryShooterMotor =
+  private final SparkFlex rightShooterMotor =
       new SparkFlex(SHOOTER_PRIMARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
-  private final SparkFlex secondaryShooterMotor =
+  private final SparkFlex leftShooterMotor =
       new SparkFlex(SHOOTER_SECONDARY_MOTOR_CAN_ID, SparkFlex.MotorType.kBrushless);
   private final SparkMax kickerMotor =
       new SparkMax(KICKER_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
@@ -36,24 +33,22 @@ public class HopperSubsystem extends SubsystemBase {
   private final DigitalInput doorClosedLimit = new DigitalInput(DOOR_CLOSED_LIMIT_DIO_PORT);
 
   private double targetShooterVelocity;
-  private double iError = 0;
+  private double rIError = 0;
+  private double lIError = 0;
   private double doorSetpoint = 0;
 
-  private Timer agitatorTimer = new Timer();
+  private final Timer agitatorTimer = new Timer();
   private boolean agitatorState = false;
 
   public HopperSubsystem() {
-    secondaryShooterMotor.configure(
-        new SparkFlexConfig().follow(primaryShooterMotor, true),
-        ResetMode.kNoResetSafeParameters,
-        PersistMode.kPersistParameters);
     agitatorTimer.start();
     agitatorTimer.reset();
   }
 
   @Override
   public void periodic() {
-    Telemetry.shooter.currentShooterRPM = getShooterVelocity();
+    Telemetry.shooter.currentRightShooterRPM = getRightShooterVelocity();
+    Telemetry.shooter.currentLeftShooterRPM = getLeftShooterVelocity();
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
@@ -66,20 +61,34 @@ public class HopperSubsystem extends SubsystemBase {
     }
   }
 
-  public double getShooterVelocity() {
-    return primaryShooterMotor.getEncoder().getVelocity();
+  public double getRightShooterVelocity() {
+    return rightShooterMotor.getEncoder().getVelocity();
+  }
+
+  public double getLeftShooterVelocity() {
+    return leftShooterMotor.getEncoder().getVelocity();
   }
 
   public void setShooterVelocity(double target) {
     Telemetry.shooter.targetShooterRPM = target;
-    targetShooterVelocity = target;
     if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
-      iError = 0;
+      rIError = 0;
+      lIError = 0;
     }
+    targetShooterVelocity = target;
   }
 
   public void setShooterSpeed(double speed) {
-    primaryShooterMotor.set(speed);
+    setRightShooterSpeed(speed);
+    setLeftShooterSpeed(speed);
+  }
+
+  public void setRightShooterSpeed(double speed) {
+    rightShooterMotor.set(speed);
+  }
+
+  public void setLeftShooterSpeed(double speed) {
+    leftShooterMotor.set(speed);
   }
 
   public void setKickerSpeed(double speed) {
@@ -167,18 +176,34 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   private void updateShooterSpeed() {
-    double currentSpeed = getShooterVelocity();
-    double error = (targetShooterVelocity - currentSpeed); // Normalize error
-    if (Math.abs(error) > I_ZONE) {
-      iError = 0;
+    /* ----- RIGHT SHOOTER ----- */
+    double rSpeed = getRightShooterVelocity();
+    double rError = (targetShooterVelocity - rSpeed); // Normalize error
+    if (Math.abs(rError) > I_ZONE) {
+      rIError = 0;
     } else {
-      iError += error;
-      iError = Math.min(iError, (1 - error * KP) / KI);
+      rIError += rError;
+      rIError = Math.min(rIError, (1 - rError * KP) / KI);
     }
 
-    double pidOutput = (targetShooterVelocity * KFF) + (error * KP) + (iError * KI);
+    /* ----- LEFT SHOOTER ----- */
+    double lSpeed = getLeftShooterVelocity();
+    double lError = (targetShooterVelocity - lSpeed);
+    if (Math.abs(lError) > I_ZONE) {
+      lIError = 0;
+    } else {
+      lIError += lError;
+      lIError = Math.min(lIError, (1 - lError * KP) / KI);
+    }
+
+    double pidOutputR = (targetShooterVelocity * KFF) + (rError * KP) + (rIError * KI);
+    double pidOutputL = (targetShooterVelocity * KFF) + (lError * KP) + (lIError * KI);
+
     if (targetShooterVelocity == 0) setShooterSpeed(0);
-    else setShooterSpeed(pidOutput);
+    else {
+      setRightShooterSpeed(pidOutputR);
+      setLeftShooterSpeed(pidOutputL);
+    }
   }
 
   private void updateDoorSpeed() {
@@ -196,7 +221,8 @@ public class HopperSubsystem extends SubsystemBase {
     setShooterVelocity(0);
     setDoorSetpoint(0);
 
-    primaryShooterMotor.stopMotor();
+    rightShooterMotor.stopMotor();
+    leftShooterMotor.stopMotor();
     kickerMotor.stopMotor();
     agitatorMotor.stopMotor();
     setRollerSpeeds(0, 0);
@@ -227,5 +253,15 @@ public class HopperSubsystem extends SubsystemBase {
     } else {
       setAgitatorSpeed(-AGITATOR_RUNSPEED);
     }
+  }
+
+  public boolean isShooterAtSpeed() {
+
+    boolean leftAtSpeed =
+        Math.abs(targetShooterVelocity - getLeftShooterVelocity()) < ACCPETED_SHOOTER_ERROR;
+    boolean rightAtSpeed =
+        Math.abs(targetShooterVelocity - getRightShooterVelocity()) < ACCPETED_SHOOTER_ERROR;
+
+    return leftAtSpeed && rightAtSpeed;
   }
 }

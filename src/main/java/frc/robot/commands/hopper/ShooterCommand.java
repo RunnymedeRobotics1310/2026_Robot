@@ -1,7 +1,6 @@
 package frc.robot.commands.hopper;
 
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
@@ -89,8 +88,7 @@ public class ShooterCommand extends LoggingCommand {
     }
 
     // kicker
-    double currentVelocity = hopperSubsystem.getShooterVelocity();
-    boolean atSpeed = Math.abs(targetSpeed - currentVelocity) < ACCPETED_SHOOTER_ERROR;
+    boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
     // boolean overThreshold = Math.abs(targetSpeed - currentVelocity) < ACCEPTED_THRESHOLD;
     boolean facingHub =
         SwerveUtils.isCloseEnough(

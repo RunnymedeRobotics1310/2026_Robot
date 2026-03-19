@@ -14,7 +14,8 @@ public class ShooterTelemetry {
   public boolean enabled = true;
 
   public double targetShooterRPM;
-  public double currentShooterRPM;
+  public double currentLeftShooterRPM;
+  public double currentRightShooterRPM;
   public double kickerSpeed;
   public double hoodAngle;
   public double agitatorSpeed;
@@ -23,7 +24,10 @@ public class ShooterTelemetry {
 
     if (enabled) {
       SmartDashboard.putNumber(PREFIX + "Shooter/TargetShooterRPM", (int) targetShooterRPM);
-      SmartDashboard.putNumber(PREFIX + "Shooter/CurrentShooterRPM", (int) currentShooterRPM);
+      SmartDashboard.putNumber(
+          PREFIX + "Shooter/CurrentLeftShooterRPM", (int) currentLeftShooterRPM);
+      SmartDashboard.putNumber(
+          PREFIX + "Shooter/CurrentRightShooterRPM", (int) currentRightShooterRPM);
       SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", RunnymedeUtils.round(kickerSpeed));
       SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", RunnymedeUtils.round(hoodAngle));
     }

@@ -55,7 +55,7 @@ public class CloseShootCommand extends LoggingCommand {
     hopperSubsystem.setHood(0.0);
     int targetspeed = 3400;
     hopperSubsystem.setShooterVelocity(targetspeed);
-    if (hopperSubsystem.getShooterVelocity() > 2850) {
+    if (hopperSubsystem.isShooterAtSpeed()) {
       hopperSubsystem.setKickerSpeed(0.7);
     } else {
       hopperSubsystem.setKickerSpeed(0.0);
