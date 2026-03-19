@@ -7,9 +7,8 @@
     { "type": "set_pose", "xMetres": 3.4, "yMetres": 2.2, "headingDegrees": 0 },
     { "type": "drive_field_oriented", "vxMPS": -2.0, "vyMPS": 0, "headingDegrees": 0, "timeoutSeconds": 0.8 },
     {
-      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "type": "parallel", "endCondition": "all", "timeoutSeconds": 6.0,
       "commands": [
-        { "type": "delay", "durationSeconds": 6.0 },
         { "type": "shooter" },
         {
           "type": "sequential",
@@ -25,9 +24,8 @@
     { "type": "null_drive", "timeoutSeconds": 5.0 },
     { "type": "drive_field_oriented", "vxMPS": 2.0, "vyMPS": 2.0, "headingDegrees": 180, "timeoutSeconds": 0.9 },
     {
-      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "type": "parallel", "endCondition": "all", "timeoutSeconds": 10.0,
       "commands": [
-        { "type": "delay", "durationSeconds": 10.0 },
         { "type": "shooter" },
         {
           "type": "sequential",

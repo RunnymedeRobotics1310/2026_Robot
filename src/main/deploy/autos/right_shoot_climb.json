@@ -6,9 +6,8 @@
   "steps": [
     { "type": "drive_field_oriented", "vxMPS": -2.0, "vyMPS": 0, "headingDegrees": 0, "timeoutSeconds": 0.8 },
     {
-      "type": "parallel", "endCondition": "deadline", "deadlineIndex": 0,
+      "type": "parallel", "endCondition": "all", "timeoutSeconds": 10.0,
       "commands": [
-        { "type": "delay", "durationSeconds": 10.0 },
         { "type": "shooter" },
         {
           "type": "sequential",

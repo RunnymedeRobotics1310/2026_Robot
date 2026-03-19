@@ -344,27 +344,30 @@ window.CommandPalette = (function () {
       label: 'Parallel',
       icon: 'P',
       colorClass: 'parallel',
-      defaultValues: { type: 'parallel', endCondition: 'all', deadlineIndex: 0, commands: [] },
+      defaultValues: { type: 'parallel', endCondition: 'all', deadlineIndex: 1, timeoutSeconds: 0, commands: [] },
       fields: [
         { key: 'endCondition', label: 'End Condition', type: 'select', options: [
           { value: 'all', label: 'All finish (ParallelCommandGroup)' },
           { value: 'first', label: 'First finishes (ParallelRaceGroup)' },
           { value: 'deadline', label: 'Deadline child finishes (ParallelDeadlineGroup)' },
         ]},
-        { key: 'deadlineIndex', label: 'Deadline Child Index', type: 'number', min: 0, max: 10, step: 1, showIf: function (v) { return v.endCondition === 'deadline'; } },
+        { key: 'deadlineIndex', label: 'Deadline Child #', type: 'number', min: 1, max: 10, step: 1, showIf: function (v) { return v.endCondition === 'deadline'; } },
+        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0, max: 15, step: 0.5, hint: '0 = no timeout' },
       ],
       summarize: function (v) {
         var n = (v.commands || []).length;
-        var mode = v.endCondition === 'all' ? 'All' : (v.endCondition === 'first' ? 'Race' : ('Deadline #' + v.deadlineIndex));
-        return mode + ', ' + n + ' cmd' + (n !== 1 ? 's' : '');
+        var mode = v.endCondition === 'all' ? 'All' : (v.endCondition === 'first' ? 'Race' : ('Deadline #' + (v.deadlineIndex || 1)));
+        var summary = mode + ', ' + n + ' cmd' + (n !== 1 ? 's' : '');
+        if (v.timeoutSeconds > 0) summary += ', timeout ' + v.timeoutSeconds + 's';
+        return summary;
       },
       validate: function (v) {
         var e = [];
         if (!v.commands || v.commands.length < 2) e.push('Parallel group needs at least 2 commands');
         if (v.endCondition === 'deadline') {
-          var maxIndex = (v.commands ? v.commands.length : 0) - 1;
-          if (v.deadlineIndex < 0 || v.deadlineIndex > maxIndex) {
-            e.push('Deadline index must be between 0 and ' + maxIndex);
+          var maxCmd = v.commands ? v.commands.length : 0;
+          if (v.deadlineIndex < 1 || v.deadlineIndex > maxCmd) {
+            e.push('Deadline child # must be between 1 and ' + maxCmd);
           }
         }
         return e;
@@ -379,7 +382,10 @@ window.CommandPalette = (function () {
           }),
         };
         if (v.endCondition === 'deadline') {
-          out.deadlineIndex = Math.max(0, Math.floor(v.deadlineIndex || 0));
+          out.deadlineIndex = Math.max(0, Math.floor((v.deadlineIndex || 1) - 1));
+        }
+        if (v.timeoutSeconds > 0) {
+          out.timeoutSeconds = v.timeoutSeconds;
         }
         return out;
       },
@@ -389,11 +395,15 @@ window.CommandPalette = (function () {
       label: 'Sequential',
       icon: 'Q',
       colorClass: 'sequential',
-      defaultValues: { type: 'sequential', commands: [] },
-      fields: [],
+      defaultValues: { type: 'sequential', timeoutSeconds: 0, commands: [] },
+      fields: [
+        { key: 'timeoutSeconds', label: 'Timeout (s)', type: 'number', min: 0, max: 15, step: 0.5, hint: '0 = no timeout' },
+      ],
       summarize: function (v) {
         var n = (v.commands || []).length;
-        return n + ' cmd' + (n !== 1 ? 's' : '');
+        var summary = n + ' cmd' + (n !== 1 ? 's' : '');
+        if (v.timeoutSeconds > 0) summary += ', timeout ' + v.timeoutSeconds + 's';
+        return summary;
       },
       validate: function (v) {
         var e = [];
@@ -401,13 +411,17 @@ window.CommandPalette = (function () {
         return e;
       },
       serialize: function (v) {
-        return {
+        var out = {
           type: 'sequential',
           commands: (v.commands || []).map(function (child) {
             var childDef = COMMAND_TYPES[child.type];
             return childDef ? childDef.serialize(child) : child;
           }),
         };
+        if (v.timeoutSeconds > 0) {
+          out.timeoutSeconds = v.timeoutSeconds;
+        }
+        return out;
       },
     },
   };
@@ -735,6 +749,10 @@ window.CommandPalette = (function () {
     var merged = Object.assign({}, typeDef.defaultValues, jsonStep);
     if ((jsonStep.type === 'parallel' || jsonStep.type === 'sequential') && Array.isArray(jsonStep.commands)) {
       merged.commands = jsonStep.commands.map(deserializeStep);
+    }
+    // Convert 0-based JSON deadlineIndex to 1-based UI value
+    if (jsonStep.type === 'parallel' && jsonStep.deadlineIndex !== undefined) {
+      merged.deadlineIndex = (jsonStep.deadlineIndex || 0) + 1;
     }
     return merged;
   }

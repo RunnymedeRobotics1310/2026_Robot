@@ -65,30 +65,26 @@ public class AutoCommandFactory {
     // Map legacy format to new type names
     String type = mapLegacyType(rawType, step);
 
-    // Handle structural types directly
+    Command cmd = null;
+
     if ("parallel".equals(type)) {
-      return buildParallelGroup(step);
-    }
-    if ("delay".equals(type)) {
+      cmd = buildParallelGroup(step);
+    } else if ("delay".equals(type)) {
       double duration = getDouble(step, "durationSeconds");
-      return new WaitCommand(duration);
-    }
-    if ("sequential".equals(type)) {
-      return buildSequentialGroup(step);
-    }
-
-    // Delegate to registry for all registered command types
-    if (registry.hasType(type)) {
-      Command cmd = registry.createCommand(type, step, subsystems);
-      if (cmd != null) {
-        // Apply timeout wrapping for commands that don't have internal timeout params
-        cmd = applyTimeoutIfNeeded(cmd, type, step);
-      }
-      return cmd;
+      cmd = new WaitCommand(duration);
+    } else if ("sequential".equals(type)) {
+      cmd = buildSequentialGroup(step);
+    } else if (registry.hasType(type)) {
+      cmd = registry.createCommand(type, step, subsystems);
+    } else {
+      System.out.println("AutoCommandFactory: Unknown step type: " + type);
+      return null;
     }
 
-    System.out.println("AutoCommandFactory: Unknown step type: " + type);
-    return null;
+    if (cmd != null) {
+      cmd = applyTimeoutIfNeeded(cmd, step);
+    }
+    return cmd;
   }
 
   /** Map legacy JSON format type names to new registry type names. */
@@ -126,22 +122,11 @@ public class AutoCommandFactory {
     return rawType;
   }
 
-  /**
-   * Apply .withTimeout() for command types that don't have internal timeout handling but have a
-   * timeoutSeconds field in the step config.
-   */
-  private Command applyTimeoutIfNeeded(Command cmd, String type, Map<String, Object> step) {
-    // These types handle their own timeout or don't need one
-    if ("drive_velocity".equals(type)
-        || "face_hub".equals(type)
-        || "vision_approach_tag".equals(type)
-        || "drive_field_oriented".equals(type)
-        || "shooter".equals(type)
-        || "null_drive".equals(type)) {
-      double timeout = getDouble(step, "timeoutSeconds");
-      if (timeout > 0) {
-        return cmd.withTimeout(timeout);
-      }
+  /** Apply .withTimeout() if the step config has a positive timeoutSeconds value. */
+  private Command applyTimeoutIfNeeded(Command cmd, Map<String, Object> step) {
+    double timeout = getDouble(step, "timeoutSeconds");
+    if (timeout > 0) {
+      return cmd.withTimeout(timeout);
     }
     return cmd;
   }

@@ -284,9 +284,11 @@ class AutoConfigParserTest {
 
     Map<String, Object> parallel = config.steps.get(2);
     assertEquals("parallel", parallel.get("type"));
-    assertEquals("deadline", parallel.get("endCondition"));
+    assertEquals("all", parallel.get("endCondition"));
+    assertEquals(6.0, ((Number) parallel.get("timeoutSeconds")).doubleValue());
     List<Map<String, Object>> cmds = (List<Map<String, Object>>) parallel.get("commands");
-    assertEquals("shooter", cmds.get(1).get("type"));
+    assertEquals(2, cmds.size());
+    assertEquals("shooter", cmds.get(0).get("type"));
   }
 
   @Test
