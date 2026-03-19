@@ -100,23 +100,18 @@ public class LightingSubsystem extends SubsystemBase {
       /* Telemetry.climb.alignedToTower */ false) {
         greenLedPattern.applyTo(ledBuffer);
 
-      } else if (
-      /* Telemetry.climb.climbEncoder > 0 */ false) {
+      } else if (climb.climbPosition > 0) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
-        //      } else if (Math.abs(shooter.targetShooterRPM - shooter.currentShooterRPM)
-        //              < ACCPETED_SHOOTER_ERROR
-        //          && shooter.targetShooterRPM > 0) { // shooterAtSpeed
-        //        yellowLEDPatern.applyTo(ledBuffer);
-
-        //      } else if (intake.topRollerSpeed != 0) {
-        //        blink(yellowLEDPatern, 0.5);
-
-      } else if (drive.distanceToHub <= SUPER_FAR_SHOOTING_DISTANCE && false) {
+        // debug
+      } else if (shooter.kickerSpeed != 0) {
         orangeLedPattern.applyTo(ledBuffer);
 
-      } else if (shooter.kickerSpeed != 0) {
+      } else if (isShooterAtSpeed()) {
         yellowLEDPatern.applyTo(ledBuffer);
+
+      } else if (intake.topRollerSpeed != 0) {
+        blink(yellowLEDPatern, 0.5);
 
       } else {
         alliancePattern.applyTo(ledBuffer);
@@ -158,5 +153,15 @@ public class LightingSubsystem extends SubsystemBase {
 
     LEDPattern active = isAllianceColor ? alliancePattern : pattern;
     active.applyTo(ledBuffer);
+  }
+
+  private boolean isShooterAtSpeed() {
+    boolean leftAtSpeed =
+        Math.abs(shooter.targetShooterRPM - shooter.currentLeftShooterRPM)
+            <= ACCPETED_SHOOTER_ERROR;
+    boolean rightAtSpeed =
+        Math.abs(shooter.targetShooterRPM - shooter.currentRightShooterRPM)
+            <= ACCPETED_SHOOTER_ERROR;
+    return shooter.targetShooterRPM > 0 && leftAtSpeed && rightAtSpeed;
   }
 }

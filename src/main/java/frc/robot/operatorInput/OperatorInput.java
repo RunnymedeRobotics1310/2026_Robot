@@ -142,7 +142,11 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isReverseKicker() {
-    return operatorController.getRightBumperButton();
+    return !isShift() && operatorController.getRightBumperButton();
+  }
+
+  public boolean isRunKicker() {
+    return isShift() && operatorController.getRightBumperButton();
   }
 
   public boolean isRunAgitator() {

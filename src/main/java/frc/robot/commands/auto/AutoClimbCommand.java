@@ -34,7 +34,7 @@ public class AutoClimbCommand extends LoggingCommand {
     hopper.setDoorSetpoint(0);
     if (climbGoingUp) {
       climb.setClimbSpeed(1);
-      if (climb.getPos() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
+      if (climb.getClimbPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
         climb.setClimbSpeed(CLIMB_SLOW_ZONE_SPEED);
       }
     } else {
@@ -52,10 +52,10 @@ public class AutoClimbCommand extends LoggingCommand {
   public boolean isFinished() {
     //    log("CLIMB: " + climb.getPos());
 
-    if (climbGoingUp && climb.getPos() >= MAX_CLIMB_POSITION) {
+    if (climbGoingUp && climb.getClimbPosition() >= MAX_CLIMB_POSITION) {
       return true;
     }
-    if (!climbGoingUp && climb.getPos() <= 0) {
+    if (!climbGoingUp && climb.getClimbPosition() <= 0) {
       return true;
     }
     return false;

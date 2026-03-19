@@ -19,6 +19,7 @@ public class Telemetry {
   public static VisionTelemetry vision = new VisionTelemetry();
   public static ShooterTelemetry shooter = new ShooterTelemetry();
   public static IntakeTelemetry intake = new IntakeTelemetry();
+  public static ClimbTelemetry climb = new ClimbTelemetry();
 
   public static AlertLevel healthyRobot = AlertLevel.NONE;
 
@@ -30,6 +31,7 @@ public class Telemetry {
     vision.post();
     shooter.post();
     intake.post();
+    climb.post();
 
     SmartDashboard.putBoolean(PREFIX + "RobotHealth", healthyRobot == AlertLevel.NONE);
   }

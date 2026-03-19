@@ -9,6 +9,7 @@ import static frc.robot.Constants.ClimbConstants.*;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.Telemetry;
 
 public class ClimbSubsystem extends SubsystemBase {
 
@@ -49,6 +50,8 @@ public class ClimbSubsystem extends SubsystemBase {
     //    }
     //    System.out.println(getPos());
     climbMotor.set(climbMotorSpeed);
+    Telemetry.climb.climbSpeed = climbMotorSpeed;
+    Telemetry.climb.climbPosition = getClimbPosition();
   }
 
   public void setClimbSpeed(double speed) {
@@ -59,7 +62,7 @@ public class ClimbSubsystem extends SubsystemBase {
     climbMotor.getEncoder().setPosition(0);
   }
 
-  public double getPos() {
+  public double getClimbPosition() {
     return climbMotor.getEncoder().getPosition();
     //    return 0;
   }

@@ -90,6 +90,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.isRunAgitator()) hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     if (oi.isStopAgitator()) hopperSubsystem.setAgitatorSpeed(0);
     if (oi.isReverseKicker()) hopperSubsystem.setKickerSpeed(-KICKER_RUNSPEED);
+    if (oi.isRunKicker()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     if (oi.isStopFlywheel()) hopperSubsystem.setShooterSpeed(-0.01);
     if (oi.isReverseFlywheel()) hopperSubsystem.setShooterSpeed(-0.1);
     if (oi.putHoodDown()) hopperSubsystem.setHood(0);
