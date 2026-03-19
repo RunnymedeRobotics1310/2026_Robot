@@ -103,7 +103,7 @@ public class TeleopDriveCommand extends LoggingCommand {
     final boolean doFlip = rotate180Val && !prevRotate180Val;
     prevRotate180Val = rotate180Val;
 
-    final double omegaRadiansPerSecond;
+    double omegaRadiansPerSecond;
     double desiredOmegaRadiansPerSecond;
     double correctedCcwRotAngularVelPct = ccwRotAngularVelPct;
 
@@ -153,6 +153,17 @@ public class TeleopDriveCommand extends LoggingCommand {
         headingSetpointDeg = normalizeDegrees(headingSetpointDeg);
         omegaRadiansPerSecond =
             swerve.computeOmega(headingSetpointDeg, ROTATION_CONFIG.maxRotVelocityRadPS());
+
+        // face hub ff (to face hub while moving quickly)
+        if (lockOnHub) {
+          // tangential velocity relative to hub
+          double vTan =
+              velocity.getNorm()
+                  * Math.sin(
+                      swerve.angleToShootTowards().getRadians() - velocity.getAngle().getRadians());
+          double omegaFFToHub = vTan / swerve.distanceToHub();
+          omegaRadiansPerSecond += omegaFFToHub;
+        }
       }
     }
 
