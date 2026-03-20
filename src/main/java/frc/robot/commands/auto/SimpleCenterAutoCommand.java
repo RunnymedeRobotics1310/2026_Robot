@@ -20,7 +20,7 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
     addCommands(new SetAllianceGyroCommand(swerve, 0));
 
     addCommands(
-        new LazyShooterCommand(hopper, 3300, 0, 5).deadlineFor(new NullDriveCommand(swerve)));
+        new LazyShooterCommand(hopper, 4000, 0, 5).deadlineFor(new NullDriveCommand(swerve)));
 
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0).withTimeout(1.6));
     addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180).withTimeout(1));
