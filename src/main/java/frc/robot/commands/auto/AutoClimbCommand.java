@@ -39,7 +39,6 @@ public class AutoClimbCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     hopper.setDoorSetpoint(0);
-    if (climbGoingUp) climb.zeroEncoder();
   }
 
   @Override
@@ -68,7 +67,7 @@ public class AutoClimbCommand extends LoggingCommand {
     if (climbGoingUp && climb.getClimbPosition() >= MAX_CLIMB_POSITION) {
       return true;
     }
-    if (!climbGoingUp && climb.getClimbPosition() <= 0) {
+    if (!climbGoingUp && climb.getClimbPosition() <= 45) {
       return true;
     }
     return false;

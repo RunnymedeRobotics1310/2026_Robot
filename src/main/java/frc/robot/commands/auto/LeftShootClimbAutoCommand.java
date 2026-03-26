@@ -42,7 +42,7 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
     addCommands(
         (new AutoClimbCommand(climb, hopper, true).deadlineFor(new NullDriveCommand(swerve)))
             .andThen(
-                new DriveToTowerCommand(swerve, vision, true)
+                new DriveToTowerCommand(swerve, vision, false)
                     .andThen(new AutoClimbCommand(climb, hopper, false))));
   }
 }
