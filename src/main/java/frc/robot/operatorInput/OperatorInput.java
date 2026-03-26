@@ -2,9 +2,7 @@ package frc.robot.operatorInput;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.OperatorConstants;
@@ -62,7 +60,18 @@ public class OperatorInput extends SubsystemBase {
   public void configureButtonBindings(
       SwerveSubsystem swerve, HopperSubsystem hopper, LimelightVisionSubsystem vision) {
 
-    new Trigger(this::isZeroGyro).onTrue(new SetAllianceGyroCommand(swerve, 0));
+    new Trigger(this::isZeroGyro)
+        .onTrue(
+            new SequentialCommandGroup(
+                new SetAllianceGyroCommand(swerve, 0),
+                new WaitCommand(0.1),
+                new InstantCommand(
+                    () -> {
+                      if (vision.isVisionPoseValid()) {
+                        swerve.resetOdometry(vision.getVisionPose());
+                      }
+                    })));
+
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, hopper, climb));
 
     /* DRIVER CONTROLS */

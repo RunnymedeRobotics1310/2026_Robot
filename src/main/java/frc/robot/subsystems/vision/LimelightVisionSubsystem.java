@@ -170,6 +170,24 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   }
 
   /**
+   * Get the latest vision pose with validity information.
+   *
+   * @return the vision pose from the primary limelight (nikola)
+   */
+  public Pose2d getVisionPose() {
+    return primaryLimelightPoseCache.getPose();
+  }
+
+  /**
+   * Check if the current vision pose is valid.
+   *
+   * @return true if the vision pose is valid and can be used for odometry correction
+   */
+  public boolean isVisionPoseValid() {
+    return primaryLimelightPoseCache.isPoseValid();
+  }
+
+  /**
    * Checks if a specific tag is visible
    *
    * @param tagId The ID of the tag to check
