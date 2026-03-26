@@ -49,6 +49,7 @@ public class ClimbSubsystem extends SubsystemBase {
     Telemetry.climb.climbSpeed = climbMotorSpeed;
     Telemetry.climb.climbPosition = getClimbPosition();
     Telemetry.climb.climbDown = isClimbDown();
+    Telemetry.climb.isClimbing = isClimbing();
   }
 
   public void setClimbSpeed(double speed) {
@@ -57,6 +58,10 @@ public class ClimbSubsystem extends SubsystemBase {
 
   public void zeroEncoder() {
     climbMotor.getEncoder().setPosition(0);
+  }
+
+  public boolean isClimbing() {
+    return Math.abs(Telemetry.drive.robotRoll) > 10 /* && !isClimbDown()*/;
   }
 
   public double getClimbPosition() {

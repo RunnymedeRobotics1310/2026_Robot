@@ -17,7 +17,7 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 public class DriveToTowerCommand extends LoggingCommand {
 
   private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = 23; // robot left
+  private static final int LEFT_TOWER_TX_OFFSET = 24; // robot left
   private static final int RIGHT_TOWER_TX_OFFSET = -13; // robot right
 
   private final SwerveSubsystem swerve;
@@ -109,7 +109,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     log("TY: " + tY);
-    return tY < -11.6; // tY when aligned is 6.7ish
+    return tY < -11.4; // tY when aligned is 6.7ish
     //      return false;
     // will eventually end based on a sensor in the climb
   }

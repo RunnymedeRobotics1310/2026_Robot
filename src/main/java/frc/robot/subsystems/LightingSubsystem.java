@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
+import frc.robot.telemetry.Telemetry;
 import frc.robot.telemetry.Telemetry.*;
 
 public class LightingSubsystem extends SubsystemBase {
@@ -80,8 +81,7 @@ public class LightingSubsystem extends SubsystemBase {
       // if in range
       // else DEFAULT PATTERN (based on alliance?)
 
-      if (
-      /* Telemetry.climb.level == 3 */ false) {
+      if (Telemetry.climb.isClimbing) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
 
       } else if (

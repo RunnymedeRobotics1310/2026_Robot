@@ -168,7 +168,8 @@ public final class Constants {
 
     public static final double NOMINAL_VOLTAGE = 12;
 
-    public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
+    public static final GyroConfig GYRO_CONFIG =
+        GyroConfig.pigeon2(8, false); // getting pitch for climb lights
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG =
         new SwerveTranslationConfig(
@@ -286,7 +287,7 @@ public final class Constants {
             TRANSLATION_CONFIG.maxSpeedMPS(),
             ROTATION_CONFIG.maxRotVelocityRadPS(),
             0.55,
-            0.85,
+            0.2,
             0.65,
             FRONT_LEFT,
             FRONT_RIGHT,
@@ -327,7 +328,7 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 9;
     public static final int DOOR_OPEN_LIMIT_DIO_PORT = 0;
 
-    public static final double INTAKE_SPEED = -0;
+    public static final double INTAKE_SPEED = -1;
     public static final double DOOR_SPEED = 0.4;
     public static final double INTAKE_DOOR_ANGLE = 1000.0;
     public static final double DOOR_KP = 0.001;

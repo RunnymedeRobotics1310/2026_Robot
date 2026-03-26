@@ -42,6 +42,9 @@ public class DriveTelemetry {
 
   public double distanceToHub = Double.MIN_VALUE;
 
+  public double robotRoll = Double.MIN_VALUE;
+  public double robotPitch = Double.MIN_VALUE;
+
   void post() {
 
     if (enabled) {
