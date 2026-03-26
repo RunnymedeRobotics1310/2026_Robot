@@ -321,20 +321,22 @@ public final class Constants {
     public static final int DOOR_CAN_ID = 41;
     public static final int TOP_ROLLER_CAN_ID = 42;
     public static final int BOTTOM_ROLLER_CAN_ID = 43;
-    public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 0;
+    public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 9;
+    public static final int DOOR_OPEN_LIMIT_DIO_PORT = 0;
 
-    public static final double INTAKE_SPEED = -1;
-    public static final double INTAKE_DOOR_ANGLE = 30.0;
-    public static final double DOOR_KP = 0.01;
+    public static final double INTAKE_SPEED = -0;
+    public static final double DOOR_SPEED = 0.4;
+    public static final double INTAKE_DOOR_ANGLE = 1000.0;
+    public static final double DOOR_KP = 0.001;
     public static final double DOOR_KI = 0;
     public static final double DOOR_KD = 0;
-    public static final double DOOR_ENCODERS_TO_DEGREES = 360 / 90;
+    public static final double DOOR_ENCODERS_TO_DEGREES = 360.0 / (45.0 * (42.0 / 18.0));
   }
 
   public static final class ClimbConstants {
 
     public static final int CLIMB_MOTOR_CAN_ID = 51;
-    public static final int CLIMB_LOWER_LIMIT_DIO_PORT = 9;
+    public static final int CLIMB_LOWER_LIMIT_DIO_PORT = 1;
 
     public static final double MAX_CLIMB_POSITION = 170;
     public static final double CLIMB_SLOW_ZONE = 5;

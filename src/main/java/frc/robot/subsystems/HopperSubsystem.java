@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.*;
 
+import ca.team1310.swerve.utils.SwerveUtils;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -31,6 +32,7 @@ public class HopperSubsystem extends SubsystemBase {
   private final SparkMax doorMotor = new SparkMax(DOOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
 
   private final DigitalInput doorClosedLimit = new DigitalInput(DOOR_CLOSED_LIMIT_DIO_PORT);
+  private final DigitalInput doorOpenLimit = new DigitalInput(DOOR_OPEN_LIMIT_DIO_PORT);
 
   private double targetShooterVelocity;
   private double rIError = 0;
@@ -125,11 +127,17 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   public void setDoorSpeed(double doorSpeed) {
+    if (getDoorClosed() && doorSpeed < 0) doorSpeed = 0;
+    if (getDoorDown() && doorSpeed > 0) doorSpeed = 0;
     doorMotor.set(doorSpeed);
   }
 
   public boolean getDoorClosed() {
     return !doorClosedLimit.get();
+  }
+
+  public boolean getDoorDown() {
+    return !doorOpenLimit.get();
   }
 
   public double calculateShootingAngle(double distanceMeters) {
@@ -140,37 +148,17 @@ public class HopperSubsystem extends SubsystemBase {
 
   public double calculateShootingSpeed(double distanceMeters) {
     double shooterSpeed = 0;
-    if (distanceMeters < MAX_SHOOTING_DISTANCE) {
+    double hoodValue = calculateHoodValule(distanceMeters);
 
-      if (distanceMeters >= HOOD_SHOOT_DISTANCE) {
-        double aVal = A_VALUE_WITH_HOOD * Math.pow(distanceMeters, 3);
-        double bVal = B_VALUE_WITH_HOOD * Math.pow(distanceMeters, 2);
-        double cVal = C_VALUE_WITH_HOOD * distanceMeters;
-        double dVal = D_VALUE_WITH_HOOD;
-        shooterSpeed = (aVal + bVal + cVal + dVal);
-      } else {
-        double aVal = A_VALUE_NO_HOOD * Math.pow(distanceMeters, 2);
-        double bVal = B_VALUE_NO_HOOD * distanceMeters;
-        double cVal = C_VALUE_NO_HOOD;
-        shooterSpeed = (aVal + bVal + cVal);
-      }
-    }
-    if (shooterSpeed > MAX_SHOOTER_RPM) shooterSpeed = MAX_SHOOTER_RPM;
-    else if (shooterSpeed < 0.0) shooterSpeed = 0.0;
+    shooterSpeed = 610 * distanceMeters + 3150 - hoodValue * 1000;
+
     return shooterSpeed;
   }
 
   public double calculateHoodValule(double distance) {
     double hoodValue = 0;
-    if (distance >= HOOD_SHOOT_DISTANCE) {
-      double aVal = HOOD_A_VALUE * Math.pow(distance, 3);
-      double bVal = HOOD_B_VALUE * Math.pow(distance, 2);
-      double cVal = HOOD_C_VALUE * distance;
-      double dVal = HOOD_D_VALUE;
-      hoodValue = (aVal + bVal + cVal + dVal);
-    }
-    if (hoodValue > 1.0) hoodValue = 1.0;
-    else if (hoodValue < 0.0) hoodValue = 0.0;
+
+    hoodValue = SwerveUtils.clamp(0, .3 * distance - .5, 1);
 
     return hoodValue;
   }
@@ -213,7 +201,7 @@ public class HopperSubsystem extends SubsystemBase {
     setDoorSpeed(error * DOOR_KP);
 
     if (doorSetpoint == 0 && !getDoorClosed()) {
-      setDoorSpeed(-0.1);
+      setDoorSpeed(-DOOR_SPEED);
     }
   }
 
@@ -256,6 +244,8 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   public boolean isShooterAtSpeed() {
+
+    if (targetShooterVelocity == 0) return false;
 
     boolean leftAtSpeed =
         Math.abs(targetShooterVelocity - getLeftShooterVelocity()) < ACCPETED_SHOOTER_ERROR;

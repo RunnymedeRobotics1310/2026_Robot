@@ -1,7 +1,6 @@
 package frc.robot.commands.hopper;
 
-import static frc.robot.Constants.IntakeConstants.INTAKE_DOOR_ANGLE;
-import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
@@ -58,6 +57,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.isIntakeDoingStuff()) {
       hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
       hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+      hopperSubsystem.setDoorSpeed(DOOR_SPEED);
       firstIntake = true;
       intakeTimer.reset();
     } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
@@ -84,7 +84,7 @@ public class DefaultHopperCommand extends LoggingCommand {
       hopperSubsystem.setAgitatorSpeed(0);
     }
     //    if (oi.isIntakeDoingStuff()) hopperSubsystem.setAgitatorSpeed(0);
-    if (oi.shootFromAnywhere()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    //    if (oi.shootFromAnywhere()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 
     /* ----- OPERATOR OVERRIDES ----- */
     if (oi.isRunAgitator()) hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
@@ -126,8 +126,8 @@ public class DefaultHopperCommand extends LoggingCommand {
 
     // agitator
     //    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
-    hopperSubsystem.reverseAgitator(1);
-    //    hopperSubsystem.pulseAgitator(1);
+    //    hopperSubsystem.reverseAgitator(1);
+    hopperSubsystem.pulseAgitator(1);
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
