@@ -22,13 +22,14 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
     addCommands(
         new LazyShooterCommand(hopper, 4000, 0, 5).deadlineFor(new NullDriveCommand(swerve)));
 
-    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0).withTimeout(1.6));
-    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180).withTimeout(1));
+    addCommands(
+        new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0)
+            .withTimeout(1.6)
+            .andThen(new DriveRobotOrientedAtHeadingCommand(swerve, 0, 0, 180).withTimeout(1))
+            .alongWith(new AutoClimbCommand(climb, hopper, true)));
 
     addCommands(
-        (new AutoClimbCommand(climb, hopper, true).deadlineFor(new NullDriveCommand(swerve)))
-            .andThen(
-                new DriveToTowerCommand(swerve, vision, true)
-                    .andThen(new AutoClimbCommand(climb, hopper, false))));
+        new DriveToTowerCommand(swerve, vision, true)
+            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }

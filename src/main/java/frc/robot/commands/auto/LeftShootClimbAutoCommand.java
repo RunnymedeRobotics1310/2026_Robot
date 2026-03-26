@@ -35,14 +35,14 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
             .alongWith(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
             .withTimeout(7));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, 0, -1, 180).withTimeout(1.8));
-
-    addCommands(new DriveFieldOrientedCommand(swerve, -1, 0, 180).withTimeout(0.4));
+    addCommands(
+        new DriveFieldOrientedCommand(swerve, 0, -1, 180)
+            .withTimeout(1.8)
+            .andThen(new DriveFieldOrientedCommand(swerve, -1, 0, 180).withTimeout(0.4))
+            .alongWith(new AutoClimbCommand(climb, hopper, true)));
 
     addCommands(
-        (new AutoClimbCommand(climb, hopper, true).deadlineFor(new NullDriveCommand(swerve)))
-            .andThen(
-                new DriveToTowerCommand(swerve, vision, false)
-                    .andThen(new AutoClimbCommand(climb, hopper, false))));
+        new DriveToTowerCommand(swerve, vision, false)
+            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }
