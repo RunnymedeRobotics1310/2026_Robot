@@ -186,6 +186,23 @@ public class SwerveSubsystem extends SubsystemBase {
     return drive.getPose(); // todo: fixme:
   }
 
+  /**
+   * Update the vision pose for odometry debugging telemetry. This should be called by the vision
+   * subsystem when a new vision measurement is available.
+   *
+   * <p>Note: Vision pose fusion into odometry is handled by RunnymedeSwerve's
+   * LimelightAwareSwerveDrive.
+   *
+   * @param visionPose the vision-measured pose
+   * @param timestamp the timestamp of the vision measurement
+   * @param isValid whether the vision pose is valid
+   */
+  public void updateVisionPose(Pose2d visionPose, double timestamp, boolean isValid) {
+    if (Constants.TelemetryConfig.odometryDebugEnabled) {
+      Telemetry.odometryDebug.updateVisionPose(visionPose, timestamp, isValid);
+    }
+  }
+
   public double getYaw() {
     return drive.getYaw();
   }
