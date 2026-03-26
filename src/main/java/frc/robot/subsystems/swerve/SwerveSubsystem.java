@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
@@ -50,6 +51,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     distanceToHub = calculateDistanceToHub();
     Telemetry.drive.distanceToHub = distanceToHub;
+    Telemetry.drive.robotRoll = drive.getRoll();
+    Telemetry.drive.robotPitch = drive.getPitch();
+
+    SmartDashboard.putNumber("1310/Roll", drive.getRoll());
+    SmartDashboard.putNumber("1310/Pitch", drive.getPitch());
   }
 
   /*

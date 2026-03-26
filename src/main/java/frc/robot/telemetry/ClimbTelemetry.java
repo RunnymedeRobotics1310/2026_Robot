@@ -22,6 +22,8 @@ public class ClimbTelemetry {
   /** Whether the climb is at the lower limit */
   public boolean climbDown = false;
 
+  public boolean isClimbing = false;
+
   void post() {
 
     if (enabled) {

@@ -165,7 +165,8 @@ public final class Constants {
 
     public static final double NOMINAL_VOLTAGE = 12;
 
-    public static final GyroConfig GYRO_CONFIG = GyroConfig.pigeon2(8, true);
+    public static final GyroConfig GYRO_CONFIG =
+        GyroConfig.pigeon2(8, false); // getting pitch for climb lights
 
     public static final SwerveTranslationConfig TRANSLATION_CONFIG =
         new SwerveTranslationConfig(
