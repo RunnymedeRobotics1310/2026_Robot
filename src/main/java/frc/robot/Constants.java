@@ -324,7 +324,7 @@ public final class Constants {
     public static final int DOOR_CLOSED_LIMIT_DIO_PORT = 9;
     public static final int DOOR_OPEN_LIMIT_DIO_PORT = 0;
 
-    public static final double INTAKE_SPEED = -0;
+    public static final double INTAKE_SPEED = -1;
     public static final double DOOR_SPEED = 0.4;
     public static final double INTAKE_DOOR_ANGLE = 1000.0;
     public static final double DOOR_KP = 0.001;

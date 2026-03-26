@@ -88,7 +88,7 @@ public class OperatorInput extends SubsystemBase {
     /* OPERATOR CONTROLS */
 
     // Shoot from set range - ends when button is released, or after 100 seconds
-    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3400, 0, 100));
+    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3900, 0, 100));
 
     new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true));
     new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
