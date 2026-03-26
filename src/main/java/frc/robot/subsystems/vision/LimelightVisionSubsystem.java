@@ -53,9 +53,9 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
     // Update swerve subsystem with vision pose for Field2d and odometry debugging
     swerve.updateVisionPose(
-            primaryLimelightPoseCache.getPose(),
-            primaryLimelightPoseCache.getTimestampSeconds(),
-            primaryLimelightPoseCache.isPoseValid());
+        primaryLimelightPoseCache.getPose(),
+        primaryLimelightPoseCache.getTimestampSeconds(),
+        primaryLimelightPoseCache.isPoseValid());
 
     // Update telemetry
     updateTelemetry();
