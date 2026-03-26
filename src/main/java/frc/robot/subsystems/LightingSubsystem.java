@@ -43,7 +43,7 @@ public class LightingSubsystem extends SubsystemBase {
   public static final LEDPattern rainbowLedPattern = LEDPattern.rainbow(255, 128);
   public static final Distance kLedSpacing = Meters.of(1 / 120.0);
   public final LEDPattern scrollingRainbowLedPattern =
-      rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing);
+      rainbowLedPattern.scrollAtAbsoluteSpeed(MetersPerSecond.of(0.1310), kLedSpacing);
   public static final LEDPattern yellowLEDPatern = LEDPattern.solid(kYellow);
   public static final LEDPattern greenLedPattern = LEDPattern.solid(kGreen);
   public static final LEDPattern purpleLedPattern = LEDPattern.solid(kDarkViolet);
@@ -83,23 +83,6 @@ public class LightingSubsystem extends SubsystemBase {
 
       if (Telemetry.climb.isClimbing) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
-
-      } else if (
-      /* Telemetry.climb.level == 2 */ false) {
-        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kViolet)
-            .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
-            .applyTo(ledBuffer);
-
-      } else if (
-      /* Telemetry.climb.level == 1 */ false) {
-        LEDPattern.gradient(LEDPattern.GradientType.kContinuous, kDarkViolet)
-            .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), kLedSpacing)
-            .applyTo(ledBuffer);
-
-      } else if (
-      /* Telemetry.climb.alignedToTower */ false) {
-        greenLedPattern.applyTo(ledBuffer);
-
       } else if (!climb.climbDown) {
         blink(LEDPattern.solid(kViolet), 0.25);
 
@@ -120,8 +103,7 @@ public class LightingSubsystem extends SubsystemBase {
 
       if (swerve.hasVisPose) visPoseCount = 25;
 
-      if (
-      /* Telemetry.climb.level == 3 */ false) {
+      if (Telemetry.climb.isClimbing) {
         scrollingRainbowLedPattern.applyTo(ledBuffer);
 
       } else if (healthyRobot == AlertLevel.ERROR) {
