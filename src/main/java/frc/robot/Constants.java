@@ -45,6 +45,9 @@ public final class Constants {
     public static boolean coral = false;
     public static boolean climb = false;
     public static boolean pneumatics = false;
+
+    /** Enable odometry debugging telemetry for comparing wheel odometry vs vision */
+    public static boolean odometryDebugEnabled = true;
   }
 
   public static class OperatorConstants {

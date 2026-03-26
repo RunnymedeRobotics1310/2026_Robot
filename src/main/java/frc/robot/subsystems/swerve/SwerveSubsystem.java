@@ -50,6 +50,13 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     distanceToHub = calculateDistanceToHub();
     Telemetry.drive.distanceToHub = distanceToHub;
+
+    if (Constants.TelemetryConfig.odometryDebugEnabled) {
+      // Update odometry debug telemetry with current poses
+      // Note: Field2d visualization is already provided by RunnymedeSwerve's FieldAwareSwerveDrive
+      Telemetry.odometryDebug.updateOdometryPose(getPose());
+      Telemetry.odometryDebug.updateWheelOnlyPose(drive.getWheelOnlyPose());
+    }
   }
 
   /*
