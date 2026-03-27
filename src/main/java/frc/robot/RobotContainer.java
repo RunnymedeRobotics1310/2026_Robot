@@ -77,7 +77,7 @@ public class RobotContainer {
 
     hopperSubsystem.setDefaultCommand(
         new DefaultHopperCommand(
-            hopperSubsystem, swerveSubsystem, operatorInput, shooterTuneNTBridge));
+            hopperSubsystem, swerveSubsystem, climbSubsystem, operatorInput, shooterTuneNTBridge));
 
     climbSubsystem.setDefaultCommand(new ClimbCommand(climbSubsystem, operatorInput));
 

@@ -9,6 +9,7 @@ import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
@@ -16,6 +17,7 @@ public class DefaultHopperCommand extends LoggingCommand {
 
   private final HopperSubsystem hopperSubsystem;
   private final SwerveSubsystem swerveSubsystem;
+  private final ClimbSubsystem climb;
   private final OperatorInput oi;
   private final ShooterTuneNTBridge bridge;
 
@@ -31,11 +33,13 @@ public class DefaultHopperCommand extends LoggingCommand {
   public DefaultHopperCommand(
       HopperSubsystem hopper,
       SwerveSubsystem swerve,
+      ClimbSubsystem climb,
       OperatorInput oi,
       ShooterTuneNTBridge bridge) {
 
     this.hopperSubsystem = hopper;
     this.swerveSubsystem = swerve;
+    this.climb = climb;
     this.oi = oi;
     this.bridge = bridge;
     addRequirements(hopperSubsystem);
@@ -54,7 +58,7 @@ public class DefaultHopperCommand extends LoggingCommand {
   public void execute() {
 
     /* ----- INTAKE ----- */
-    if (oi.isIntakeDoingStuff()) {
+    if (oi.isIntakeDoingStuff() && climb.isClimbDown()) {
       hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
       hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       hopperSubsystem.setDoorSpeed(DOOR_SPEED);
@@ -98,12 +102,10 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.isIntakeForwards()) hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
     if (oi.isIntakeReverse()) {
       hopperSubsystem.setRollerSpeeds(-INTAKE_SPEED, -INTAKE_SPEED);
-      hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
     }
-    if (oi.isOpenDoor()) hopperSubsystem.setDoorSetpoint(40);
+    if (oi.isOpenDoor()) hopperSubsystem.setDoorSpeed(DOOR_SPEED);
     if (oi.isCloseDoor() && !hopperSubsystem.getDoorClosed()) {
-      hopperSubsystem.setDoorSetpoint(-1);
-      hopperSubsystem.setDoorSpeed(-0.2);
+      hopperSubsystem.setDoorSpeed(-0.5);
     }
   }
 

@@ -19,6 +19,7 @@ public class ClimbSubsystem extends SubsystemBase {
   private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_DIO_PORT);
 
   private double climbMotorSpeed = 0;
+  public boolean isAutoClimbed = false;
 
   public ClimbSubsystem() {}
 
@@ -61,7 +62,7 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public boolean isClimbing() {
-    return Math.abs(Telemetry.drive.robotRoll) > 10 /* && !isClimbDown()*/;
+    return Math.abs(Telemetry.drive.robotRoll) > 6.7 /* && !isClimbDown()*/;
   }
 
   public double getClimbPosition() {

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Constants;
 import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ClimbSubsystem;
 
@@ -30,10 +32,15 @@ public class ClimbCommand extends LoggingCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (input.isShift()) {
-      climb.setClimbSpeed(input.getOperatorController().getLeftY());
-    } else climb.setClimbSpeed(0);
-    //    log("CLIMB: " + climb.getPos());
+
+    if (climb.isAutoClimbed && DriverStation.isTeleopEnabled()) {
+      climb.setClimbSpeed(1);
+      if (climb.getClimbPosition() >= Constants.ClimbConstants.MAX_CLIMB_POSITION) {
+        climb.isAutoClimbed = false;
+        climb.setClimbSpeed(0);
+      }
+    } else if (input.isIntakeDoingStuff() && !climb.isClimbDown()) climb.setClimbSpeed(-1);
+    else climb.setClimbSpeed(input.getOperatorController().getLeftY());
   }
 
   // Returns true when the command should end.

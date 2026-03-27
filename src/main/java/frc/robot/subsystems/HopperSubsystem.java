@@ -130,6 +130,7 @@ public class HopperSubsystem extends SubsystemBase {
     if (getDoorClosed() && doorSpeed < 0) doorSpeed = 0;
     if (getDoorDown() && doorSpeed > 0) doorSpeed = 0;
     doorMotor.set(doorSpeed);
+    //    doorMotor.set(0);
   }
 
   public boolean getDoorClosed() {

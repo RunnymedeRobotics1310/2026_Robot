@@ -2,6 +2,7 @@ package frc.robot.commands.auto;
 
 import static frc.robot.Constants.ClimbConstants.*;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.commands.auto.config.ConfigParam;
@@ -39,6 +40,7 @@ public class AutoClimbCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     hopper.setDoorSetpoint(0);
+    if (!climbGoingUp && DriverStation.isAutonomousEnabled()) climb.isAutoClimbed = true;
   }
 
   @Override
@@ -67,7 +69,7 @@ public class AutoClimbCommand extends LoggingCommand {
     if (climbGoingUp && climb.getClimbPosition() >= MAX_CLIMB_POSITION) {
       return true;
     }
-    if (!climbGoingUp && climb.getClimbPosition() <= 45) {
+    if (!climbGoingUp && climb.getClimbPosition() <= 40) {
       return true;
     }
     return false;
