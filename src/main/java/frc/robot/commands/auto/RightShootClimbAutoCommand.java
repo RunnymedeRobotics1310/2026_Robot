@@ -28,11 +28,11 @@ public class RightShootClimbAutoCommand extends SequentialCommandGroup {
             .alongWith(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
             .withTimeout(7));
 
+    addCommands(new DriveFieldOrientedCommand(swerve, 0, 1, 180).withTimeout(1.5));
+    addCommands(new DriveFieldOrientedCommand(swerve, -1, 0, 180).withTimeout(0.4));
+
     addCommands(
-        new DriveFieldOrientedCommand(swerve, 0, 1, 180)
-            .withTimeout(1.5)
-            .andThen(new DriveFieldOrientedCommand(swerve, -1, 0, 180).withTimeout(0.4))
-            .alongWith(new AutoClimbCommand(climb, hopper, true)));
+        new AutoClimbCommand(climb, hopper, true).deadlineFor(new NullDriveCommand(swerve)));
 
     addCommands(
         new DriveToTowerCommand(swerve, vision, true)

@@ -27,6 +27,8 @@ public class DriveToTowerCommand extends LoggingCommand {
   private int noDataCount = 0;
   private final int tXOffset;
   private int theta = 0;
+  private int tyCount = 0;
+  private double prevTy = 0;
 
   public DriveToTowerCommand(
       SwerveSubsystem swerve,
@@ -49,7 +51,8 @@ public class DriveToTowerCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     noDataCount = 0;
-
+    tyCount = 0;
+    prevTy = 0;
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
       tagId = 15;
     } else {
@@ -109,7 +112,10 @@ public class DriveToTowerCommand extends LoggingCommand {
     // if ur in the spot, stop
     final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     log("TY: " + tY);
-    return tY < -11.4; // tY when aligned is 6.7ish
+
+    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() < 4) return true;
+
+    return tY < -11.4; // tY when aligned is 11.5ish
     //      return false;
     // will eventually end based on a sensor in the climb
   }
@@ -118,6 +124,8 @@ public class DriveToTowerCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     noDataCount = 0;
+    prevTy = 0;
+    tyCount = 0;
     swerve.stop();
   }
 }

@@ -59,21 +59,23 @@ public class DefaultHopperCommand extends LoggingCommand {
 
     /* ----- INTAKE ----- */
     if (oi.isIntakeDoingStuff() && climb.isClimbDown()) {
-      hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
-      hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
+      //      hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+      //      hopperSubsystem.setDoorSetpoint(INTAKE_DOOR_ANGLE);
       hopperSubsystem.setDoorSpeed(DOOR_SPEED);
       firstIntake = true;
-      intakeTimer.reset();
+
+      if (intakeTimer.get() < 0.25 && firstIntake) {
+        hopperSubsystem.setRollerSpeeds(0, 0);
+      } else {
+        hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+      }
     } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
       hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
       hopperSubsystem.setDoorSetpoint(0);
     } else {
       hopperSubsystem.setDoorSetpoint(0);
-      if (intakeTimer.get() < 0.5 && firstIntake) {
-        hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
-      } else {
-        hopperSubsystem.setRollerSpeeds(0, 0);
-      }
+      hopperSubsystem.setRollerSpeeds(0, 0);
+      intakeTimer.reset();
     }
 
     /* ----- SHOOTER ----- */

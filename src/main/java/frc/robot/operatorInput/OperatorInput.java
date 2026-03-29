@@ -62,15 +62,16 @@ public class OperatorInput extends SubsystemBase {
 
     new Trigger(this::isZeroGyro)
         .onTrue(
-            new SequentialCommandGroup(
-                new SetAllianceGyroCommand(swerve, 0),
-                new WaitCommand(0.1),
-                new InstantCommand(
-                    () -> {
-                      if (vision.isVisionPoseValid()) {
-                        swerve.resetOdometry(vision.getVisionPose());
-                      }
-                    })));
+            //            new SequentialCommandGroup(
+            //                new SetAllianceGyroCommand(swerve, 0),
+            //                new WaitCommand(0.1),
+            //                new InstantCommand(
+            //                    () -> {
+            //                      if (vision.isVisionPoseValid()) {
+            //                        swerve.resetOdometry(vision.getVisionPose());
+            //                      }
+            //                    }))
+            new SetAllianceGyroCommand(swerve, 0));
 
     new Trigger(this::isCancel).whileTrue(new CancelCommand(this, swerve, hopper, climb));
 

@@ -54,5 +54,6 @@ public class ClimbCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     climb.stop();
+    if (interrupted && DriverStation.isTeleopEnabled()) climb.isAutoClimbed = false;
   }
 }

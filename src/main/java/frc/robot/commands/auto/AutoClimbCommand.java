@@ -41,6 +41,7 @@ public class AutoClimbCommand extends LoggingCommand {
     logCommandStart();
     hopper.setDoorSetpoint(0);
     if (!climbGoingUp && DriverStation.isAutonomousEnabled()) climb.isAutoClimbed = true;
+    log("auto climbing: up=" + climbGoingUp);
   }
 
   @Override
@@ -48,11 +49,14 @@ public class AutoClimbCommand extends LoggingCommand {
     hopper.setDoorSetpoint(0);
     if (climbGoingUp) {
       climb.setClimbSpeed(1);
+      log("climbing up! " + climb.getClimbPosition());
       if (climb.getClimbPosition() > MAX_CLIMB_POSITION - CLIMB_SLOW_ZONE) {
         climb.setClimbSpeed(CLIMB_SLOW_ZONE_SPEED);
+        log("slow zone! " + climb.getClimbPosition());
       }
     } else {
       climb.setClimbSpeed(-1);
+      log("climbing down! " + climb.getClimbPosition());
     }
   }
 
@@ -60,11 +64,13 @@ public class AutoClimbCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     climb.stop();
+    log("*********************************************************");
+    log("Auto climb ended... position: " + climb.getClimbPosition());
+    log("*********************************************************");
   }
 
   @Override
   public boolean isFinished() {
-    //    log("CLIMB: " + climb.getPos());
 
     if (climbGoingUp && climb.getClimbPosition() >= MAX_CLIMB_POSITION) {
       return true;
