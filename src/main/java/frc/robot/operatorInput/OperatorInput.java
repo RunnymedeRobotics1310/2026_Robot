@@ -196,11 +196,11 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean putClimbUp() {
-    return operatorController.getPOV() == 0;
+    return operatorController.getPOV() == 0 || driverController.getPOV() == 0;
   }
 
   public boolean putClimbDown() {
-    return operatorController.getPOV() == 180;
+    return operatorController.getPOV() == 180 || driverController.getPOV() == 180;
   }
 
   public boolean isOpenDoor() {

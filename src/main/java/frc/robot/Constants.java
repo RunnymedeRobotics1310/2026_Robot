@@ -109,7 +109,7 @@ public final class Constants {
     public static final double KI = 0.00001;
     public static final double KD = 0; // keep this at zero
     public static final double KFF = 1 / MAX_SHOOTER_RPM;
-    public static final double I_ZONE = 300;
+    public static final double I_ZONE = 500;
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
     public static final double ACCPETED_SHOOTER_ERROR = 100; // could change error later

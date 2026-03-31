@@ -55,6 +55,9 @@ public class Robot extends TimedRobot {
       PortForwarder.add(port + 100, "10.13.10.12", port);
     }
 
+    //    DataLogManager.start();
+    //    DriverStation.startDataLog(DataLogManager.getLog());
+
     // This is solely here to trigger Java's dumbness on the first string + double printout delay
     System.out.println("Robot Initialized.  Here's a Random: " + Math.random());
   }

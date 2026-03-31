@@ -12,6 +12,7 @@ import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.telemetry.Telemetry;
 
 public class DefaultHopperCommand extends LoggingCommand {
 
@@ -24,6 +25,8 @@ public class DefaultHopperCommand extends LoggingCommand {
   private boolean firstShot = false;
   private boolean firstIntake = false;
   private final Timer intakeTimer = new Timer();
+  private final Timer rollerPauseTimer = new Timer();
+  private boolean pauseRollers = false;
 
   // Jeff's scary AI thingy
   private int logCounter = 0;
@@ -50,8 +53,11 @@ public class DefaultHopperCommand extends LoggingCommand {
     logCommandStart();
     firstShot = false;
     firstIntake = false;
+    pauseRollers = false;
     intakeTimer.reset();
     intakeTimer.start();
+    rollerPauseTimer.reset();
+    rollerPauseTimer.start();
   }
 
   @Override
@@ -68,6 +74,17 @@ public class DefaultHopperCommand extends LoggingCommand {
         hopperSubsystem.setRollerSpeeds(0, 0);
       } else {
         hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
+
+        if (Math.abs(hopperSubsystem.getBottomRollerSpeed()) < 0.5
+            || Math.abs(hopperSubsystem.getTopRollerSpeed()) < 0.5) {
+          if (Telemetry.intake.bottomRollerSpeed != 0 || Telemetry.intake.topRollerSpeed != 0) {
+            rollerPauseTimer.reset();
+            pauseRollers = true;
+          }
+          if (rollerPauseTimer.get() > 0.25) {
+            pauseRollers = false;
+          }
+        }
       }
     } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
       hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);

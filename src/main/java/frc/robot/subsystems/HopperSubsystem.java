@@ -38,6 +38,7 @@ public class HopperSubsystem extends SubsystemBase {
   private double rIError = 0;
   private double lIError = 0;
   private double doorSetpoint = 0;
+  private double targetRollerSpeed = 0;
 
   private final Timer agitatorTimer = new Timer();
   private boolean agitatorState = false;
@@ -254,5 +255,13 @@ public class HopperSubsystem extends SubsystemBase {
         Math.abs(targetShooterVelocity - getRightShooterVelocity()) < ACCPETED_SHOOTER_ERROR;
 
     return leftAtSpeed && rightAtSpeed;
+  }
+
+  public double getBottomRollerSpeed() {
+    return bottomRollerMotor.get();
+  }
+
+  public double getTopRollerSpeed() {
+    return topRollerMotor.get();
   }
 }
