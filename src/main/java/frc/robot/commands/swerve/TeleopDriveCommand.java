@@ -1,9 +1,7 @@
 package frc.robot.commands.swerve;
 
 import static ca.team1310.swerve.utils.SwerveUtils.normalizeDegrees;
-import static frc.robot.Constants.OperatorConstants.GENERAL_SPEED_FACTOR;
-import static frc.robot.Constants.OperatorConstants.MAX_SPEED_FACTOR;
-import static frc.robot.Constants.OperatorConstants.SLOW_SPEED_FACTOR;
+import static frc.robot.Constants.OperatorConstants.*;
 import static frc.robot.Constants.Swerve.ROTATION_CONFIG;
 import static frc.robot.Constants.Swerve.TRANSLATION_CONFIG;
 import static frc.robot.RunnymedeUtils.getRunnymedeAlliance;
@@ -93,10 +91,17 @@ public class TeleopDriveCommand extends LoggingCommand {
 
     // Compute boost factor
     final boolean isSlow = oi.isSlowMode();
+
+    final boolean isShooting = oi.shootFromAnywhere();
+
     // final boolean isSlow = false;
     final boolean isFast = oi.isFastMode();
     final double boostFactor =
-        isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
+        isSlow
+            ? SLOW_SPEED_FACTOR
+            : isShooting
+                ? SHOOTING_SPEED_FACTOR
+                : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
 
     Translation2d velocity = calculateTeleopVelocity(vX, vY, boostFactor, invert);
 
@@ -123,8 +128,12 @@ public class TeleopDriveCommand extends LoggingCommand {
       if (rotationSettleTimer.hasElapsed(0.5) && headingSetpointDeg == null) {
         headingSetpointDeg = swerve.getYaw();
       }
-
-      if (faceHub || lockOnHub) {
+      if (lockOnHub && isShooting) {
+        double flightTime = 0.216 * swerve.distanceToHub() + 0.128;
+        double lateralDisplacement = swerve.getLateralVelocityToHub() * .8;
+        double leadAngle = Math.toDegrees(Math.atan2(lateralDisplacement, swerve.distanceToHub()));
+        headingSetpointDeg = swerve.angleToShootTowards().getDegrees() + leadAngle;
+      } else if (faceHub || lockOnHub) {
         lockOnHub = true;
         headingSetpointDeg = swerve.angleToShootTowards().getDegrees();
       }
@@ -155,7 +164,7 @@ public class TeleopDriveCommand extends LoggingCommand {
             swerve.computeOmega(headingSetpointDeg, ROTATION_CONFIG.maxRotVelocityRadPS());
 
         // face hub ff (to face hub while moving quickly)
-        if (lockOnHub) {
+        if (lockOnHub && !isShooting) {
           // tangential velocity relative to hub
           double vTan =
               velocity.getNorm()

@@ -234,6 +234,24 @@ public class SwerveSubsystem extends SubsystemBase {
     return Math.hypot(velocity[0], velocity[1]);
   }
 
+  public double getVelocityTowardHub() {
+    Rotation2d angleToHub = angleToShootTowards();
+    double[] velocity = drive.getMeasuredRobotVelocity();
+    if (velocity == null || velocity.length < 2) {
+      return 0;
+    }
+    return velocity[0] * angleToHub.getCos() + velocity[1] * angleToHub.getSin();
+  }
+
+  public double getLateralVelocityToHub() {
+    Rotation2d angleToHub = angleToShootTowards();
+    double[] velocity = drive.getMeasuredRobotVelocity();
+    if (velocity == null || velocity.length < 2) {
+      return 0;
+    }
+    return velocity[0] * -angleToHub.getCos() + velocity[1] * angleToHub.getSin();
+  }
+
   /**
    * Set the gyro yaw offset of the robot, in degrees.
    *

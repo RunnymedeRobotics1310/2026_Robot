@@ -57,6 +57,7 @@ public final class Constants {
 
     public static final double GENERAL_SPEED_FACTOR = .5;
     public static final double MAX_SPEED_FACTOR = 1;
+    public static final double SHOOTING_SPEED_FACTOR = .3;
     public static final double SLOW_SPEED_FACTOR = .1;
   }
 
@@ -113,6 +114,7 @@ public final class Constants {
     public static final double KICKER_RUNSPEED = 1;
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
     public static final double ACCPETED_SHOOTER_ERROR = 100; // could change error later
+    public static final double KICKER_MOTOR_OFF_TIMER = 0.1; // 100ms before the motor stops
 
     // Unused values from previous calculations:
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****

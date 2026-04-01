@@ -58,9 +58,11 @@ public class HopperSubsystem extends SubsystemBase {
 
     rightShooterMotor.configure(
         rightShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rightShooterConfig.encoder.quadratureMeasurementPeriod(2).quadratureAverageDepth(4);
+
     leftShooterMotor.configure(
         leftShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
+    leftShooterConfig.encoder.quadratureMeasurementPeriod(2).quadratureAverageDepth(4);
     // Spark Max config
     SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
     sparkMaxConfig.voltageCompensation(12);

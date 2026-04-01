@@ -1,14 +1,7 @@
 package frc.robot.commands.hopper;
 
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import ca.team1310.swerve.utils.SwerveUtils;
 import edu.wpi.first.wpilibj.Timer;
@@ -108,7 +101,8 @@ public class ShooterCommand extends LoggingCommand {
     if (atSpeed && facingHub) {
       kickerDebounceTimer.reset();
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    } else if (kickerDebounceTimer.hasElapsed(0.1)) { // FIXME change to constant later
+    } else if (kickerDebounceTimer.hasElapsed(
+        KICKER_MOTOR_OFF_TIMER)) { // FIXME change to constant later
       hopperSubsystem.setKickerSpeed(0);
     }
   }

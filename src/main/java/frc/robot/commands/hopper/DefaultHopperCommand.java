@@ -1,8 +1,7 @@
 package frc.robot.commands.hopper;
 
 import static frc.robot.Constants.IntakeConstants.*;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.*;
 
 import ca.team1310.swerve.math.SwerveMath;
 import ca.team1310.swerve.utils.SwerveUtils;
@@ -130,14 +129,17 @@ public class DefaultHopperCommand extends LoggingCommand {
   }
 
   public void shooting() {
+    double flightTime = 1.5;
+
     // distance
     double distance = swerveSubsystem.distanceToHub();
+    double predictedDistance = distance - (swerveSubsystem.getVelocityTowardHub() * flightTime);
 
     // hood
-    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
+    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(predictedDistance));
 
     // shooter
-    double targetSpeed = hopperSubsystem.calculateShootingSpeed(distance);
+    double targetSpeed = hopperSubsystem.calculateShootingSpeed(predictedDistance);
     hopperSubsystem.setShooterVelocity(targetSpeed);
 
     // agitator
