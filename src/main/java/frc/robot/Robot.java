@@ -7,11 +7,16 @@ package frc.robot;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArraySubscriber;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.telemetry.Telemetry;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -54,9 +59,6 @@ public class Robot extends TimedRobot {
       PortForwarder.add(port, "10.13.10.11", port);
       PortForwarder.add(port + 100, "10.13.10.12", port);
     }
-
-    //    DataLogManager.start();
-    //    DriverStation.startDataLog(DataLogManager.getLog());
 
     // This is solely here to trigger Java's dumbness on the first string + double printout delay
     System.out.println("Robot Initialized.  Here's a Random: " + Math.random());
@@ -101,7 +103,14 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    DataLogManager.stop();
+    try {
+      Runtime.getRuntime().exec("umount /media/sda1");
+    } catch (IOException e) {
+      DriverStation.reportWarning("Failed to unmount USB: " + e.getMessage(), false);
+    }
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -115,6 +124,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
+    startLogging();
   }
 
   /** This function is called periodically during autonomous. */
@@ -130,6 +141,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    startLogging();
   }
 
   /** This function is called periodically during operator control. */
@@ -153,4 +166,42 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  private void startLogging() {
+
+    try {
+      Runtime.getRuntime().exec("mount /media/sda1");
+    } catch (IOException e) {
+      DriverStation.reportWarning("Failed to mount USB: " + e.getMessage(), false);
+    }
+
+    Timer.delay(0.05); // to let the drive mount, might not be a good idea to delay enable inits
+
+    File usbLog = new File("/media/sda1/logs");
+    if (usbLog.exists() && usbLog.canWrite()) {
+      DriverStation.reportWarning("USB drive detected, logging to USB drive", false);
+      DataLogManager.start("/media/sda1/logs"); // write to usb
+    } else {
+      DriverStation.reportWarning("USB not mounted! Logging to internal storage.", false);
+      DataLogManager.start(); // write to roborio
+    }
+
+    // Start logging to the flash drive, not the roboRIO
+    DataLogManager.logNetworkTables(false); // Disable the default "log everything"
+    DriverStation.startDataLog(DataLogManager.getLog());
+
+    DataLog log = DataLogManager.getLog();
+    NetworkTableInstance nt = NetworkTableInstance.getDefault();
+
+    //     Add each prefix you want captured
+    nt.startEntryDataLog(log, "/SmartDashboard/1310", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/Alerts", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/Encoders", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/Field", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/swerve", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/limelight-dwayne", "");
+    nt.startEntryDataLog(log, "/SmartDashboard/limelight-johnson", "");
+    nt.startEntryDataLog(log, "/FMSInfo", "");
+    nt.startEntryDataLog(log, "/DS", "");
+  }
 }

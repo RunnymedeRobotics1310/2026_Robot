@@ -55,6 +55,10 @@ public class HopperSubsystem extends SubsystemBase {
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
+    Telemetry.intake.topRollerTemp = topRollerMotor.getMotorTemperature();
+    Telemetry.intake.bottomRollerTemp = bottomRollerMotor.getMotorTemperature();
+    Telemetry.shooter.rightShooterTemp = rightShooterMotor.getMotorTemperature();
+    Telemetry.shooter.leftShooterTemp = leftShooterMotor.getMotorTemperature();
 
     updateShooterSpeed();
     updateDoorSpeed();
