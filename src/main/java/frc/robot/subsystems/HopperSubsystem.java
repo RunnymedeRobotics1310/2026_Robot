@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.telemetry.Telemetry;
 
 public class HopperSubsystem extends SubsystemBase {
@@ -72,6 +73,7 @@ public class HopperSubsystem extends SubsystemBase {
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
+    Telemetry.shooter.ballMPS = calculateBallMPS();
 
     updateShooterSpeed();
     updateDoorSpeed();
@@ -284,5 +286,18 @@ public class HopperSubsystem extends SubsystemBase {
 
   public double getTopRollerSpeed() {
     return topRollerMotor.get();
+  }
+
+  public double calculateBallMPS() {
+    double shooterRPM =
+        (getRightShooterVelocity() + getLeftShooterVelocity())
+            / 2; // Assuming both shooter motors are running at the same speed
+    double wheelDiameter = Constants.ShooterConstants.SHOOTER_WHEEL_DIAMETER_METRES;
+    double shootingEfficiency = Constants.ShooterConstants.SHOOTER_EFFICIENTY;
+
+    double wheelCircumference = Math.PI * wheelDiameter;
+    double surfaceSpeedMPS = (shooterRPM / 60.0) * wheelCircumference;
+    Telemetry.shooter.ballMPS = surfaceSpeedMPS * shootingEfficiency;
+    return surfaceSpeedMPS * shootingEfficiency;
   }
 }

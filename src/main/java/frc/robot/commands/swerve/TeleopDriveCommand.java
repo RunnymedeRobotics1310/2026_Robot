@@ -5,6 +5,7 @@ import static frc.robot.Constants.OperatorConstants.GENERAL_SPEED_FACTOR;
 import static frc.robot.Constants.OperatorConstants.MAX_SPEED_FACTOR;
 import static frc.robot.Constants.OperatorConstants.SLOW_SPEED_FACTOR;
 import static frc.robot.Constants.Swerve.ROTATION_CONFIG;
+import static frc.robot.Constants.Swerve.SHOOTING_SPEED_MULT;
 import static frc.robot.Constants.Swerve.TRANSLATION_CONFIG;
 import static frc.robot.RunnymedeUtils.getRunnymedeAlliance;
 import static frc.robot.operatorInput.OperatorInput.Axis.X;
@@ -93,12 +94,18 @@ public class TeleopDriveCommand extends LoggingCommand {
 
     // Compute boost factor
     final boolean isSlow = oi.isSlowMode();
+
+    final boolean isShooting = oi.shootFromAnywhere();
+
     // final boolean isSlow = false;
     final boolean isFast = oi.isFastMode();
     final double boostFactor =
-        isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
+        isSlow
+            ? SLOW_SPEED_FACTOR
+            : isShooting ? SHOOTING_SPEED_MULT : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
 
     Translation2d velocity = calculateTeleopVelocity(vX, vY, boostFactor, invert);
+    swerve.setCurrentFieldVelocity(velocity);
 
     final boolean doFlip = rotate180Val && !prevRotate180Val;
     prevRotate180Val = rotate180Val;
@@ -126,7 +133,7 @@ public class TeleopDriveCommand extends LoggingCommand {
 
       if (faceHub || lockOnHub) {
         lockOnHub = true;
-        headingSetpointDeg = swerve.angleToShootTowards().getDegrees();
+        headingSetpointDeg = swerve.angleToShootTowards(velocity).getDegrees();
       }
 
       // rotate 180º button
@@ -156,11 +163,14 @@ public class TeleopDriveCommand extends LoggingCommand {
 
         // face hub ff (to face hub while moving quickly)
         if (lockOnHub) {
+          double targetAngleRad = swerve.angleToShootTowards(velocity).getRadians();
+
           // tangential velocity relative to hub
           double vTan =
               velocity.getNorm()
                   * Math.sin(
-                      swerve.angleToShootTowards().getRadians() - velocity.getAngle().getRadians());
+                      swerve.angleToShootTowards(velocity).getRadians()
+                          - velocity.getAngle().getRadians());
           double omegaFFToHub = vTan / swerve.distanceToHub();
           omegaRadiansPerSecond += omegaFFToHub;
         }

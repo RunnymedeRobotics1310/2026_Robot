@@ -19,6 +19,7 @@ public class ShooterTelemetry {
   public double kickerSpeed;
   public double hoodAngle;
   public double agitatorSpeed;
+  public double ballMPS;
 
   void post() {
 

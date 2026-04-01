@@ -28,6 +28,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private double distanceToHub = 0;
 
+  private Translation2d currentFieldVelocity = new Translation2d();
+
   public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
     this.drive =
         new LimelightAwareSwerveDrive(
@@ -79,6 +81,17 @@ public class SwerveSubsystem extends SubsystemBase {
    * @param y m/s
    * @param omega rad/s
    */
+
+  /** Updates the current velocity of the robot (called by TeleopDriveCommand) */
+  public void setCurrentFieldVelocity(Translation2d velocity) {
+    this.currentFieldVelocity = velocity;
+  }
+
+  /** Gets the current commanded velocity of the robot */
+  public Translation2d getFieldVelocity() {
+    return currentFieldVelocity;
+  }
+
   private void driveSafely(double x, double y, double omega) {
     x = xLimiter.calculate(x);
     y = yLimiter.calculate(y);
@@ -404,6 +417,50 @@ public class SwerveSubsystem extends SubsystemBase {
     double dx, dy;
     dx = hubPose.getX() - pose.getX();
     dy = hubPose.getY() - pose.getY();
+
+    return new Rotation2d(dx, dy);
+  }
+
+  /**
+   * Upgraded aiming logic that accounts for robot movement (Shot on the Move).
+   *
+   * @param robotVelocityMPS Current field-relative velocity vector
+   */
+  public Rotation2d angleToShootTowards(Translation2d robotVelocityMPS) {
+    Pose2d pose = getPose();
+    Translation2d hubPose = Constants.FieldLocation.HUB_CENTRE.getLocation();
+
+    // Preserve your existing zone-logic
+    if (RunnymedeUtils.isFurtherThan(pose, hubPose)) {
+      if (RunnymedeUtils.isLeftOf(pose, hubPose)) {
+        hubPose = Constants.FieldLocation.ZONE_SHOTS_LEFT.getLocation();
+      } else {
+        hubPose = Constants.FieldLocation.ZONE_SHOTS_RIGHT.getLocation();
+      }
+    }
+
+    // --- PHYSICS CALCULATION ---
+    double distance = hubPose.getDistance(pose.getTranslation());
+    double ballSpeed =
+        Telemetry.shooter.ballMPS; // Get the current ball speed in m/s from telemetry
+
+    if (ballSpeed < 0.5) {
+      double dx = hubPose.getX() - pose.getX();
+      double dy = hubPose.getY() - pose.getY();
+      return new Rotation2d(dx, dy);
+    }
+
+    // Total time = (Distance / Ball Speed) + Kicker/Hood mechanical delay
+    // MECHANICAL_DELAY accounts for the time the ball spends in the kicker/hood arc.
+    double mechanicalDelay = Constants.ShooterConstants.PREDICTED_SHOOTER_DELAY_SECONDS;
+    double timeToTarget = (distance / ballSpeed) + mechanicalDelay;
+
+    // Create a virtual target by "looking back" along the path we are driving
+    // VirtualTarget = ActualHub - (RobotVelocity * Time)
+    Translation2d virtualTarget = hubPose.minus(robotVelocityMPS.times(timeToTarget));
+
+    double dx = virtualTarget.getX() - pose.getX();
+    double dy = virtualTarget.getY() - pose.getY();
 
     return new Rotation2d(dx, dy);
   }

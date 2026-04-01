@@ -8,6 +8,7 @@ import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import ca.team1310.swerve.math.SwerveMath;
 import ca.team1310.swerve.utils.SwerveUtils;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.operatorInput.OperatorInput;
@@ -163,9 +164,13 @@ public class DefaultHopperCommand extends LoggingCommand {
             < ACCEPTED_SHOOTER_THRESHOLD;
     boolean threshHoldMode = atSpeed || hopperSubsystem.getKickerVelocity() > 0 && overThreshold;
 
+    Translation2d currentVelocity = swerveSubsystem.getFieldVelocity();
+
     boolean facingHub =
         SwerveUtils.isCloseEnough(
-            swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
+            swerveSubsystem.angleToShootTowards(currentVelocity).getDegrees(),
+            swerveSubsystem.getYaw(),
+            5);
 
     boolean shouldShoot = (facingHub && (atSpeed || (overThreshold && threshHoldMode)));
     if (shouldShoot) {

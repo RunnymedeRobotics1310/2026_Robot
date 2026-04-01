@@ -114,7 +114,14 @@ public final class Constants {
     public static final double AGITATOR_RUNSPEED = -1; // FIXME: remove 0 later
     public static final double ACCPETED_SHOOTER_ERROR = 20; // could change error later
 
-    public static final double ACCEPTED_SHOOTER_THRESHOLD = 220; // could change error later
+    public static final double ACCEPTED_SHOOTER_THRESHOLD = 190; // could change error later
+
+    public static final double SHOOTER_WHEEL_DIAMETER_METRES = 0.1;
+    public static final double SHOOTER_EFFICIENTY =
+        0.5; // percentage of theoretical speed that the shooter actually needs to be at to get the
+    // desired ball speed
+    public static final double PREDICTED_SHOOTER_DELAY_SECONDS =
+        0.55; // time between kicker starting and ball leaving the shooter, in seconds
 
     // Unused values from previous calculations:
     public static final double SLOPE_VALUE_SUPER_FAR = 479.67; // CHANGE ALL SLOPES AND Y INTS *****
@@ -159,6 +166,8 @@ public final class Constants {
   }
 
   public static final class Swerve {
+
+    public static final double SHOOTING_SPEED_MULT = 0.28;
 
     /** Front to back from the middle of the wheels */
     public static final double WHEEL_BASE_METRES = inchesToMeters(22.75);
