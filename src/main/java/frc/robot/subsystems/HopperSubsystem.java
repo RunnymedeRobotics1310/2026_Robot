@@ -1,7 +1,24 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.IntakeConstants.*;
-import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.IntakeConstants.BOTTOM_ROLLER_CAN_ID;
+import static frc.robot.Constants.IntakeConstants.DOOR_CAN_ID;
+import static frc.robot.Constants.IntakeConstants.DOOR_CLOSED_LIMIT_DIO_PORT;
+import static frc.robot.Constants.IntakeConstants.DOOR_ENCODERS_TO_DEGREES;
+import static frc.robot.Constants.IntakeConstants.DOOR_KP;
+import static frc.robot.Constants.IntakeConstants.DOOR_OPEN_LIMIT_DIO_PORT;
+import static frc.robot.Constants.IntakeConstants.DOOR_SPEED;
+import static frc.robot.Constants.IntakeConstants.TOP_ROLLER_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.ACCPETED_SHOOTER_ERROR;
+import static frc.robot.Constants.ShooterConstants.AGITATOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
+import static frc.robot.Constants.ShooterConstants.HOOD_PWM_PORT;
+import static frc.robot.Constants.ShooterConstants.I_ZONE;
+import static frc.robot.Constants.ShooterConstants.KFF;
+import static frc.robot.Constants.ShooterConstants.KI;
+import static frc.robot.Constants.ShooterConstants.KICKER_MOTOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.KP;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_CAN_ID;
+import static frc.robot.Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_CAN_ID;
 
 import ca.team1310.swerve.utils.SwerveUtils;
 import com.revrobotics.spark.SparkFlex;
@@ -70,6 +87,10 @@ public class HopperSubsystem extends SubsystemBase {
 
   public double getLeftShooterVelocity() {
     return leftShooterMotor.getEncoder().getVelocity();
+  }
+
+  public double getKickerVelocity() {
+    return kickerMotor.getEncoder().getVelocity();
   }
 
   public void setShooterVelocity(double target) {

@@ -1,6 +1,8 @@
 package frc.robot.commands.hopper;
 
-import static frc.robot.Constants.IntakeConstants.*;
+import static frc.robot.Constants.IntakeConstants.DOOR_SPEED;
+import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.Constants.ShooterConstants.ACCEPTED_SHOOTER_THRESHOLD;
 import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
@@ -155,11 +157,18 @@ public class DefaultHopperCommand extends LoggingCommand {
 
     // kicker
     boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
+
+    boolean overThreshold =
+        Math.abs(targetSpeed - hopperSubsystem.getRightShooterVelocity())
+            < ACCEPTED_SHOOTER_THRESHOLD;
+    boolean threshHoldMode = atSpeed || hopperSubsystem.getKickerVelocity() > 0 && overThreshold;
+
     boolean facingHub =
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if ((atSpeed /*|| firstShot*/) && facingHub) {
+    boolean shouldShoot = (facingHub && (atSpeed || (overThreshold && threshHoldMode)));
+    if (shouldShoot) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
