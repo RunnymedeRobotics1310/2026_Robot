@@ -2,6 +2,7 @@ package frc.robot.telemetry;
 
 import static frc.robot.telemetry.Telemetry.PREFIX;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RunnymedeUtils;
 
@@ -44,6 +45,8 @@ public class DriveTelemetry {
 
   public double robotRoll = Double.MIN_VALUE;
   public double robotPitch = Double.MIN_VALUE;
+
+  public Pose2d robotPose;
 
   void post() {
 

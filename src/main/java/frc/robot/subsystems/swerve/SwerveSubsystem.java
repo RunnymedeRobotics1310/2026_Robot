@@ -64,6 +64,9 @@ public class SwerveSubsystem extends SubsystemBase {
       Telemetry.odometryDebug.updateOdometryPose(getPose());
       Telemetry.odometryDebug.updateWheelOnlyPose(drive.getWheelOnlyPose());
     }
+
+    Telemetry.drive.robotPose =
+        new Pose2d(drive.getPose().getTranslation(), Rotation2d.fromDegrees(drive.getYaw()));
   }
 
   /*
