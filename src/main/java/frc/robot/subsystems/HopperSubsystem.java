@@ -4,9 +4,13 @@ import static frc.robot.Constants.IntakeConstants.*;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import ca.team1310.swerve.utils.SwerveUtils;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
@@ -44,6 +48,35 @@ public class HopperSubsystem extends SubsystemBase {
   private boolean agitatorState = false;
 
   public HopperSubsystem() {
+    // Spark Flex config
+    SparkFlexConfig rightShooterConfig = new SparkFlexConfig();
+    rightShooterConfig.voltageCompensation(12);
+
+    SparkFlexConfig leftShooterConfig = new SparkFlexConfig();
+    leftShooterConfig.voltageCompensation(12);
+    leftShooterConfig.inverted(true);
+
+    rightShooterMotor.configure(
+        rightShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    leftShooterMotor.configure(
+        leftShooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    // Spark Max config
+    SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
+    sparkMaxConfig.voltageCompensation(12);
+
+    kickerMotor.configure(
+        sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    agitatorMotor.configure(
+        sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    doorMotor.configure(
+        sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    bottomRollerMotor.configure(
+        sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    topRollerMotor.configure(
+        sparkMaxConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
     agitatorTimer.start();
     agitatorTimer.reset();
   }

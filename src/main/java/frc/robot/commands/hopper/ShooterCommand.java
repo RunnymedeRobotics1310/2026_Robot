@@ -28,7 +28,7 @@ public class ShooterCommand extends LoggingCommand {
   private final SwerveSubsystem swerveSubsystem;
 
   private final Timer timer = new Timer();
-  private boolean firstShot = false;
+  private final Timer kickerDebounceTimer = new Timer();
 
   public ShooterCommand(HopperSubsystem hopperSubsystem, SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -43,7 +43,8 @@ public class ShooterCommand extends LoggingCommand {
     logCommandStart();
     timer.reset();
     timer.start();
-    firstShot = false;
+    kickerDebounceTimer.reset();
+    kickerDebounceTimer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -66,13 +67,29 @@ public class ShooterCommand extends LoggingCommand {
     hopperSubsystem.stop();
     timer.stop();
     timer.reset();
+    kickerDebounceTimer.stop();
+    kickerDebounceTimer.reset();
   }
 
   // public static final double ACCEPTED_THRESHOLD = 200.0;
 
   public void shooting() {
-    // shooter
     double distance = swerveSubsystem.distanceToHub();
+
+    // hood
+    double hoodAngle = 0;
+    if (distance < MAX_SHOOTING_DISTANCE) {
+      if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
+        hoodAngle = SUPER_FAR_SHOOT_HOOD_VALUE;
+      } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
+        hoodAngle = MEDIUM_SHOOT_HOOD_VALUE;
+      }
+    } else {
+      hoodAngle = CLOSE_SHOOT_HOOD_VALUE;
+    }
+    hopperSubsystem.setHood(hoodAngle);
+
+    // shooter
     double targetSpeed = hopperSubsystem.calculateShootingSpeed(distance);
     hopperSubsystem.setShooterVelocity(targetSpeed);
 
@@ -80,28 +97,18 @@ public class ShooterCommand extends LoggingCommand {
     hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
 
-    // hood
-    if (distance < MAX_SHOOTING_DISTANCE) {
-      if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
-      } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
-      }
-    } else {
-      hopperSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
-    }
-
     // kicker
     boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
+
     // boolean overThreshold = Math.abs(targetSpeed - currentVelocity) < ACCEPTED_THRESHOLD;
     boolean facingHub =
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if (atSpeed /*|| firstShot)*/ && facingHub) {
-      firstShot = true;
+    if (atSpeed && facingHub) {
+      kickerDebounceTimer.reset();
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    } else {
+    } else if (kickerDebounceTimer.hasElapsed(0.1)) { // FIXME change to constant later
       hopperSubsystem.setKickerSpeed(0);
     }
   }

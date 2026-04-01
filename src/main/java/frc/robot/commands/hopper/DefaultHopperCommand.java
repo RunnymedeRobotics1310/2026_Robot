@@ -12,7 +12,6 @@ import frc.robot.operatorInput.OperatorInput;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.telemetry.Telemetry;
 
 public class DefaultHopperCommand extends LoggingCommand {
 
@@ -25,13 +24,14 @@ public class DefaultHopperCommand extends LoggingCommand {
   private boolean firstShot = false;
   private boolean firstIntake = false;
   private final Timer intakeTimer = new Timer();
-  private final Timer rollerPauseTimer = new Timer();
-  private boolean pauseRollers = false;
 
   // Jeff's scary AI thingy
   private int logCounter = 0;
   private double lastHoodAngle = -1;
   private boolean wasKickerEnabled = false;
+
+  // Test fixes
+  private final Timer kickerDebounceTimer = new Timer();
 
   public DefaultHopperCommand(
       HopperSubsystem hopper,
@@ -53,11 +53,10 @@ public class DefaultHopperCommand extends LoggingCommand {
     logCommandStart();
     firstShot = false;
     firstIntake = false;
-    pauseRollers = false;
     intakeTimer.reset();
     intakeTimer.start();
-    rollerPauseTimer.reset();
-    rollerPauseTimer.start();
+    kickerDebounceTimer.reset();
+    kickerDebounceTimer.start();
   }
 
   @Override
@@ -74,17 +73,6 @@ public class DefaultHopperCommand extends LoggingCommand {
         hopperSubsystem.setRollerSpeeds(0, 0);
       } else {
         hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
-
-        if (Math.abs(hopperSubsystem.getBottomRollerSpeed()) < 0.5
-            || Math.abs(hopperSubsystem.getTopRollerSpeed()) < 0.5) {
-          if (Telemetry.intake.bottomRollerSpeed != 0 || Telemetry.intake.topRollerSpeed != 0) {
-            rollerPauseTimer.reset();
-            pauseRollers = true;
-          }
-          if (rollerPauseTimer.get() > 0.25) {
-            pauseRollers = false;
-          }
-        }
       }
     } else if (oi.shootFromAnywhere() || oi.isCloseShoot()) {
       hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
@@ -135,13 +123,20 @@ public class DefaultHopperCommand extends LoggingCommand {
     firstShot = false;
     intakeTimer.reset();
     intakeTimer.stop();
+    kickerDebounceTimer.reset();
+    kickerDebounceTimer.stop();
     hopperSubsystem.setHood(0);
     hopperSubsystem.stop();
   }
 
   public void shooting() {
-    // shooter
+    // distance
     double distance = swerveSubsystem.distanceToHub();
+
+    // hood
+    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
+
+    // shooter
     double targetSpeed = hopperSubsystem.calculateShootingSpeed(distance);
     hopperSubsystem.setShooterVelocity(targetSpeed);
 
@@ -150,19 +145,15 @@ public class DefaultHopperCommand extends LoggingCommand {
     //    hopperSubsystem.reverseAgitator(1);
     hopperSubsystem.pulseAgitator(1);
 
-    // hood
-    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
-
     // kicker
-    boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
     boolean facingHub =
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if ((atSpeed /*|| firstShot*/) && facingHub) {
-      firstShot = true;
+    if (hopperSubsystem.isShooterAtSpeed() && facingHub) {
+      kickerDebounceTimer.reset();
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
-    } else {
+    } else if (kickerDebounceTimer.hasElapsed(0.1)) {
       hopperSubsystem.setKickerSpeed(0);
     }
   }
