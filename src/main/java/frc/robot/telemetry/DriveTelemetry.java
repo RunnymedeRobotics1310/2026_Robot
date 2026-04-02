@@ -2,7 +2,7 @@ package frc.robot.telemetry;
 
 import static frc.robot.telemetry.Telemetry.PREFIX;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RunnymedeUtils;
 
@@ -46,7 +46,7 @@ public class DriveTelemetry {
   public double robotRoll = Double.MIN_VALUE;
   public double robotPitch = Double.MIN_VALUE;
 
-  public Pose2d robotPose;
+  public Field2d robotPoseField2D = new Field2d();
 
   void post() {
 
@@ -70,6 +70,8 @@ public class DriveTelemetry {
               fieldOrientedDeltaToPoseY,
               fieldOrientedDeltaToPoseHeading);
       SmartDashboard.putString(PREFIX + "Drive/distance_to_pose", delta);
+
+      SmartDashboard.putData(PREFIX + "Drive/RobotPoseField2D", robotPoseField2D);
 
       SmartDashboard.putNumber(PREFIX + "Drive/DistanceToHub", RunnymedeUtils.round(distanceToHub));
     }

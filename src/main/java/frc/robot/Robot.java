@@ -9,7 +9,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArraySubscriber;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.telemetry.Telemetry;
@@ -81,7 +80,7 @@ public class Robot extends TimedRobot {
       Telemetry.healthyRobot = Telemetry.AlertLevel.NONE;
     }
     // FIXME: Not displaying on dashboard for some reason, investigate later
-    SmartDashboard.putData("/1310/PDH", pdh);
+    //    SmartDashboard.putData("/1310/PDH", pdh);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
@@ -177,7 +176,8 @@ public class Robot extends TimedRobot {
       DriverStation.reportWarning("Failed to mount USB: " + e.getMessage(), false);
     }
 
-    Timer.delay(0.05); // to let the drive mount, might not be a good idea to delay enable inits
+    //    Timer.delay(0.05); // to let the drive mount, might not be a good idea to delay enable
+    // inits
 
     File usbLog = new File("/media/sda1/logs");
     if (usbLog.exists() && usbLog.canWrite()) {
