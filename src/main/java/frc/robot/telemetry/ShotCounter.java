@@ -25,12 +25,14 @@ public class ShotCounter {
   private int rightShotCount = 0;
   private int autoShotCount = 0;
   private int teleopShotCount = 0;
+  private int pastHubShotCount = 0;
 
   private final NetworkTableEntry ntCountLeftShots;
   private final NetworkTableEntry ntCountRightShots;
   private final NetworkTableEntry ntCountTotalShots;
   private final NetworkTableEntry ntCountAutoShots;
   private final NetworkTableEntry ntCountTeleopShots;
+  private final NetworkTableEntry ntCountPastHubShots;
 
   public ShotCounter() {
     NetworkTable table =
@@ -40,6 +42,7 @@ public class ShotCounter {
     ntCountTotalShots = table.getEntry("CountTotalShots");
     ntCountAutoShots = table.getEntry("CountAutoShots");
     ntCountTeleopShots = table.getEntry("CountTeleopShots");
+    ntCountPastHubShots = table.getEntry("CountPastHubShots");
 
     publish();
   }
@@ -51,13 +54,17 @@ public class ShotCounter {
 
     // Only update all the counts and publish if we've detected a shot taken
     if (newShots > 0) {
-      leftShotCount += leftShot;
-      rightShotCount += rightShot;
+      if (Telemetry.drive.pastHub) {
+        pastHubShotCount += newShots;
+      } else {
+        leftShotCount += leftShot;
+        rightShotCount += rightShot;
 
-      if (DriverStation.isAutonomous()) {
-        autoShotCount += newShots;
-      } else if (DriverStation.isTeleop()) {
-        teleopShotCount += newShots;
+        if (DriverStation.isAutonomous()) {
+          autoShotCount += newShots;
+        } else if (DriverStation.isTeleop()) {
+          teleopShotCount += newShots;
+        }
       }
 
       publish();
@@ -103,6 +110,7 @@ public class ShotCounter {
     ntCountTotalShots.setInteger(leftShotCount + rightShotCount);
     ntCountAutoShots.setInteger(autoShotCount);
     ntCountTeleopShots.setInteger(teleopShotCount);
+    ntCountPastHubShots.setInteger(pastHubShotCount);
   }
 
   public void reset() {
@@ -110,6 +118,7 @@ public class ShotCounter {
     rightShotCount = 0;
     autoShotCount = 0;
     teleopShotCount = 0;
+    pastHubShotCount = 0;
     leftState = State.READY;
     rightState = State.READY;
 

@@ -404,6 +404,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // if past alliance zone, point at trench
     boolean pastHub = RunnymedeUtils.isFurtherThan(robotPose, hubPose);
+    Telemetry.drive.pastHub = pastHub;
 
     if (pastHub) {
       if (RunnymedeUtils.isLeftOf(robotPose, hubPose)) {

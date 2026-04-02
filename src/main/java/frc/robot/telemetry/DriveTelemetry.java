@@ -46,6 +46,8 @@ public class DriveTelemetry {
   public double robotRoll = Double.MIN_VALUE;
   public double robotPitch = Double.MIN_VALUE;
 
+  public boolean pastHub = false;
+
   void post() {
 
     if (enabled) {
@@ -71,6 +73,7 @@ public class DriveTelemetry {
 
       SmartDashboard.putNumber(PREFIX + "Drive/DistanceToHub", round(distanceToHub));
       SmartDashboard.putNumber(PREFIX + "Drive/AngleToHub", round(angleToHub));
+      SmartDashboard.putBoolean(PREFIX + "Drive/PastHub", pastHub);
 
       SmartDashboard.putNumber("1310/Roll", round(robotRoll));
       SmartDashboard.putNumber("1310/Pitch", round(robotPitch));
