@@ -32,7 +32,6 @@ public class ShotCounter {
   private final NetworkTableEntry ntCountAutoShots;
   private final NetworkTableEntry ntCountTeleopShots;
 
-
   public ShotCounter() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable(PREFIX + "Shooter");
     ntCountLeftShots = table.getEntry("CountLeftShots");

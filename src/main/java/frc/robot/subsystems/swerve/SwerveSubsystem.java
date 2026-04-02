@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import ca.team1310.swerve.RunnymedeSwerveDrive;
+import ca.team1310.swerve.math.SwerveMath;
 import ca.team1310.swerve.utils.SwerveUtils;
 import ca.team1310.swerve.vision.LimelightAwareSwerveDrive;
 import edu.wpi.first.math.MathUtil;
@@ -9,13 +10,11 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RunnymedeUtils;
 import frc.robot.telemetry.Telemetry;
+import frc.robot.util.HubTargetVector;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -26,7 +25,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SlewRateLimiter omegaLimiter;
   private final PIDController headingPIDController;
 
-  private double distanceToHub = 0;
+  private HubTargetVector hubTarget = new HubTargetVector(0, 0);
 
   public SwerveSubsystem(SwerveDriveSubsystemConfig config) {
     this.drive =
@@ -49,14 +48,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    distanceToHub = calculateDistanceToHub();
-    Telemetry.drive.distanceToHub = distanceToHub;
+    hubTarget = calculateHubVector();
+    Telemetry.drive.distanceToHub = hubTarget.magnitude;
+    Telemetry.drive.angleToHub = hubTarget.angleDegrees;
 
     Telemetry.drive.robotRoll = drive.getRoll();
     Telemetry.drive.robotPitch = drive.getPitch();
-
-    SmartDashboard.putNumber("1310/Roll", drive.getRoll());
-    SmartDashboard.putNumber("1310/Pitch", drive.getPitch());
 
     if (Constants.TelemetryConfig.odometryDebugEnabled) {
       // Update odometry debug telemetry with current poses
@@ -144,6 +141,9 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Stop all motors as fast as possible */
   public void stop() {
     driveRobotOriented(0, 0, 0);
+    xLimiter.reset(0);
+    yLimiter.reset(0);
+    omegaLimiter.reset(0);
   }
 
   /**
@@ -380,46 +380,53 @@ public class SwerveSubsystem extends SubsystemBase {
         xSign * speed * Math.abs(angle.getCos()), ySign * speed * Math.abs(angle.getSin()));
   }
 
-  /**
-   * Finds the angle to aim to to shoot - either the Hub if we're in the zone, or the side of our
-   * zone away from the hub if we're in the ball pit
-   *
-   * @return Angle to shooting destination
-   */
-  public Rotation2d angleToShootTowards() {
-    Pose2d pose = getPose();
+  public double distanceToHub() {
+    return getHubVector().magnitude;
+  }
+
+  public double getHubAngleDeg() {
+    return getHubVector().angleDegrees;
+  }
+
+  public Rotation2d getHubAngle() {
+    return Rotation2d.fromDegrees(getHubAngleDeg());
+  }
+
+  public HubTargetVector getHubVector() {
+    return hubTarget;
+  }
+
+  /** return a vector from the robot to the shooting target */
+  private HubTargetVector calculateHubVector() {
+
+    Pose2d robotPose = getPose();
     Translation2d hubPose = Constants.FieldLocation.HUB_CENTRE.getLocation();
 
     // if past alliance zone, point at trench
-    boolean pastHub = RunnymedeUtils.isFurtherThan(pose, hubPose);
+    boolean pastHub = RunnymedeUtils.isFurtherThan(robotPose, hubPose);
 
     if (pastHub) {
-      if (RunnymedeUtils.isLeftOf(pose, hubPose)) {
+      if (RunnymedeUtils.isLeftOf(robotPose, hubPose)) {
         hubPose = Constants.FieldLocation.ZONE_SHOTS_LEFT.getLocation();
       } else {
         hubPose = Constants.FieldLocation.ZONE_SHOTS_RIGHT.getLocation();
       }
     }
 
-    double dx, dy;
-    dx = hubPose.getX() - pose.getX();
-    dy = hubPose.getY() - pose.getY();
+    double dX = hubPose.getX() - robotPose.getX();
+    double dY = hubPose.getY() - robotPose.getY();
 
-    return new Rotation2d(dx, dy);
-  }
+    HubTargetVector hubTarget = new HubTargetVector(dX, dY);
 
-  public double calculateDistanceToHub() {
-    Pose2d pose = getPose();
-    Translation2d hubPose =
-        new Translation2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84));
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      hubPose = new Translation2d(Units.inchesToMeters(469.11), Units.inchesToMeters(158.84));
-    }
+    // TODO: change based on velocity
+    // example of how to get velocity vector
+    double[] rrV = drive.getMeasuredRobotVelocity();
+    double[] frV = SwerveMath.toFieldOriented(rrV[0], rrV[1], Math.toRadians(getYaw()));
+    double vX = frV[0];
+    double vY = frV[1];
+    HubTargetVector velocity = new HubTargetVector(vX, vY);
+    //
 
-    return hubPose.getDistance(pose.getTranslation());
-  }
-
-  public double distanceToHub() {
-    return distanceToHub;
+    return hubTarget;
   }
 }

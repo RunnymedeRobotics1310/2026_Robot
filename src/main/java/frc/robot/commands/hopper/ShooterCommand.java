@@ -75,8 +75,7 @@ public class ShooterCommand extends LoggingCommand {
     // kicker
     boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
     boolean facingHub =
-        SwerveUtils.isCloseEnough(
-            swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
+        SwerveUtils.isCloseEnough(swerveSubsystem.getHubAngleDeg(), swerveSubsystem.getYaw(), 5);
 
     if ((atSpeed || firstShot) && facingHub) {
       firstShot = true;
