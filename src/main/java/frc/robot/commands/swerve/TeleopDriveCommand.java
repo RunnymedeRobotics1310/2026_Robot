@@ -126,7 +126,7 @@ public class TeleopDriveCommand extends LoggingCommand {
 
       if (faceHub || lockOnHub) {
         lockOnHub = true;
-        headingSetpointDeg = swerve.angleToShootTowards().getDegrees();
+        headingSetpointDeg = swerve.getHubAngleDeg();
       }
 
       // rotate 180º button
@@ -160,7 +160,7 @@ public class TeleopDriveCommand extends LoggingCommand {
           double vTan =
               velocity.getNorm()
                   * Math.sin(
-                      swerve.angleToShootTowards().getRadians() - velocity.getAngle().getRadians());
+                      Math.toRadians(swerve.getHubAngleDeg()) - velocity.getAngle().getRadians());
           double omegaFFToHub = vTan / swerve.distanceToHub();
           omegaRadiansPerSecond += omegaFFToHub;
         }

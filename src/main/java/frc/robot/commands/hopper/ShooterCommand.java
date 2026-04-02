@@ -1,17 +1,9 @@
 package frc.robot.commands.hopper;
 
 import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.Constants.ShooterConstants.AGITATOR_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.CLOSE_SHOOT_HOOD_VALUE;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
-import static frc.robot.Constants.ShooterConstants.MAX_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.MEDIUM_SHOOT_HOOD_VALUE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOTING_DISTANCE;
-import static frc.robot.Constants.ShooterConstants.SUPER_FAR_SHOOT_HOOD_VALUE;
 
 import ca.team1310.swerve.utils.SwerveUtils;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.HopperSubsystem;
@@ -27,7 +19,6 @@ public class ShooterCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerveSubsystem;
 
-  private final Timer timer = new Timer();
   private boolean firstShot = false;
 
   public ShooterCommand(HopperSubsystem hopperSubsystem, SwerveSubsystem swerveSubsystem) {
@@ -41,8 +32,6 @@ public class ShooterCommand extends LoggingCommand {
   @Override
   public void initialize() {
     logCommandStart();
-    timer.reset();
-    timer.start();
     firstShot = false;
   }
 
@@ -64,8 +53,6 @@ public class ShooterCommand extends LoggingCommand {
     logCommandEnd(interrupted);
     hopperSubsystem.setHood(0);
     hopperSubsystem.stop();
-    timer.stop();
-    timer.reset();
   }
 
   // public static final double ACCEPTED_THRESHOLD = 200.0;
@@ -77,28 +64,20 @@ public class ShooterCommand extends LoggingCommand {
     hopperSubsystem.setShooterVelocity(targetSpeed);
 
     // agitator
-    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    //    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    //    hopperSubsystem.reverseAgitator(1);
+    hopperSubsystem.pulseAgitator(1);
     hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
 
     // hood
-    if (distance < MAX_SHOOTING_DISTANCE) {
-      if (distance >= SUPER_FAR_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(SUPER_FAR_SHOOT_HOOD_VALUE);
-      } else if (distance >= MEDIUM_SHOOTING_DISTANCE) {
-        hopperSubsystem.setHood(MEDIUM_SHOOT_HOOD_VALUE);
-      }
-    } else {
-      hopperSubsystem.setHood(CLOSE_SHOOT_HOOD_VALUE);
-    }
+    hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
 
     // kicker
     boolean atSpeed = hopperSubsystem.isShooterAtSpeed();
-    // boolean overThreshold = Math.abs(targetSpeed - currentVelocity) < ACCEPTED_THRESHOLD;
     boolean facingHub =
-        SwerveUtils.isCloseEnough(
-            swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
+        SwerveUtils.isCloseEnough(swerveSubsystem.getHubAngleDeg(), swerveSubsystem.getYaw(), 5);
 
-    if (atSpeed /*|| firstShot)*/ && facingHub) {
+    if ((atSpeed || firstShot) && facingHub) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {

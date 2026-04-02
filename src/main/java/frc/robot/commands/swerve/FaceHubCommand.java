@@ -1,6 +1,5 @@
 package frc.robot.commands.swerve;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -22,15 +21,15 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public void execute() {
-    Rotation2d hubAngle = swerve.angleToShootTowards();
-    double omega = swerve.computeOmega(hubAngle.getDegrees());
+    double hubAngle = swerve.getHubAngleDeg();
+    double omega = swerve.computeOmega(hubAngle);
     log("omega: " + omega);
     swerve.driveFieldOriented(0, 0, omega);
   }
 
   @Override
   public boolean isFinished() {
-    double error = Math.abs(swerve.angleToShootTowards().getDegrees() - swerve.getYaw());
+    double error = Math.abs(swerve.getHubAngleDeg() - swerve.getYaw());
     log("Error: " + error);
     return error <= 3;
   }
