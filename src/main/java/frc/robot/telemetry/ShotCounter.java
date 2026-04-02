@@ -32,9 +32,9 @@ public class ShotCounter {
   private final NetworkTableEntry ntCountAutoShots;
   private final NetworkTableEntry ntCountTeleopShots;
 
-
   public ShotCounter() {
-    NetworkTable table = NetworkTableInstance.getDefault().getTable(PREFIX + "Shooter");
+    NetworkTable table =
+        NetworkTableInstance.getDefault().getTable("SmartDashboard/" + PREFIX + "Shooter");
     ntCountLeftShots = table.getEntry("CountLeftShots");
     ntCountRightShots = table.getEntry("CountRightShots");
     ntCountTotalShots = table.getEntry("CountTotalShots");
@@ -114,5 +114,17 @@ public class ShotCounter {
     rightState = State.READY;
 
     publish();
+  }
+
+  public int getTeleopShotCount() {
+    return teleopShotCount;
+  }
+
+  public int getAutoShotCount() {
+    return autoShotCount;
+  }
+
+  public int getTotalShotCount() {
+    return rightShotCount + leftShotCount;
   }
 }

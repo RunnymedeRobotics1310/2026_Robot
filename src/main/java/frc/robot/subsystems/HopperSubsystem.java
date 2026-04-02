@@ -272,4 +272,16 @@ public class HopperSubsystem extends SubsystemBase {
   public double getTopRollerSpeed() {
     return topRollerMotor.get();
   }
+
+  public int getAutoShotCount() {
+    return shotCounter.getAutoShotCount();
+  }
+
+  public int getTeleopShotCount() {
+    return shotCounter.getTeleopShotCount();
+  }
+
+  public int getTotalShotCount() {
+    return shotCounter.getTotalShotCount();
+  }
 }
