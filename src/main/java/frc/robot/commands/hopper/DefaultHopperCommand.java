@@ -159,7 +159,7 @@ public class DefaultHopperCommand extends LoggingCommand {
         SwerveUtils.isCloseEnough(
             swerveSubsystem.angleToShootTowards().getDegrees(), swerveSubsystem.getYaw(), 5);
 
-    if ((atSpeed /*|| firstShot*/) && facingHub) {
+    if ((atSpeed || firstShot) && facingHub) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
     } else {
