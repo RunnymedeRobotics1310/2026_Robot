@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.telemetry.ShotCounter;
 import frc.robot.telemetry.Telemetry;
 
 public class HopperSubsystem extends SubsystemBase {
@@ -43,6 +44,8 @@ public class HopperSubsystem extends SubsystemBase {
   private final Timer agitatorTimer = new Timer();
   private boolean agitatorState = false;
 
+  private ShotCounter shotCounter = new ShotCounter();
+
   public HopperSubsystem() {
     agitatorTimer.start();
     agitatorTimer.reset();
@@ -50,8 +53,13 @@ public class HopperSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Telemetry.shooter.currentRightShooterRPM = getRightShooterVelocity();
-    Telemetry.shooter.currentLeftShooterRPM = getLeftShooterVelocity();
+    double leftRpm = getLeftShooterVelocity();
+    double rightRpm = getRightShooterVelocity();
+
+    shotCounter.update(targetShooterVelocity, leftRpm, rightRpm);
+
+    Telemetry.shooter.currentRightShooterRPM = rightRpm;
+    Telemetry.shooter.currentLeftShooterRPM = leftRpm;
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
