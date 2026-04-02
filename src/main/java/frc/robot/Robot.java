@@ -27,7 +27,6 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   private final PowerDistribution pdh = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
-  ;
 
   private double lastDashUpdate = 0;
 
