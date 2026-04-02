@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
 import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
@@ -38,8 +39,7 @@ public class RobotContainer {
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
-  //  private final PowerDistribution pdh = new PowerDistribution(1,
-  // PowerDistribution.ModuleType.kRev);
+  private final PowerDistribution pdh = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
 
   private final AutoCommandRegistry autoCommandRegistry;
   private final AutoCommandFactory autoCommandFactory;
