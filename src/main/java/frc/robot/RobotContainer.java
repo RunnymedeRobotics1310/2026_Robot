@@ -8,6 +8,7 @@ import static frc.robot.Constants.Swerve.SUBSYSTEM_CONFIG;
 import static frc.robot.Constants.VisionConstants.VISION_CONFIG;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
@@ -90,6 +91,8 @@ public class RobotContainer {
 
     autoConfigNTBridge.setOnConfigsChanged(() -> operatorInput.refreshCustomAutoChooser());
     autoConfigNTBridge.publishCommandMetadata(autoCommandRegistry.getMetadataJson());
+
+    SmartDashboard.putData("1310/PDH", pdh);
   }
 
   /**
