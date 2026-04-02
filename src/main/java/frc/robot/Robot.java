@@ -8,10 +8,8 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArraySubscriber;
 import edu.wpi.first.util.datalog.DataLog;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.telemetry.Telemetry;
@@ -27,6 +25,9 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+
+  private final PowerDistribution pdh = new PowerDistribution(1, PowerDistribution.ModuleType.kRev);
+  ;
 
   private double lastDashUpdate = 0;
 
@@ -80,6 +81,8 @@ public class Robot extends TimedRobot {
     } else {
       Telemetry.healthyRobot = Telemetry.AlertLevel.NONE;
     }
+    // FIXME: Not displaying on dashboard for some reason, investigate later
+    SmartDashboard.putData("/1310/PDH", pdh);
 
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
