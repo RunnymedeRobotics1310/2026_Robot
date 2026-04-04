@@ -262,15 +262,16 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.addOption(
         "Opportunistic Outpost", Constants.AutoConstants.AutoPattern.OPPORTUNISTIC_OUTPOST);
     //    autoPatternChooser.addOption("Custom Auto", Constants.AutoConstants.AutoPattern.CUSTOM);
+    autoPatternChooser.addOption(
+        "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
+    autoPatternChooser.addOption(
+        "Right Shoot Climb", Constants.AutoConstants.AutoPattern.RIGHT_SHOOT_CLIMB);
+    autoPatternChooser.addOption("Depot", Constants.AutoConstants.AutoPattern.DEPOT);
 
     SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
     refreshCustomAutoChooser();
     //    autoPatternChooser.addOption("Shoot Center",
     // Constants.AutoConstants.AutoPattern.SHOOT_CENTER);
-    autoPatternChooser.addOption(
-        "Left Shoot Climb", Constants.AutoConstants.AutoPattern.LEFT_SHOOT_CLIMB);
-    autoPatternChooser.addOption(
-        "Right Shoot Climb", Constants.AutoConstants.AutoPattern.RIGHT_SHOOT_CLIMB);
 
     SmartDashboard.putData("1310/auto/Delay Selector", delayChooser);
 
@@ -306,6 +307,7 @@ public class OperatorInput extends SubsystemBase {
       case LEFT_SHOOT_CLIMB -> new LeftShootClimbAutoCommand(swerve, hopper, vision, climb, delay);
       case RIGHT_SHOOT_CLIMB ->
           new RightShootClimbAutoCommand(swerve, hopper, vision, climb, delay);
+      case DEPOT -> new DepotAutoCommand(swerve, hopper, vision, climb, delay);
       case CUSTOM -> buildCustomAutoCommand(delay);
       default -> new InstantCommand();
     };

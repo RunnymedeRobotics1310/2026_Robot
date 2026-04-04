@@ -158,6 +158,8 @@ public class DefaultHopperCommand extends LoggingCommand {
     boolean facingHub =
         SwerveUtils.isCloseEnough(swerveSubsystem.getHubAngleDeg(), swerveSubsystem.getYaw(), 5);
 
+    Telemetry.shooter.facingHub = facingHub;
+
     if ((atSpeed || firstShot) && facingHub) {
       firstShot = true;
       hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);

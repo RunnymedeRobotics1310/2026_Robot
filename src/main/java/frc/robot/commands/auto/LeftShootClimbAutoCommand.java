@@ -1,7 +1,7 @@
 package frc.robot.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.hopper.ShooterCommand;
+import frc.robot.commands.hopper.AutoShooterCommand;
 import frc.robot.commands.swerve.*;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
@@ -24,8 +24,8 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
     addCommands(new DriveFieldOrientedCommand(swerve, -2, 0, 0).withTimeout(0.8));
 
     addCommands(
-        new ShooterCommand(hopper, swerve)
-            .alongWith(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
+        new AutoShooterCommand(hopper, swerve, 8)
+            .deadlineFor(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
             .withTimeout(7));
 
     addCommands(new DriveFieldOrientedCommand(swerve, -0.3, -1.5, 180).withTimeout(1.8));

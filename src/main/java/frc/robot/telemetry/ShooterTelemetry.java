@@ -20,6 +20,7 @@ public class ShooterTelemetry {
   public double kickerSpeed;
   public double hoodAngle;
   public double agitatorSpeed;
+  public boolean facingHub;
 
   void post() {
 
@@ -32,6 +33,7 @@ public class ShooterTelemetry {
       SmartDashboard.putNumber(PREFIX + "Shooter/KickerTarget", round(kickerTarget));
       SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", round(kickerSpeed));
       SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", round(hoodAngle));
+      SmartDashboard.putBoolean(PREFIX + "Shooter/facingHub", facingHub);
     }
   }
 }
