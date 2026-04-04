@@ -13,19 +13,23 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
     value = "shooter",
     category = "shooter",
     description = "Auto-aim shooter using distance to hub")
-public class ShooterCommand extends LoggingCommand {
+public class AutoShooterCommand extends LoggingCommand {
 
   private final HopperSubsystem hopperSubsystem;
 
   private final SwerveSubsystem swerveSubsystem;
 
+  private final int shots;
+
   private boolean firstShot = false;
 
-  public ShooterCommand(HopperSubsystem hopperSubsystem, SwerveSubsystem swerveSubsystem) {
+  public AutoShooterCommand(
+      HopperSubsystem hopperSubsystem, SwerveSubsystem swerveSubsystem, int shots) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopperSubsystem);
     this.hopperSubsystem = hopperSubsystem;
     this.swerveSubsystem = swerveSubsystem;
+    this.shots = shots;
   }
 
   // Called when the command is initially scheduled.
@@ -44,7 +48,7 @@ public class ShooterCommand extends LoggingCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return hopperSubsystem.getAutoShotCount() >= shots;
   }
 
   // Called once the command ends or is interrupted.
