@@ -426,6 +426,9 @@ public class SwerveSubsystem extends SubsystemBase {
     double vX = frV[0];
     double vY = frV[1];
     HubTargetVector velocity = new HubTargetVector(vX, vY);
+
+    hubTarget.subtract(velocity);
+
     //
 
     return hubTarget;
