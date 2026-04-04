@@ -38,7 +38,7 @@ public class RobotContainer {
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
   private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
-  //  private final PowerDistribution pdh = new PowerDistribution(1,
+  // private final PowerDistribution pdh = new PowerDistribution(1,
   // PowerDistribution.ModuleType.kRev);
 
   private final AutoCommandRegistry autoCommandRegistry;
@@ -90,6 +90,8 @@ public class RobotContainer {
 
     autoConfigNTBridge.setOnConfigsChanged(() -> operatorInput.refreshCustomAutoChooser());
     autoConfigNTBridge.publishCommandMetadata(autoCommandRegistry.getMetadataJson());
+
+    // SmartDashboard.putData("1310/PDH", pdh);
   }
 
   /**

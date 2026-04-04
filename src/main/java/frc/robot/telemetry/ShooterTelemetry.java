@@ -1,9 +1,9 @@
 package frc.robot.telemetry;
 
+import static frc.robot.RunnymedeUtils.round;
 import static frc.robot.telemetry.Telemetry.PREFIX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RunnymedeUtils;
 
 /**
  * @author Tony Field
@@ -16,6 +16,7 @@ public class ShooterTelemetry {
   public double targetShooterRPM;
   public double currentLeftShooterRPM;
   public double currentRightShooterRPM;
+  public double kickerTarget;
   public double kickerSpeed;
   public double hoodAngle;
   public double agitatorSpeed;
@@ -28,8 +29,9 @@ public class ShooterTelemetry {
           PREFIX + "Shooter/CurrentLeftShooterRPM", (int) currentLeftShooterRPM);
       SmartDashboard.putNumber(
           PREFIX + "Shooter/CurrentRightShooterRPM", (int) currentRightShooterRPM);
-      SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", RunnymedeUtils.round(kickerSpeed));
-      SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", RunnymedeUtils.round(hoodAngle));
+      SmartDashboard.putNumber(PREFIX + "Shooter/KickerTarget", round(kickerTarget));
+      SmartDashboard.putNumber(PREFIX + "Shooter/KickerSpeed", round(kickerSpeed));
+      SmartDashboard.putNumber(PREFIX + "Shooter/HoodAngle", round(hoodAngle));
     }
   }
 }

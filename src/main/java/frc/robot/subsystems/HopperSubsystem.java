@@ -60,6 +60,7 @@ public class HopperSubsystem extends SubsystemBase {
 
     Telemetry.shooter.currentRightShooterRPM = rightRpm;
     Telemetry.shooter.currentLeftShooterRPM = leftRpm;
+    Telemetry.shooter.kickerSpeed = kickerMotor.getEncoder().getVelocity();
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
@@ -103,7 +104,7 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   public void setKickerSpeed(double speed) {
-    Telemetry.shooter.kickerSpeed = speed;
+    Telemetry.shooter.kickerTarget = speed;
     kickerMotor.set(speed);
   }
 
