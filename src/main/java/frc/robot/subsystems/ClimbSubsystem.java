@@ -6,16 +6,14 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.ClimbConstants.*;
 
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.telemetry.Telemetry;
 
 public class ClimbSubsystem extends SubsystemBase {
 
-  private final SparkMax climbMotor =
-      new SparkMax(CLIMB_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
+  //  private final SparkMax climbMotor =
+  //      new SparkMax(CLIMB_MOTOR_CAN_ID, SparkLowLevel.MotorType.kBrushless);
   private final DigitalInput climbLowerLimit = new DigitalInput(CLIMB_LOWER_LIMIT_DIO_PORT);
 
   private double climbMotorSpeed = 0;
@@ -45,7 +43,7 @@ public class ClimbSubsystem extends SubsystemBase {
         climbMotorSpeed = CLIMB_SLOW_ZONE_SPEED;
       }
     }
-    climbMotor.set(climbMotorSpeed);
+    //    climbMotor.set(climbMotorSpeed);
 
     Telemetry.climb.climbSpeed = climbMotorSpeed;
     Telemetry.climb.climbPosition = getClimbPosition();
@@ -58,7 +56,7 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public void zeroEncoder() {
-    climbMotor.getEncoder().setPosition(0);
+    //    climbMotor.getEncoder().setPosition(0);
   }
 
   public boolean isClimbing() {
@@ -66,15 +64,17 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   public double getClimbPosition() {
-    return climbMotor.getEncoder().getPosition();
+    //    return climbMotor.getEncoder().getPosition();
+    return 0;
   }
 
   public boolean isClimbDown() {
-    return !climbLowerLimit.get();
+    return true;
+    //    return !climbLowerLimit.get();
   }
 
   public void stop() {
     setClimbSpeed(0);
-    climbMotor.stopMotor();
+    //    climbMotor.stopMotor();
   }
 }
