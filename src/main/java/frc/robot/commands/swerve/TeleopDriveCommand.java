@@ -15,6 +15,7 @@ import static frc.robot.operatorInput.OperatorInput.Stick.RIGHT;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,6 +68,10 @@ public class TeleopDriveCommand extends LoggingCommand {
   // @Override
   @Override
   public void execute() {
+    if (DriverStation.isAutonomousEnabled()) {
+      swerve.stop();
+      return;
+    }
     final boolean isZeroGyro = oi.isZeroGyro();
 
     // With the driver standing behind the driver station glass, "forward" on the left stick is

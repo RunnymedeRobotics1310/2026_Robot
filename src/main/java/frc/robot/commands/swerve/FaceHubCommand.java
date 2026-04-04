@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import ca.team1310.swerve.utils.SwerveUtils;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -29,9 +30,7 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public boolean isFinished() {
-    double error = Math.abs(swerve.getHubAngleDeg() - swerve.getYaw());
-    log("Error: " + error);
-    return error <= 3;
+    return SwerveUtils.isCloseEnough(swerve.getYaw(), swerve.getHubAngleDeg(), 3);
   }
 
   @Override

@@ -113,7 +113,7 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
     log("TY: " + tY);
 
-    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() < 4) return true;
+    //    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() < 4) return true;
 
     return tY < -11.4; // tY when aligned is 11.5ish
     //      return false;
