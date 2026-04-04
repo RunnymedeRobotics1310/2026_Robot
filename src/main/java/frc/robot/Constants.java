@@ -81,7 +81,6 @@ public final class Constants {
       SHOOT_CENTER,
       LEFT_SHOOT_CLIMB,
       RIGHT_SHOOT_CLIMB,
-      DEPOT,
       CUSTOM
     }
 

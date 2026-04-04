@@ -1,8 +1,8 @@
 package frc.robot.commands.auto.config;
 
 import frc.robot.commands.auto.AutoClimbCommand;
-import frc.robot.commands.hopper.AutoShooterCommand;
 import frc.robot.commands.hopper.LazyShooterCommand;
+import frc.robot.commands.hopper.ShooterCommand;
 import frc.robot.commands.swerve.DriveDistanceCommand;
 import frc.robot.commands.swerve.DriveFieldOrientedCommand;
 import frc.robot.commands.swerve.DriveRobotOrientedAtHeadingCommand;
@@ -30,7 +30,7 @@ public class AutoCommandRegistrations {
     registry.register(FaceHubCommand.class);
     registry.register(DriveToTowerCommand.class);
     registry.register(LazyShooterCommand.class);
-    registry.register(AutoShooterCommand.class);
+    registry.register(ShooterCommand.class);
     registry.register(DriveFieldOrientedCommand.class);
     registry.register(NullDriveCommand.class);
     registry.register(AutoClimbCommand.class);
