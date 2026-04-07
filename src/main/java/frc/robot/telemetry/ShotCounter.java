@@ -75,8 +75,10 @@ public class ShotCounter {
   private int updateWheel(
       double target, double actual, State current, java.util.function.Consumer<State> setState) {
     if (target < MIN_SPINNING_RPM) {
+      // If a ball already caused a dip, count it before resetting
+      int shot = (current == State.DIPPED) ? 1 : 0;
       setState.accept(State.SPINNING_UP);
-      return 0;
+      return shot;
     }
 
     double error = target - actual;
