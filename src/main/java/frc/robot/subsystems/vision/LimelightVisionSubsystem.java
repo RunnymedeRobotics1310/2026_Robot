@@ -76,7 +76,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
    *
    * @return Appropriate botPose data
    */
-  private LimelightBotPose getBotPose(String limelightName) {
+  public LimelightBotPose getBotPose(String limelightName) {
     if (limelightName.equals(VISION_PRIMARY_LIMELIGHT_NAME)) {
       return primaryLimelightPoseCache;
     } else if (limelightName.equals(VISION_SECONDARY_LIMELIGHT_NAME)) {

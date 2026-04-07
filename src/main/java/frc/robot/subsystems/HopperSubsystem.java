@@ -284,4 +284,8 @@ public class HopperSubsystem extends SubsystemBase {
   public int getTotalShotCount() {
     return shotCounter.getTotalShotCount();
   }
+
+  public void resetShotCount() {
+    shotCounter.reset();
+  }
 }
