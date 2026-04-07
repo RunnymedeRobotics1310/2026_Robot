@@ -14,12 +14,13 @@ public class ShotCounter {
   private static final double MIN_SPINNING_RPM = 1000.0;
 
   private enum State {
+    SPINNING_UP,
     READY,
     DIPPED
   }
 
-  private State leftState = State.READY;
-  private State rightState = State.READY;
+  private State leftState = State.SPINNING_UP;
+  private State rightState = State.SPINNING_UP;
 
   private int leftShotCount = 0;
   private int rightShotCount = 0;
@@ -74,13 +75,19 @@ public class ShotCounter {
   private int updateWheel(
       double target, double actual, State current, java.util.function.Consumer<State> setState) {
     if (target < MIN_SPINNING_RPM) {
-      setState.accept(State.READY);
+      setState.accept(State.SPINNING_UP);
       return 0;
     }
 
     double error = target - actual;
 
     switch (current) {
+      case SPINNING_UP:
+        if (error <= RECOVERY_THRESHOLD && actual > MIN_SPINNING_RPM) {
+          setState.accept(State.READY);
+        }
+        return 0;
+
       case READY:
         if (error > DROP_THRESHOLD && actual > MIN_SPINNING_RPM) {
           setState.accept(State.DIPPED);
@@ -119,8 +126,8 @@ public class ShotCounter {
     autoShotCount = 0;
     teleopShotCount = 0;
     pastHubShotCount = 0;
-    leftState = State.READY;
-    rightState = State.READY;
+    leftState = State.SPINNING_UP;
+    rightState = State.SPINNING_UP;
 
     publish();
   }
