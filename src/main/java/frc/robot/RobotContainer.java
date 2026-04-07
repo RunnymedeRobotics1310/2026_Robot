@@ -36,7 +36,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(SUBSYSTEM_CONFIG);
   private final LimelightVisionSubsystem visionSubsystem =
       new LimelightVisionSubsystem(VISION_CONFIG, swerveSubsystem);
-  private final HopperSubsystem hopperSubsystem = new HopperSubsystem();
+  public final HopperSubsystem hopperSubsystem = new HopperSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   // private final PowerDistribution pdh = new PowerDistribution(1,
   // PowerDistribution.ModuleType.kRev);

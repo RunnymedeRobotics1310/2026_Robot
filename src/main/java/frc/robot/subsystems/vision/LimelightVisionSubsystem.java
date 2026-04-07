@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import static frc.robot.Constants.VisionConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -15,6 +16,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
   // MegaTags
   private final DoubleArraySubscriber primaryMegaTag;
   private final DoubleArraySubscriber secondaryMegaTag;
+  private final DoubleArrayPublisher llRobotOrientation;
 
   // These hold the data from the limelights, updated every periodic()
   private final LimelightBotPose primaryLimelightPoseCache = new LimelightBotPose();
@@ -24,6 +26,11 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   public LimelightVisionSubsystem(VisionConfig visionConfig, SwerveSubsystem swerve) {
     this.swerve = swerve;
+
+    final NetworkTable llNT =
+        NetworkTableInstance.getDefault().getTable("limelight-" + VISION_SECONDARY_LIMELIGHT_NAME);
+
+    llRobotOrientation = llNT.getDoubleArrayTopic("robot_orientation_set").publish();
 
     Telemetry.vision.telemetryLevel = visionConfig.telemetryLevel();
 
@@ -47,6 +54,8 @@ public class LimelightVisionSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // update the secondary limelight heading
+    llRobotOrientation.set(new double[] {swerve.getYaw(), 0, 0, 0, 0, 0});
     // Pull data from the limelights and update our cache
     primaryLimelightPoseCache.update(primaryMegaTag.getAtomic());
     secondaryLimelightPoseCache.update(secondaryMegaTag.getAtomic());
@@ -54,6 +63,7 @@ public class LimelightVisionSubsystem extends SubsystemBase {
     // Update swerve subsystem with vision pose for Field2d and odometry debugging
     swerve.updateVisionPose(
         primaryLimelightPoseCache.getPose(),
+        secondaryLimelightPoseCache.getPose(),
         primaryLimelightPoseCache.getTimestampSeconds(),
         primaryLimelightPoseCache.isPoseValid());
 

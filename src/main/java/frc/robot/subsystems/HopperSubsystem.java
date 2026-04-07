@@ -220,10 +220,9 @@ public class HopperSubsystem extends SubsystemBase {
     setShooterVelocity(0);
     setDoorSetpoint(0);
 
-    rightShooterMotor.stopMotor();
-    leftShooterMotor.stopMotor();
-    kickerMotor.stopMotor();
-    agitatorMotor.stopMotor();
+    setShooterSpeed(0);
+    setKickerSpeed(0);
+    setAgitatorSpeed(0);
     setRollerSpeeds(0, 0);
     setDoorSpeed(0);
   }

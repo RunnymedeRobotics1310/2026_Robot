@@ -23,33 +23,31 @@ public class DepotAutoCommand extends SequentialCommandGroup {
 
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, -2, 0, 0).withTimeout(0.8));
-
     addCommands(
-        new AutoShooterCommand(hopper, swerve, 8)
-            .deadlineFor(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve)))
-            .withTimeout(7));
-
-    addCommands(
-        new DriveToFieldLocationCommand(swerve, new Pose2d(1.1, 5.8, new Rotation2d(0)))
-            .withTimeout(4));
+        (new DriveAimFieldOrientedCommand(swerve, -0.8, 0)
+                .withTimeout(2)
+                .andThen(
+                    new DriveToFieldLocationAimedAtHubCommand(
+                        swerve, new Pose2d(1.1, 6, new Rotation2d(0)), 0.3, 1.5)))
+            .deadlineFor(new AutoShooterCommand(hopper, swerve, 8)));
 
     addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(90)));
     addCommands(
         new DriveFieldOrientedCommand(swerve, -0.6, 0, 90)
             .withTimeout(1.5)
             .deadlineFor(new LazyIntakeCommand(hopper)));
-    addCommands(new DriveFieldOrientedCommand(swerve, 1, 0, 90).withTimeout(2));
-    addCommands(new FaceHubCommand(swerve));
+    addCommands(new DriveFieldOrientedCommand(swerve, 1, 0, 90).withTimeout(1));
+    addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(0)));
 
-    // holy moly, this hurts to look at (i made it)
     addCommands(
-        ((new DriveToFieldLocationAimedAtHubCommand(
-                    swerve, new Pose2d(2.2, 4.1, new Rotation2d(0)), 0.2, 0.1)
-                .withTimeout(4)
-                .andThen(new NullDriveCommand(swerve).withTimeout(3)))
-            .alongWith(new AutoShooterCommand(hopper, swerve, 16))
-            .withTimeout(7)));
+        ((new AutoShooterCommand(hopper, swerve, 16).withTimeout(5))
+            .deadlineFor(
+                new DriveToFieldLocationAimedAtHubCommand(
+                        swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)), 0.2, 0.3)
+                    .andThen(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve))))));
+
+    addCommands(
+        new DriveToFieldLocationCommand(swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)), 0.3));
 
     addCommands(
         (new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180))
