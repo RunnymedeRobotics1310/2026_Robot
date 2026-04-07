@@ -8,7 +8,6 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringArraySubscriber;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.telemetry.Telemetry;
@@ -92,11 +91,11 @@ public class Robot extends TimedRobot {
     m_robotContainer.getAutoConfigNTBridge().periodic();
 
     // Update telemetry every 150ms
-    double currentTime = Timer.getFPGATimestamp();
-    if (currentTime - lastDashUpdate > 0.150) {
-      Telemetry.post();
-      lastDashUpdate = currentTime;
-    }
+    //    double currentTime = Timer.getFPGATimestamp();
+    //    if (currentTime - lastDashUpdate > 0.150) {
+    Telemetry.post();
+    //      lastDashUpdate = currentTime;
+    //    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -115,6 +114,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
+    m_robotContainer.hopperSubsystem.resetShotCount();
   }
 
   /** This function is called periodically during autonomous. */

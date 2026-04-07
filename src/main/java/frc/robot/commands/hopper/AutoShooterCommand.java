@@ -4,6 +4,7 @@ import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import ca.team1310.swerve.utils.SwerveUtils;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.HopperSubsystem;
@@ -49,6 +50,8 @@ public class AutoShooterCommand extends LoggingCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() < 7) return true;
+
     return hopperSubsystem.getAutoShotCount() >= shots;
   }
 

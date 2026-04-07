@@ -1,6 +1,7 @@
 package frc.robot.commands.swerve;
 
 import ca.team1310.swerve.utils.SwerveUtils;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -9,9 +10,15 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class FaceHubCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerve;
+  private final Translation2d velocity;
 
   public FaceHubCommand(SwerveSubsystem swerve) {
+    this(swerve, new Translation2d());
+  }
+
+  public FaceHubCommand(SwerveSubsystem swerve, Translation2d velocity) {
     this.swerve = swerve;
+    this.velocity = velocity;
     addRequirements(swerve);
   }
 
@@ -22,7 +29,7 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public void execute() {
-    double hubAngle = swerve.getHubAngleDeg();
+    double hubAngle = swerve.calculateHubAngleDegForVelocity(velocity);
     double omega = swerve.computeOmega(hubAngle);
     log("omega: " + omega);
     swerve.driveFieldOriented(0, 0, omega);

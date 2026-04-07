@@ -22,6 +22,7 @@ public class OdometryDebugTelemetry {
   // Pose publishers for AdvantageScope compatibility
   private final StructPublisher<Pose2d> odometryPosePublisher;
   private final StructPublisher<Pose2d> visionPosePublisher;
+  private final StructPublisher<Pose2d> visionSecondaryPosePublisher;
   private final StructPublisher<Pose2d> wheelOnlyPosePublisher;
   private final StructArrayPublisher<Pose2d> odometryTrailPublisher;
   private final StructArrayPublisher<Pose2d> visionTrailPublisher;
@@ -55,6 +56,7 @@ public class OdometryDebugTelemetry {
   // Current poses
   private Pose2d currentOdometryPose = new Pose2d();
   private Pose2d currentVisionPose = new Pose2d();
+  private Pose2d currentSecondaryVisionPose = new Pose2d();
   private Pose2d currentWheelOnlyPose = new Pose2d();
   private double visionTimestamp = 0;
   private boolean visionValid = false;
@@ -78,6 +80,8 @@ public class OdometryDebugTelemetry {
     // Create struct publishers for proper Pose2d logging (AdvantageScope compatible)
     odometryPosePublisher = nt.getStructTopic(NT_PREFIX + "Odometry/Pose", Pose2d.struct).publish();
     visionPosePublisher = nt.getStructTopic(NT_PREFIX + "Vision/Pose", Pose2d.struct).publish();
+    visionSecondaryPosePublisher =
+        nt.getStructTopic(NT_PREFIX + "Vision/SecondaryPose", Pose2d.struct).publish();
     wheelOnlyPosePublisher =
         nt.getStructTopic(NT_PREFIX + "WheelOnly/Pose", Pose2d.struct).publish();
     odometryTrailPublisher =
@@ -153,12 +157,14 @@ public class OdometryDebugTelemetry {
    * @param timestamp the timestamp of the vision measurement
    * @param isValid whether the vision measurement is valid
    */
-  public void updateVisionPose(Pose2d pose, double timestamp, boolean isValid) {
+  public void updateVisionPose(
+      Pose2d pose, Pose2d secondaryPose, double timestamp, boolean isValid) {
     if (!Constants.TelemetryConfig.odometryDebugEnabled) {
       return;
     }
 
     currentVisionPose = pose;
+    currentSecondaryVisionPose = secondaryPose;
     visionTimestamp = timestamp;
     visionValid = isValid;
 
@@ -265,6 +271,7 @@ public class OdometryDebugTelemetry {
     // Publish current poses (struct format for AdvantageScope)
     odometryPosePublisher.set(currentOdometryPose);
     visionPosePublisher.set(currentVisionPose);
+    visionSecondaryPosePublisher.set(currentSecondaryVisionPose);
     wheelOnlyPosePublisher.set(currentWheelOnlyPose);
 
     // Publish trails

@@ -161,8 +161,8 @@ public class DriveToFieldLocationAimedAtHubCommand extends LoggingCommand {
     // targetHeadingDeg, 10));
     boolean done =
         (SwerveUtils.isCloseEnough(
-                swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance)
-            && SwerveUtils.isCloseEnough(swerve.getYaw(), targetHeadingDeg, 2));
+            swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance));
+    //            && SwerveUtils.isCloseEnough(swerve.getYaw(), targetHeadingDeg, 2));
     if (done) {
       System.out.println(
           "REACHED DESTINATION: x["
