@@ -1,6 +1,7 @@
 package frc.robot.telemetry;
 
 import ca.team1310.swerve.SwerveTelemetry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Telemetry {
@@ -36,5 +37,15 @@ public class Telemetry {
     odometryDebug.post();
 
     SmartDashboard.putBoolean(PREFIX + "RobotHealth", healthyRobot == AlertLevel.NONE);
+
+    String botState;
+    if (DriverStation.isAutonomous()) {
+      botState = "Auto";
+    } else if (DriverStation.isTeleop()) {
+      botState = "Teleop";
+    } else {
+      botState = "Disabled";
+    }
+    SmartDashboard.putString(PREFIX + "BotState", botState);
   }
 }
