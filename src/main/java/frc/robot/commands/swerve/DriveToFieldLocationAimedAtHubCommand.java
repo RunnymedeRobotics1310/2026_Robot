@@ -134,14 +134,7 @@ public class DriveToFieldLocationAimedAtHubCommand extends LoggingCommand {
     Translation2d dif = new Translation2d(xDif, yDif);
     Translation2d transV = swerve.computeVelocity(dif, maxSpeedMPS);
 
-    //    double angleDif =
-    //        SwerveUtils.normalizeDegrees(targetHeadingDeg -
-    // currentPose.getRotation().getDegrees());
-
-    //    double maxOmega = Math.max((Math.toRadians(angleDif) / dif.getNorm()) * transV.getNorm(),
-    // .1);
     double omega = swerve.computeOmega(swerve.getHubAngleDeg());
-    //    System.out.println(maxOmega);
 
     // face hub ff (to face hub while moving quickly)
     double vTan =
@@ -155,14 +148,10 @@ public class DriveToFieldLocationAimedAtHubCommand extends LoggingCommand {
 
   @Override
   public boolean isFinished() {
-    //        return (SwerveUtils.isCloseEnough(
-    //                swerve.getPose().getTranslation(), location.pose.getTranslation(), 0.05)
-    //                && SwerveUtils.isCloseEnough(swerve.getPose().getRotation().getDegrees(),
-    // targetHeadingDeg, 10));
+
     boolean done =
         (SwerveUtils.isCloseEnough(
             swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance));
-    //            && SwerveUtils.isCloseEnough(swerve.getYaw(), targetHeadingDeg, 2));
     if (done) {
       System.out.println(
           "REACHED DESTINATION: x["

@@ -130,17 +130,13 @@ public class DriveToFieldLocationCommand extends LoggingCommand {
 
     double maxOmega = Math.max((Math.toRadians(angleDif) / dif.getNorm()) * transV.getNorm(), .1);
     double omega = swerve.computeOmega(targetHeadingDeg, maxOmega);
-    System.out.println(maxOmega);
 
     swerve.driveFieldOriented(transV.getX(), transV.getY(), omega);
   }
 
   @Override
   public boolean isFinished() {
-    //        return (SwerveUtils.isCloseEnough(
-    //                swerve.getPose().getTranslation(), location.pose.getTranslation(), 0.05)
-    //                && SwerveUtils.isCloseEnough(swerve.getPose().getRotation().getDegrees(),
-    // targetHeadingDeg, 10));
+
     boolean done =
         (SwerveUtils.isCloseEnough(
                 swerve.getPose().getTranslation(), allianceLocation.getTranslation(), tolerance)

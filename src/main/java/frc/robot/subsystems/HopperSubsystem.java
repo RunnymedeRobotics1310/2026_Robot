@@ -83,7 +83,7 @@ public class HopperSubsystem extends SubsystemBase {
 
   public void setShooterVelocity(double target) {
     Telemetry.shooter.targetShooterRPM = target;
-    if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR) {
+    if (Math.abs(target - targetShooterVelocity) > ACCPETED_SHOOTER_ERROR / 3) {
       rIError = 0;
       lIError = 0;
     }
@@ -161,7 +161,7 @@ public class HopperSubsystem extends SubsystemBase {
     double shooterSpeed = 0;
     double hoodValue = calculateHoodValule(distanceMeters);
 
-    shooterSpeed = 610 * distanceMeters + 3150 - hoodValue * 1000;
+    shooterSpeed = 610 * distanceMeters + 3000 - hoodValue * 1000;
 
     return shooterSpeed;
   }
@@ -178,7 +178,7 @@ public class HopperSubsystem extends SubsystemBase {
     /* ----- RIGHT SHOOTER ----- */
     double rSpeed = getRightShooterVelocity();
     double rError = (targetShooterVelocity - rSpeed); // Normalize error
-    if (Math.abs(rError) > ACCPETED_SHOOTER_ERROR) {
+    if (Math.abs(rError) > I_ZONE) {
       rIError = 0;
     } else {
       rIError += rError;
@@ -188,7 +188,7 @@ public class HopperSubsystem extends SubsystemBase {
     /* ----- LEFT SHOOTER ----- */
     double lSpeed = getLeftShooterVelocity();
     double lError = (targetShooterVelocity - lSpeed);
-    if (Math.abs(lError) > ACCPETED_SHOOTER_ERROR) {
+    if (Math.abs(lError) > I_ZONE) {
       lIError = 0;
     } else {
       lIError += lError;

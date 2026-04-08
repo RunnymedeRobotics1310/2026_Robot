@@ -86,7 +86,7 @@ public class RunnymedeUtils {
   public static Pose2d getRedAlliancePose(Pose2d blueAlliancePose) {
     return new Pose2d(
         Constants.FieldConstants.FIELD_EXTENT_METRES_X - blueAlliancePose.getX(),
-        Constants.FieldConstants.FIELD_EXTENT_METRES_Y - -blueAlliancePose.getY(),
+        Constants.FieldConstants.FIELD_EXTENT_METRES_Y - blueAlliancePose.getY(),
         Rotation2d.fromDegrees(
             SwerveUtils.normalizeDegrees(blueAlliancePose.getRotation().getDegrees() + 180)));
   }

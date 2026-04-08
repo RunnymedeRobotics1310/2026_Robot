@@ -43,11 +43,12 @@ public class DepotAutoCommand extends SequentialCommandGroup {
         ((new AutoShooterCommand(hopper, swerve, 16).withTimeout(5))
             .deadlineFor(
                 new DriveToFieldLocationAimedAtHubCommand(
-                        swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)), 0.2, 0.3)
+                        swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)), 0.3, 0.3)
                     .andThen(new FaceHubCommand(swerve).andThen(new NullDriveCommand(swerve))))));
 
-    addCommands(
-        new DriveToFieldLocationCommand(swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)), 0.3));
+    //    addCommands(
+    //        new DriveToFieldLocationCommand(swerve, new Pose2d(2.2, 4.3, new Rotation2d(0)),
+    // 0.3));
 
     addCommands(
         (new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180))
