@@ -178,7 +178,7 @@ public class HopperSubsystem extends SubsystemBase {
     /* ----- RIGHT SHOOTER ----- */
     double rSpeed = getRightShooterVelocity();
     double rError = (targetShooterVelocity - rSpeed); // Normalize error
-    if (Math.abs(rError) > I_ZONE) {
+    if (Math.abs(rError) > ACCPETED_SHOOTER_ERROR) {
       rIError = 0;
     } else {
       rIError += rError;
@@ -188,7 +188,7 @@ public class HopperSubsystem extends SubsystemBase {
     /* ----- LEFT SHOOTER ----- */
     double lSpeed = getLeftShooterVelocity();
     double lError = (targetShooterVelocity - lSpeed);
-    if (Math.abs(lError) > I_ZONE) {
+    if (Math.abs(lError) > ACCPETED_SHOOTER_ERROR) {
       lIError = 0;
     } else {
       lIError += lError;

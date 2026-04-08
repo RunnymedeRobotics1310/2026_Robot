@@ -87,15 +87,17 @@ public class DriveToTowerCommand extends LoggingCommand {
     final double y = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseY();
     final double x = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseX();
     final double wallDist;
+    final double errorM;
 
     if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
       wallDist = x;
+      errorM = y - yCoord;
     } else {
       wallDist = Constants.FieldConstants.FIELD_EXTENT_METRES_X - x;
+      errorM = yCoord - y;
     }
-    final double errorM = yCoord - y;
 
-    vY = -2 * errorM;
+    vY = 2 * errorM;
 
     if (wallDist > 1.8) vX = 1; // go faster if further away from thing
     else vX = .25; // slow zone for last 15cm
@@ -126,8 +128,19 @@ public class DriveToTowerCommand extends LoggingCommand {
 
     final double y = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseY();
     final double x = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseX();
-    boolean yAligned = Math.abs(yCoord - y) < .02;
-    boolean xAligned = x < 1.6;
+    final double wallDist;
+    final double errorM;
+
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
+      wallDist = x;
+      errorM = y - yCoord;
+    } else {
+      wallDist = Constants.FieldConstants.FIELD_EXTENT_METRES_X - x;
+      errorM = yCoord - y;
+    }
+
+    boolean yAligned = Math.abs(errorM) < .02;
+    boolean xAligned = wallDist < 1.6;
 
     return yAligned && xAligned;
 
