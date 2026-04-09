@@ -97,13 +97,13 @@ public class DriveToTowerCommand extends LoggingCommand {
       errorM = yCoord - y;
     }
 
-    vY = 2 * errorM;
+    vY = 2.5 * errorM;
 
-    if (wallDist > 1.8) vX = 1; // go faster if further away from thing
+    if (wallDist > 1.85) vX = .75; // go faster if further away from thing
     else vX = .25; // slow zone for last 15cm
 
-    if (wallDist < 1.7 && Math.abs(errorM) > .05) vX = 0; // too close and not aligned
-    else if (Math.abs(errorM) > .5) vX = 0; // too far and not aligned
+    if (wallDist < 1.75 && Math.abs(errorM) > .02) vX = 0; // too close and not aligned
+    else if (Math.abs(errorM) > 1) vX = 0; // too far and not aligned
 
     double omega = swerve.computeOmega(theta);
     if (SwerveUtils.isCloseEnough(swerve.getYaw(), theta, 5))
@@ -143,10 +143,6 @@ public class DriveToTowerCommand extends LoggingCommand {
     boolean xAligned = wallDist < 1.6;
 
     return yAligned && xAligned;
-
-    //    return tY < -11.4; // tY when aligned is 11.5ish
-    //      return false;
-    // will eventually end based on a sensor in the climb
   }
 
   @Override

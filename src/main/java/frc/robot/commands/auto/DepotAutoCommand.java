@@ -52,15 +52,9 @@ public class DepotAutoCommand extends SequentialCommandGroup {
 
     addCommands(
         (new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180))
-            //                .alongWith(new AutoClimbCommand(climb, hopper, true))
-            )
+                .alongWith(new AutoClimbCommand(climb, hopper, true)))
             .andThen(
                 new DriveToTowerCommand(swerve, vision, false)
-                //                    .andThen(new AutoClimbCommand(climb, hopper, false))
-                ));
-
-    //    addCommands(
-    //        new DriveToTowerCommand(swerve, vision, false)
-    //            .andThen(new AutoClimbCommand(climb, hopper, false)));
+                    .andThen(new AutoClimbCommand(climb, hopper, false))));
   }
 }
