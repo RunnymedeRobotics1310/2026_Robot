@@ -429,39 +429,6 @@ public class SwerveSubsystem extends SubsystemBase {
     HubTargetVector velocity = new HubTargetVector(vX, vY);
 
     hubTarget.subtract(velocity);
-
-    //
-
     return hubTarget;
-  }
-
-  public double calculateHubAngleDegForVelocity(Translation2d velocity) {
-
-    Pose2d robotPose = getPose();
-    Translation2d hubPose = Constants.FieldLocation.HUB_CENTRE.getLocation();
-
-    // if past alliance zone, point at trench
-    boolean pastHub = RunnymedeUtils.isFurtherThan(robotPose, hubPose);
-    Telemetry.drive.pastHub = pastHub;
-
-    if (pastHub) {
-      if (RunnymedeUtils.isLeftOf(robotPose, hubPose)) {
-        hubPose = Constants.FieldLocation.ZONE_SHOTS_LEFT.getLocation();
-      } else {
-        hubPose = Constants.FieldLocation.ZONE_SHOTS_RIGHT.getLocation();
-      }
-    }
-
-    double dX = hubPose.getX() - robotPose.getX();
-    double dY = hubPose.getY() - robotPose.getY();
-
-    HubTargetVector hubTarget = new HubTargetVector(dX, dY);
-
-    double vX = velocity.getX();
-    double vY = velocity.getY();
-    HubTargetVector velocityVector = new HubTargetVector(vX, vY);
-
-    hubTarget.subtract(velocityVector);
-    return hubTarget.angleDegrees;
   }
 }

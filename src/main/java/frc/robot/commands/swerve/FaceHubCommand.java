@@ -1,7 +1,6 @@
 package frc.robot.commands.swerve;
 
 import ca.team1310.swerve.utils.SwerveUtils;
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
@@ -10,15 +9,15 @@ import frc.robot.subsystems.swerve.SwerveSubsystem;
 public class FaceHubCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerve;
-  private final Translation2d velocity;
+  private final boolean noFinish;
 
   public FaceHubCommand(SwerveSubsystem swerve) {
-    this(swerve, new Translation2d());
+    this(swerve, false);
   }
 
-  public FaceHubCommand(SwerveSubsystem swerve, Translation2d velocity) {
+  public FaceHubCommand(SwerveSubsystem swerve, boolean noFinish) {
     this.swerve = swerve;
-    this.velocity = velocity;
+    this.noFinish = noFinish;
     addRequirements(swerve);
   }
 
@@ -29,14 +28,14 @@ public class FaceHubCommand extends LoggingCommand {
 
   @Override
   public void execute() {
-    double hubAngle = swerve.calculateHubAngleDegForVelocity(velocity);
+    double hubAngle = swerve.getHubAngleDeg();
     double omega = swerve.computeOmega(hubAngle);
-    log("omega: " + omega);
     swerve.driveFieldOriented(0, 0, omega);
   }
 
   @Override
   public boolean isFinished() {
+    if (noFinish) return false;
     return SwerveUtils.isCloseEnough(swerve.getYaw(), swerve.getHubAngleDeg(), 3);
   }
 
@@ -44,6 +43,6 @@ public class FaceHubCommand extends LoggingCommand {
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
     swerve.stop();
-    log("stopping!!!!!");
+    log("facing hub");
   }
 }

@@ -25,8 +25,6 @@ public class LazyIntakeCommand extends LoggingCommand {
   public void execute() {
     // door go out
     // spin motors
-    // only when you press a button
-
     hopperSubsystem.setRollerSpeeds(-1, -0.8);
     hopperSubsystem.setDoorSpeed(DOOR_SPEED);
   }

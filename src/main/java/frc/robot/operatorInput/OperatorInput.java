@@ -79,9 +79,10 @@ public class OperatorInput extends SubsystemBase {
 
     // Auto align to climb
     new Trigger(driverController::getXButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, false));
+        .onTrue(new DriveToTowerCommand(swerve, vision, climb, false));
 
-    new Trigger(driverController::getBButton).onTrue(new DriveToTowerCommand(swerve, vision, true));
+    new Trigger(driverController::getBButton)
+        .onTrue(new DriveToTowerCommand(swerve, vision, climb, true));
 
     // not included here:
     //   shoot - right trigger

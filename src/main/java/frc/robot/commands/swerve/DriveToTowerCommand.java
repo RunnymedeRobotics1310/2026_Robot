@@ -1,5 +1,6 @@
 package frc.robot.commands.swerve;
 
+import static frc.robot.Constants.ClimbConstants.MAX_CLIMB_POSITION;
 import static frc.robot.Constants.VisionConstants.VISION_SECONDARY_LIMELIGHT_NAME;
 
 import ca.team1310.swerve.utils.SwerveUtils;
@@ -9,6 +10,7 @@ import frc.robot.RunnymedeUtils;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.commands.auto.config.ConfigParam;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -17,10 +19,6 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
     category = "drive",
     description = "Drive toward an AprilTag using vision")
 public class DriveToTowerCommand extends LoggingCommand {
-
-  private static final int MAX_NO_DATA_COUNT_CYCLES = 50; // TODO: fixme: move these to constants
-  private static final int LEFT_TOWER_TX_OFFSET = 24; // robot left
-  private static final int RIGHT_TOWER_TX_OFFSET = -13; // robot right
 
   // 32.75in -> between posts
   // 147.47in +- (32.75in/2)
@@ -31,32 +29,40 @@ public class DriveToTowerCommand extends LoggingCommand {
 
   private final SwerveSubsystem swerve;
   private final LimelightVisionSubsystem vision;
+  private final ClimbSubsystem climb;
+  private final boolean isRightSide;
 
-  private int tagId = -1;
-  private int noDataCount = 0;
-  private final int tXOffset;
-  private final double yCoord;
+  private double yCoord;
   private int theta = 0;
 
   public DriveToTowerCommand(
       SwerveSubsystem swerve,
       LimelightVisionSubsystem vision,
+      ClimbSubsystem climb,
       @ConfigParam(value = "rightSide", description = "Approach right side of tower")
           boolean isRightSide) {
     super();
     this.swerve = swerve;
     this.vision = vision;
+    this.climb = climb;
+    this.isRightSide = isRightSide;
     addRequirements(swerve, vision);
+  }
+
+  @Override
+  public void initialize() {
+    logCommandStart();
+    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
+      theta = 180;
+    }
 
     if (isRightSide) {
-      tXOffset = RIGHT_TOWER_TX_OFFSET;
       if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
         yCoord = BLUE_TOWER_RIGHT_POST_M;
       } else {
         yCoord = Constants.FieldConstants.FIELD_EXTENT_METRES_Y - BLUE_TOWER_RIGHT_POST_M;
       }
     } else {
-      tXOffset = LEFT_TOWER_TX_OFFSET;
       if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Blue) {
         yCoord = BLUE_TOWER_LEFT_POST_M;
       } else {
@@ -66,23 +72,7 @@ public class DriveToTowerCommand extends LoggingCommand {
   }
 
   @Override
-  public void initialize() {
-    logCommandStart();
-    noDataCount = 0;
-    if (RunnymedeUtils.getRunnymedeAlliance() == DriverStation.Alliance.Red) {
-      tagId = 15;
-    } else {
-      tagId = 31;
-      theta = 180;
-    }
-  }
-
-  @Override
   public void execute() {
-
-    // drive to tag
-    double vX; // forward/backward speed
-    final double vY; // left/right speed
 
     final double y = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseY();
     final double x = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseX();
@@ -97,13 +87,15 @@ public class DriveToTowerCommand extends LoggingCommand {
       errorM = yCoord - y;
     }
 
-    vY = 2.5 * errorM;
+    // drive to tag
+    double vX = 0.75; // forward/backward speed
+    double vY = 3 * errorM; // left/right speed
 
-    if (wallDist > 1.85) vX = .75; // go faster if further away from thing
-    else vX = .25; // slow zone for last 15cm
-
-    if (wallDist < 1.75 && Math.abs(errorM) > .02) vX = 0; // too close and not aligned
+    if (wallDist < 1.75
+        && (Math.abs(errorM) > .02 || climb.getClimbPosition() < MAX_CLIMB_POSITION))
+      vX = 0; // too close and not aligned || too close and climb not up
     else if (Math.abs(errorM) > 1) vX = 0; // too far and not aligned
+    else if (wallDist < 1.85) vX = .25; // go slower if close to the thing
 
     double omega = swerve.computeOmega(theta);
     if (SwerveUtils.isCloseEnough(swerve.getYaw(), theta, 5))
@@ -113,16 +105,6 @@ public class DriveToTowerCommand extends LoggingCommand {
 
   @Override
   public boolean isFinished() {
-
-    // if u can't see the tag for a few secs, stop
-    if (noDataCount > MAX_NO_DATA_COUNT_CYCLES && Math.abs(swerve.getYaw() - theta) < 5) {
-      log("Finishing - no vision data for " + noDataCount + " cycles");
-      return true;
-    }
-
-    // if ur in the spot, stop
-    final double tY = vision.heightOfTarget(tagId, VISION_SECONDARY_LIMELIGHT_NAME);
-    //    log("TY: " + tY);
 
     if (DriverStation.isAutonomous() && DriverStation.getMatchTime() <= 2) return true;
 
@@ -148,7 +130,8 @@ public class DriveToTowerCommand extends LoggingCommand {
   @Override
   public void end(boolean interrupted) {
     logCommandEnd(interrupted);
-    noDataCount = 0;
+    yCoord = 0;
+    theta = 0;
     swerve.stop();
   }
 }
