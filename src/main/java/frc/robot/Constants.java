@@ -82,6 +82,7 @@ public final class Constants {
       LEFT_SHOOT_CLIMB,
       RIGHT_SHOOT_CLIMB,
       DEPOT,
+      DOWN_TO_EARTH,
       CUSTOM
     }
 

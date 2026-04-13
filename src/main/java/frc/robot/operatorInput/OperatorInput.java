@@ -268,6 +268,8 @@ public class OperatorInput extends SubsystemBase {
     autoPatternChooser.addOption(
         "Right Shoot Climb", Constants.AutoConstants.AutoPattern.RIGHT_SHOOT_CLIMB);
     autoPatternChooser.addOption("Depot", Constants.AutoConstants.AutoPattern.DEPOT);
+    autoPatternChooser.addOption(
+        "Down To Earth", Constants.AutoConstants.AutoPattern.DOWN_TO_EARTH);
 
     SmartDashboard.putData("1310/auto/Custom Auto Selector", customAutoChooser);
     refreshCustomAutoChooser();
@@ -309,6 +311,7 @@ public class OperatorInput extends SubsystemBase {
       case RIGHT_SHOOT_CLIMB ->
           new RightShootClimbAutoCommand(swerve, hopper, vision, climb, delay);
       case DEPOT -> new DepotAutoCommand(swerve, hopper, vision, climb, delay);
+      case DOWN_TO_EARTH -> new DownToEarthAutoCommand(swerve, hopper, vision, climb, delay);
       case CUSTOM -> buildCustomAutoCommand(delay);
       default -> new InstantCommand();
     };
