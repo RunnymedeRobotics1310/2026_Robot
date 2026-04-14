@@ -105,6 +105,7 @@ public class DefaultHopperCommand extends LoggingCommand {
       hopperSubsystem.setShooterVelocity(0);
       hopperSubsystem.setKickerSpeed(0);
       hopperSubsystem.setAgitatorSpeed(0);
+      if (!oi.isPulseDoor()) hopperSubsystem.stopDoorPulsing();
     }
     //    if (oi.isIntakeDoingStuff()) hopperSubsystem.setAgitatorSpeed(0);
     //    if (oi.shootFromAnywhere()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
@@ -117,6 +118,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.isStopFlywheel()) hopperSubsystem.setShooterSpeed(-0.01);
     if (oi.isReverseFlywheel()) hopperSubsystem.setShooterSpeed(-0.1);
     if (oi.putHoodDown()) hopperSubsystem.setHood(0);
+    if (!oi.isIntakeDoingStuff() && oi.isPulseDoor()) hopperSubsystem.pulseDoor(0.25);
 
     if (oi.isIntakeForwards()) hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
     if (oi.isIntakeReverse()) {
@@ -149,6 +151,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     //    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     //    hopperSubsystem.reverseAgitator(1);
     hopperSubsystem.pulseAgitator(1);
+    if (!oi.isIntakeDoingStuff()) hopperSubsystem.pulseDoor(0.25);
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));

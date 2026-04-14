@@ -1,9 +1,7 @@
 package frc.robot.commands.swerve;
 
 import static ca.team1310.swerve.utils.SwerveUtils.normalizeDegrees;
-import static frc.robot.Constants.OperatorConstants.GENERAL_SPEED_FACTOR;
-import static frc.robot.Constants.OperatorConstants.MAX_SPEED_FACTOR;
-import static frc.robot.Constants.OperatorConstants.SLOW_SPEED_FACTOR;
+import static frc.robot.Constants.OperatorConstants.*;
 import static frc.robot.Constants.Swerve.ROTATION_CONFIG;
 import static frc.robot.Constants.Swerve.TRANSLATION_CONFIG;
 import static frc.robot.RunnymedeUtils.getRunnymedeAlliance;
@@ -79,11 +77,13 @@ public class TeleopDriveCommand extends LoggingCommand {
     // Runnymede Controller inverts stick y-axis values, so "forward" on stick is positive.
     // Thus, positive y stick axis maps to positive x translation on the field.
     final double vX = oi.getDriverControllerAxis(LEFT, Y);
+    final double vXop = oi.getOperatorControllerAxis(RIGHT, Y) * OPERATOR_CONTROLLER_SPEED_FACTOR;
 
     // Left and right movement on the left stick (the stick's x-axis) maps to the y-axis on the
     // field. Left on the stick (negative x) maps to positive y on the field, and vice versa.
     // Thus, negative x stick axis maps to positive y translation on the field.
     final double vY = -oi.getDriverControllerAxis(LEFT, X);
+    final double vYop = -oi.getOperatorControllerAxis(RIGHT, X) * OPERATOR_CONTROLLER_SPEED_FACTOR;
 
     // Left and right on the right stick will change the direction the robot is facing - its
     // heading. Positive x values on the stick translate to clockwise motion, and vice versa.
@@ -103,7 +103,7 @@ public class TeleopDriveCommand extends LoggingCommand {
     final double boostFactor =
         isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
 
-    Translation2d velocity = calculateTeleopVelocity(vX, vY, boostFactor, invert);
+    Translation2d velocity = calculateTeleopVelocity(vX + vXop, vY + vYop, boostFactor, invert);
 
     final boolean doFlip = rotate180Val && !prevRotate180Val;
     prevRotate180Val = rotate180Val;

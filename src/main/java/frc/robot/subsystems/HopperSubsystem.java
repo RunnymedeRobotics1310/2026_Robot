@@ -44,11 +44,17 @@ public class HopperSubsystem extends SubsystemBase {
   private final Timer agitatorTimer = new Timer();
   private boolean agitatorState = false;
 
+  private final Timer doorPulseTimer = new Timer();
+  private boolean doorPulseState = false;
+  private boolean isDoorPulsing = false;
+
   private ShotCounter shotCounter = new ShotCounter();
 
   public HopperSubsystem() {
     agitatorTimer.start();
     agitatorTimer.reset();
+    doorPulseTimer.start();
+    doorPulseTimer.reset();
   }
 
   @Override
@@ -64,6 +70,7 @@ public class HopperSubsystem extends SubsystemBase {
     Telemetry.intake.doorSetpoint = doorSetpoint;
     Telemetry.intake.doorAngle = getDoorAngle();
     Telemetry.intake.isDoorClosed = getDoorClosed();
+    Telemetry.intake.isDoorPulsing = isDoorPulsing;
 
     updateShooterSpeed();
     updateDoorSpeed();
@@ -206,6 +213,7 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   private void updateDoorSpeed() {
+    if (isDoorPulsing) return;
     if (doorSetpoint == -1) return;
     double error = doorSetpoint - getDoorAngle();
 
@@ -225,6 +233,8 @@ public class HopperSubsystem extends SubsystemBase {
     setAgitatorSpeed(0);
     setRollerSpeeds(0, 0);
     setDoorSpeed(0);
+
+    isDoorPulsing = false;
   }
 
   public void pulseAgitator(double period) {
@@ -238,6 +248,24 @@ public class HopperSubsystem extends SubsystemBase {
     } else {
       setAgitatorSpeed(0);
     }
+  }
+
+  public void pulseDoor(double period) {
+    isDoorPulsing = true;
+    if (doorPulseTimer.get() >= period) {
+      doorPulseTimer.reset();
+      doorPulseState = !doorPulseState;
+    }
+
+    if (doorPulseState) {
+      setDoorSpeed(DOOR_SPEED / 2);
+    } else {
+      setDoorSpeed(-DOOR_SPEED);
+    }
+  }
+
+  public void stopDoorPulsing() {
+    isDoorPulsing = false;
   }
 
   public void reverseAgitator(double period) {

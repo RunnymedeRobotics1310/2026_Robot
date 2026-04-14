@@ -24,12 +24,12 @@ public class DownToEarthAutoCommand extends SequentialCommandGroup {
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
     addCommands(
-        new DriveToFieldLocationCommand(swerve, new Pose2d(1.1, 6.0, new Rotation2d(270)), 0.3));
+        new DriveToFieldLocationCommand(swerve, new Pose2d(1.1, 5.9, new Rotation2d(270)), 0.3));
 
     addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(90)));
     addCommands(
         new DriveFieldOrientedCommand(swerve, -0.4, 0, 90)
-            .withTimeout(2.0)
+            .withTimeout(2.8)
             .deadlineFor(new LazyIntakeCommand(hopper)));
 
     addCommands(new DriveFieldOrientedCommand(swerve, 1, 0, 90).withTimeout(1));

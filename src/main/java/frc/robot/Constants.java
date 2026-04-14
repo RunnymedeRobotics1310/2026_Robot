@@ -58,6 +58,8 @@ public final class Constants {
     public static final double GENERAL_SPEED_FACTOR = .5;
     public static final double MAX_SPEED_FACTOR = 1;
     public static final double SLOW_SPEED_FACTOR = .1;
+
+    public static final double OPERATOR_CONTROLLER_SPEED_FACTOR = .05;
   }
 
   public static final class LightingConstants {

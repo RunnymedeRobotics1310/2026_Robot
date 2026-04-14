@@ -31,6 +31,8 @@ public class IntakeTelemetry {
   /** Whether the hopper is full or not */
   public boolean isHopperFull = false;
 
+  public boolean isDoorPulsing = false;
+
   void post() {
 
     if (enabled) {
@@ -40,6 +42,7 @@ public class IntakeTelemetry {
       SmartDashboard.putNumber(PREFIX + "Intake/DoorSetpoint", doorSetpoint);
       SmartDashboard.putNumber(PREFIX + "Intake/DoorAngle", round(doorAngle));
       SmartDashboard.putBoolean(PREFIX + "Intake/HopperFull", isHopperFull);
+      SmartDashboard.putBoolean(PREFIX + "Intake/DoorPulsing", isDoorPulsing);
     }
   }
 }

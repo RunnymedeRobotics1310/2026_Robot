@@ -192,8 +192,8 @@ public class OperatorInput extends SubsystemBase {
     return operatorController.getAButton();
   }
 
-  public boolean isClimbSolenoid() {
-    return isShift() && operatorController.getXButton();
+  public boolean isPulseDoor() {
+    return operatorController.getXButton();
   }
 
   public boolean putClimbUp() {
@@ -223,6 +223,21 @@ public class OperatorInput extends SubsystemBase {
           switch (axis) {
             case X -> driverController.getRightX();
             case Y -> driverController.getRightY();
+          };
+    };
+  }
+
+  public double getOperatorControllerAxis(Stick stick, Axis axis) {
+    return switch (stick) {
+      case LEFT ->
+          switch (axis) {
+            case X -> operatorController.getLeftX();
+            case Y -> operatorController.getLeftY();
+          };
+      case RIGHT ->
+          switch (axis) {
+            case X -> operatorController.getRightX();
+            case Y -> operatorController.getRightY();
           };
     };
   }
