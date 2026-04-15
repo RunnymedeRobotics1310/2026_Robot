@@ -41,7 +41,7 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Shooter/CurrentLeftShooterRPM",
+                    "logKey": "/SmartDashboard/1310/Shooter/CurrentLeftShooterRPM",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -51,7 +51,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Shooter/CurrentRightShooterRPM",
+                    "logKey": "/SmartDashboard/1310/Shooter/CurrentRightShooterRPM",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -61,7 +61,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Shooter/KickerSpeed",
+                    "logKey": "/SmartDashboard/1310/Shooter/KickerSpeed",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -71,7 +71,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Shooter/TargetShooterRPM",
+                    "logKey": "/SmartDashboard/1310/Shooter/TargetShooterRPM",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -83,7 +83,7 @@
                 "rightSources": [
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Drive/DistanceToHub",
+                    "logKey": "/SmartDashboard/1310/Drive/DistanceToHub",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -93,7 +93,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Shooter/KickerTarget",
+                    "logKey": "/SmartDashboard/1310/Shooter/KickerTarget",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -105,7 +105,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "SmartDashboard/1310/Shooter/CountPastHubShots",
+                    "logKey": "/SmartDashboard/1310/Shooter/CountPastHubShots",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -114,7 +114,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "SmartDashboard/1310/Shooter/CountTotalShots",
+                    "logKey": "/SmartDashboard/1310/Shooter/CountTotalShots",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -123,7 +123,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "SmartDashboard/1310/BotState",
+                    "logKey": "/SmartDashboard/1310/BotState",
                     "logType": "String",
                     "visible": true,
                     "options": {
@@ -155,7 +155,7 @@
                 "leftSources": [
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Intake/BottomRollerSpeed",
+                    "logKey": "/SmartDashboard/1310/Intake/BottomRollerSpeed",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -165,7 +165,7 @@
                   },
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Intake/TopRollerSpeed",
+                    "logKey": "/SmartDashboard/1310/Intake/TopRollerSpeed",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -177,7 +177,7 @@
                 "rightSources": [
                   {
                     "type": "stepped",
-                    "logKey": "SmartDashboard/1310/Intake/DoorAngle",
+                    "logKey": "/SmartDashboard/1310/Intake/DoorAngle",
                     "logType": "Number",
                     "visible": true,
                     "options": {
@@ -189,7 +189,7 @@
                 "discreteSources": [
                   {
                     "type": "stripes",
-                    "logKey": "SmartDashboard/1310/Intake/DoorLowerLimit",
+                    "logKey": "/SmartDashboard/1310/Intake/DoorLowerLimit",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -198,7 +198,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "SmartDashboard/1310/Intake/HopperFull",
+                    "logKey": "/SmartDashboard/1310/Intake/HopperFull",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -230,7 +230,7 @@
                 "sources": [
                   {
                     "type": "robot",
-                    "logKey": "NT:1310/OdoDebug/Odometry/Pose",
+                    "logKey": "/1310/OdoDebug/Odometry/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -239,7 +239,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:1310/OdoDebug/Vision/Pose",
+                    "logKey": "/1310/OdoDebug/Vision/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -248,7 +248,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:1310/OdoDebug/Vision/SecondaryPose",
+                    "logKey": "/1310/OdoDebug/Vision/SecondaryPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -271,7 +271,7 @@
                 "sources": [
                   {
                     "type": "robot",
-                    "logKey": "NT:1310/OdoDebug/Odometry/Pose",
+                    "logKey": "/1310/OdoDebug/Odometry/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -280,7 +280,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:1310/OdoDebug/Vision/Pose",
+                    "logKey": "/1310/OdoDebug/Vision/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -290,7 +290,7 @@
                   },
                   {
                     "type": "robot",
-                    "logKey": "NT:1310/OdoDebug/WheelOnly/Pose",
+                    "logKey": "/1310/OdoDebug/WheelOnly/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
