@@ -13,7 +13,7 @@ public class RunnymedeUtils {
   private static final long ALLIANCE_CACHE_TIME_MILLIS = 5000;
   private static DriverStation.Alliance alliance = null;
   private static long allianceLastUpdated = 0;
-  private static double teleOpMatchStartTime = 0;
+  private static double autoOpMatchStartTime = 0;
 
   /**
    * Get the active Alliance. This will return Red if there is no data from the FMS/DriverStation.
@@ -42,8 +42,8 @@ public class RunnymedeUtils {
    *
    * @param seconds From Timer.getFPGATimestamp()
    */
-  public static void setTeleopMatchStartTime(double seconds) {
-    teleOpMatchStartTime = seconds;
+  public static void setAutoMatchStartTime(double seconds) {
+    autoOpMatchStartTime = seconds;
   }
 
   /**
@@ -51,11 +51,11 @@ public class RunnymedeUtils {
    *
    * @return Seconds if there's time remaining, 0 if we're overtime.
    */
-  public static double teleopMatchTimeRemaining() {
-    double remainingTime = Timer.getFPGATimestamp() - teleOpMatchStartTime;
+  public static double autoMatchTimeRemaining() {
+    double remainingTime = Timer.getFPGATimestamp() - autoOpMatchStartTime;
 
     // If match time is within 2m15s, return it.  Otherwise, return 0.
-    return (135 - remainingTime) >= 0 ? 135 - remainingTime : -1;
+    return (20 - remainingTime) >= 0 ? 20 - remainingTime : -1;
   }
 
   /**

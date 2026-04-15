@@ -106,7 +106,7 @@ public class DriveToTowerCommand extends LoggingCommand {
   @Override
   public boolean isFinished() {
 
-    if (DriverStation.isAutonomous() && DriverStation.getMatchTime() <= 2) return true;
+    if (DriverStation.isAutonomous() && RunnymedeUtils.autoMatchTimeRemaining() < 2) return true;
 
     final double y = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseY();
     final double x = vision.getBotPose(VISION_SECONDARY_LIMELIGHT_NAME).getPoseX();
