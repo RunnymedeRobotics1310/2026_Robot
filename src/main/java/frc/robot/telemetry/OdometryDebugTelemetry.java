@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class OdometryDebugTelemetry {
 
-  private static final String NT_PREFIX = PREFIX + "OdoDebug/";
+  private static final String NT_PREFIX = PREFIX + "OdoDebug";
 
   /** Maximum number of poses to keep in history (5 seconds at 50Hz). */
   private static final int MAX_HISTORY_SIZE = 250;
@@ -78,18 +78,19 @@ public class OdometryDebugTelemetry {
     NetworkTable table = nt.getTable(NT_PREFIX);
 
     // Create struct publishers for proper Pose2d logging (AdvantageScope compatible)
-    odometryPosePublisher = nt.getStructTopic(NT_PREFIX + "Odometry/Pose", Pose2d.struct).publish();
-    visionPosePublisher = nt.getStructTopic(NT_PREFIX + "Vision/Pose", Pose2d.struct).publish();
+    odometryPosePublisher =
+        nt.getStructTopic(NT_PREFIX + "/Odometry/Pose", Pose2d.struct).publish();
+    visionPosePublisher = nt.getStructTopic(NT_PREFIX + "/Vision/Pose", Pose2d.struct).publish();
     visionSecondaryPosePublisher =
-        nt.getStructTopic(NT_PREFIX + "Vision/SecondaryPose", Pose2d.struct).publish();
+        nt.getStructTopic(NT_PREFIX + "/Vision/SecondaryPose", Pose2d.struct).publish();
     wheelOnlyPosePublisher =
-        nt.getStructTopic(NT_PREFIX + "WheelOnly/Pose", Pose2d.struct).publish();
+        nt.getStructTopic(NT_PREFIX + "/WheelOnly/Pose", Pose2d.struct).publish();
     odometryTrailPublisher =
-        nt.getStructArrayTopic(NT_PREFIX + "Odometry/Trail", Pose2d.struct).publish();
+        nt.getStructArrayTopic(NT_PREFIX + "/Odometry/Trail", Pose2d.struct).publish();
     visionTrailPublisher =
-        nt.getStructArrayTopic(NT_PREFIX + "Vision/Trail", Pose2d.struct).publish();
+        nt.getStructArrayTopic(NT_PREFIX + "/Vision/Trail", Pose2d.struct).publish();
     wheelOnlyTrailPublisher =
-        nt.getStructArrayTopic(NT_PREFIX + "WheelOnly/Trail", Pose2d.struct).publish();
+        nt.getStructArrayTopic(NT_PREFIX + "/WheelOnly/Trail", Pose2d.struct).publish();
 
     // Delta publishers (legacy: fused vs vision)
     NetworkTable deltaTable = table.getSubTable("Delta");
