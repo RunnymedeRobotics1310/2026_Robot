@@ -279,7 +279,7 @@
                 "sources": [
                   {
                     "type": "robot",
-                    "logKey": "NT:1310/OdoDebug/Odometry/Pose",
+                    "logKey": "NT:/1310/OdoDebug/Odometry/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -288,7 +288,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:1310/OdoDebug/Vision/Pose",
+                    "logKey": "NT:/1310/OdoDebug/Vision/Pose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -297,7 +297,7 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "NT:1310/OdoDebug/Vision/SecondaryPose",
+                    "logKey": "NT:/1310/OdoDebug/Vision/SecondaryPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {

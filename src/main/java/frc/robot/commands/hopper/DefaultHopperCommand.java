@@ -151,7 +151,7 @@ public class DefaultHopperCommand extends LoggingCommand {
     //    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     //    hopperSubsystem.reverseAgitator(1);
     hopperSubsystem.pulseAgitator(1);
-    if (!oi.isIntakeDoingStuff()) hopperSubsystem.pulseDoor(0.25);
+    //    if (!oi.isIntakeDoingStuff()) hopperSubsystem.pulseDoor(0.25);
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));
