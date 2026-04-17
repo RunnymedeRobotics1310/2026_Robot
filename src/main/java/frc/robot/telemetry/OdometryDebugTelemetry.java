@@ -14,7 +14,7 @@ import java.util.LinkedList;
  */
 public class OdometryDebugTelemetry {
 
-  private static final String NT_PREFIX = PREFIX + "OdoDebug";
+  private static final String NT_PREFIX = "/" + PREFIX + "OdoDebug";
 
   /** Maximum number of poses to keep in history (5 seconds at 50Hz). */
   private static final int MAX_HISTORY_SIZE = 250;
