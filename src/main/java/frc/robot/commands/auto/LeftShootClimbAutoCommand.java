@@ -31,7 +31,7 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
         ((new AutoShooterCommand(hopper, swerve, 16).withTimeout(5))
             .deadlineFor(
                 new DriveToFieldLocationAimedAtHubCommand(
-                        swerve, new Pose2d(2.2, 4.0, new Rotation2d(0)), 0.3, 0.3)
+                        swerve, new Pose2d(2.2, 4.1617, new Rotation2d(0)), 0.3, 0.3)
                     .andThen(new FaceHubCommand(swerve, true)))));
 
     addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180)));

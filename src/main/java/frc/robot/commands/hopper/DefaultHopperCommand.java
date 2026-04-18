@@ -118,7 +118,8 @@ public class DefaultHopperCommand extends LoggingCommand {
     if (oi.isStopFlywheel()) hopperSubsystem.setShooterSpeed(-0.01);
     if (oi.isReverseFlywheel()) hopperSubsystem.setShooterSpeed(-0.1);
     if (oi.putHoodDown()) hopperSubsystem.setHood(0);
-    if (!oi.isIntakeDoingStuff() && oi.isPulseDoor()) hopperSubsystem.pulseDoor(0.25);
+    if (!oi.isIntakeDoingStuff() && oi.isPulseDoor() && Telemetry.climb.climbDown)
+      hopperSubsystem.pulseDoor(0.25);
 
     if (oi.isIntakeForwards()) hopperSubsystem.setRollerSpeeds(INTAKE_SPEED, INTAKE_SPEED);
     if (oi.isIntakeReverse()) {

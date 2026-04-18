@@ -77,7 +77,7 @@ public class AutoShooterCommand extends LoggingCommand {
     //    hopperSubsystem.reverseAgitator(1);
     hopperSubsystem.pulseAgitator(1);
     hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
-    hopperSubsystem.pulseDoor(0.25);
+    //    hopperSubsystem.pulseDoor(0.25);
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));

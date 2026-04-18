@@ -120,7 +120,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isZeroGyro() {
-    return driverController.getBackButton();
+    return driverController.getBackButton() && driverController.getStartButton();
   }
 
   public boolean getRotate180Val() {
