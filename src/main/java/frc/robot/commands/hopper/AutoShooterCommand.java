@@ -4,8 +4,7 @@ import static frc.robot.Constants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.Constants.ShooterConstants.KICKER_RUNSPEED;
 
 import ca.team1310.swerve.utils.SwerveUtils;
-import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.RunnymedeUtils;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.LoggingCommand;
 import frc.robot.commands.auto.config.AutoConfigurable;
 import frc.robot.subsystems.HopperSubsystem;
@@ -26,6 +25,8 @@ public class AutoShooterCommand extends LoggingCommand {
 
   private boolean firstShot = false;
 
+  private Timer shakeyShakyeTimer = new Timer();
+
   public AutoShooterCommand(
       HopperSubsystem hopperSubsystem, SwerveSubsystem swerveSubsystem, int shots) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -40,6 +41,8 @@ public class AutoShooterCommand extends LoggingCommand {
   public void initialize() {
     logCommandStart();
     firstShot = false;
+    shakeyShakyeTimer.start();
+    shakeyShakyeTimer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -51,7 +54,8 @@ public class AutoShooterCommand extends LoggingCommand {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (DriverStation.isAutonomous() && RunnymedeUtils.autoMatchTimeRemaining() < 5) return true;
+    // if (DriverStation.isAutonomous() && RunnymedeUtils.autoMatchTimeRemaining() < 5) return
+    // true;
 
     return hopperSubsystem.getAutoShotCount() >= shots;
   }
@@ -62,6 +66,7 @@ public class AutoShooterCommand extends LoggingCommand {
     logCommandEnd(interrupted);
     hopperSubsystem.setHood(0);
     hopperSubsystem.stop();
+    shakeyShakyeTimer.stop();
   }
 
   // public static final double ACCEPTED_THRESHOLD = 200.0;
@@ -77,7 +82,12 @@ public class AutoShooterCommand extends LoggingCommand {
     //    hopperSubsystem.reverseAgitator(1);
     hopperSubsystem.pulseAgitator(1);
     hopperSubsystem.setRollerSpeeds(0, INTAKE_SPEED);
-    //    hopperSubsystem.pulseDoor(0.25);
+
+    if (shakeyShakyeTimer.get() < 9) {
+      hopperSubsystem.pulseDoor(0.25);
+    } else {
+      hopperSubsystem.setDoorSetpoint(0);
+    }
 
     // hood
     hopperSubsystem.setHood(hopperSubsystem.calculateHoodValule(distance));

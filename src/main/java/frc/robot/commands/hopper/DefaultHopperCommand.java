@@ -26,6 +26,7 @@ public class DefaultHopperCommand extends LoggingCommand {
   private boolean firstIntake = false;
   private final Timer intakeTimer = new Timer();
   private final Timer rollerPauseTimer = new Timer();
+  private final Timer poopPauseTimer = new Timer();
   private boolean pauseRollers = false;
 
   // Jeff's scary AI thingy
@@ -58,6 +59,8 @@ public class DefaultHopperCommand extends LoggingCommand {
     intakeTimer.start();
     rollerPauseTimer.reset();
     rollerPauseTimer.start();
+    poopPauseTimer.start();
+    poopPauseTimer.reset();
   }
 
   @Override
@@ -97,6 +100,7 @@ public class DefaultHopperCommand extends LoggingCommand {
 
     /* ----- SHOOTER ----- */
     if (oi.shootFromAnywhere()) shooting();
+    else if (oi.isPoop()) poop();
     else if (bridge.isDashboardConnected()) {
       handleShooterBridge();
     } else {
@@ -105,13 +109,13 @@ public class DefaultHopperCommand extends LoggingCommand {
       hopperSubsystem.setShooterVelocity(0);
       hopperSubsystem.setKickerSpeed(0);
       hopperSubsystem.setAgitatorSpeed(0);
+      poopPauseTimer.reset();
       if (!oi.isPulseDoor()) hopperSubsystem.stopDoorPulsing();
     }
     //    if (oi.isIntakeDoingStuff()) hopperSubsystem.setAgitatorSpeed(0);
     //    if (oi.shootFromAnywhere()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
 
     /* ----- OPERATOR OVERRIDES ----- */
-    if (oi.isRunAgitator()) hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
     if (oi.isStopAgitator()) hopperSubsystem.setAgitatorSpeed(0);
     if (oi.isReverseKicker()) hopperSubsystem.setKickerSpeed(-KICKER_RUNSPEED);
     if (oi.isRunKicker()) hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
@@ -222,5 +226,16 @@ public class DefaultHopperCommand extends LoggingCommand {
               + " kicker="
               + bridge.isKickerEnabled());
     }
+  }
+
+  private void poop() {
+    hopperSubsystem.setHood(0.5);
+
+    hopperSubsystem.setShooterVelocity(3500);
+    hopperSubsystem.setAgitatorSpeed(AGITATOR_RUNSPEED);
+    //    hopperSubsystem.pulseDoor(0.25);
+    //    if (poopPauseTimer.get() > 0.5) {
+    hopperSubsystem.setKickerSpeed(KICKER_RUNSPEED);
+    //    }
   }
 }

@@ -34,9 +34,9 @@ public class RightShootClimbAutoCommand extends SequentialCommandGroup {
 
     addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180)));
 
-    addCommands(
-        (new AutoClimbCommand(climb, hopper, true)
-                .alongWith(new DriveToTowerCommand(swerve, vision, climb, true)))
-            .andThen(new AutoClimbCommand(climb, hopper, false)));
+    //    addCommands(
+    //        (new AutoClimbCommand(climb, hopper, true)
+    //                .alongWith(new DriveToTowerCommand(swerve, vision, climb, true)))
+    //            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }

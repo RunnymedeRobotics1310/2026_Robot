@@ -15,7 +15,6 @@ import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoConfig;
 import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.hopper.LazyShooterCommand;
-import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
@@ -78,11 +77,12 @@ public class OperatorInput extends SubsystemBase {
     /* DRIVER CONTROLS */
 
     // Auto align to climb
-    new Trigger(driverController::getXButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, climb, false));
-
-    new Trigger(driverController::getBButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, climb, true));
+    // Commented out so we cant do the climb stuff
+    //    new Trigger(driverController::getXButton)
+    //        .onTrue(new DriveToTowerCommand(swerve, vision, climb, false));
+    //
+    //    new Trigger(driverController::getBButton)
+    //        .onTrue(new DriveToTowerCommand(swerve, vision, climb, true));
 
     // not included here:
     //   shoot - right trigger
@@ -99,10 +99,14 @@ public class OperatorInput extends SubsystemBase {
     /* OPERATOR CONTROLS */
 
     // Shoot from set range - ends when button is released, or after 100 seconds
-    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3900, 0, 100));
-
-    new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true));
-    new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
+    new Trigger(this::isSuperCloseShoot).whileTrue(new LazyShooterCommand(hopper, 1310, 0, 100));
+    new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 2900, 0.4, 100));
+    new Trigger(this::isFartherShoot).whileTrue(new LazyShooterCommand(hopper, 3400, 0.4, 100));
+    new Trigger(this::isFarShoot).whileTrue(new LazyShooterCommand(hopper, 3700, 0.5, 100));
+    new Trigger(this::isSuperFarShoot).whileTrue(new LazyShooterCommand(hopper, 4900, 0.3, 100));
+    // Commented climb commands
+    //    new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true));
+    //    new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
 
     // not included here:
     //   manual climb
@@ -127,7 +131,13 @@ public class OperatorInput extends SubsystemBase {
     return false;
   }
 
+  // Allways return false
   public boolean isFastMode() {
+    return false;
+    //    return driverController.getRightBumperButton();
+  }
+
+  public boolean isBoost() {
     return driverController.getRightBumperButton();
   }
 
@@ -135,8 +145,10 @@ public class OperatorInput extends SubsystemBase {
     return driverController.getLeftBumperButton();
   }
 
+  // Shoot from anywhere does not work
   public boolean shootFromAnywhere() {
-    return driverController.getRightTriggerAxis() > 0.5;
+    return false;
+    //    return driverController.getRightTriggerAxis() > 0.5;
   }
 
   public boolean getFaceHub() {
@@ -160,7 +172,7 @@ public class OperatorInput extends SubsystemBase {
     return isShift() && operatorController.getRightBumperButton();
   }
 
-  public boolean isRunAgitator() {
+  public boolean isPoop() {
     return !isShift() && operatorController.getLeftTriggerAxis() > 0.5;
   }
 
@@ -168,8 +180,24 @@ public class OperatorInput extends SubsystemBase {
     return isShift() && operatorController.getLeftTriggerAxis() > 0.5;
   }
 
+  public boolean isSuperCloseShoot() {
+    return (driverController.getXButton() && !isBoost());
+  }
+
   public boolean isCloseShoot() {
-    return operatorController.getRightTriggerAxis() > 0.5;
+    return driverController.getRightTriggerAxis() > 0.5;
+  }
+
+  public boolean isFartherShoot() {
+    return driverController.getAButton();
+  }
+
+  public boolean isFarShoot() {
+    return driverController.getBButton();
+  }
+
+  public boolean isSuperFarShoot() {
+    return (driverController.getXButton() && isBoost());
   }
 
   public boolean isStopFlywheel() {
@@ -196,13 +224,13 @@ public class OperatorInput extends SubsystemBase {
     return operatorController.getXButton();
   }
 
-  public boolean putClimbUp() {
-    return operatorController.getPOV() == 0 || driverController.getPOV() == 0;
-  }
-
-  public boolean putClimbDown() {
-    return operatorController.getPOV() == 180 || driverController.getPOV() == 180;
-  }
+  //  public boolean putClimbUp() {
+  //    return operatorController.getPOV() == 0 || driverController.getPOV() == 0;
+  //  }
+  //
+  //  public boolean putClimbDown() {
+  //    return operatorController.getPOV() == 180 || driverController.getPOV() == 180;
+  //  }
 
   public boolean isOpenDoor() {
     return isShift() && operatorController.getPOV() == 270;

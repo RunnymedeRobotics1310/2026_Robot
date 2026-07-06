@@ -131,7 +131,8 @@ public class HopperSubsystem extends SubsystemBase {
   public void setRollerSpeeds(double topRollerSpeed, double bottomRollerSpeed) {
     Telemetry.intake.topRollerSpeed = topRollerSpeed;
     Telemetry.intake.bottomRollerSpeed = bottomRollerSpeed;
-    topRollerMotor.set(topRollerSpeed);
+    //    topRollerMotor.set(topRollerSpeed)
+    topRollerMotor.set(0);
     bottomRollerMotor.set(bottomRollerSpeed);
   }
 

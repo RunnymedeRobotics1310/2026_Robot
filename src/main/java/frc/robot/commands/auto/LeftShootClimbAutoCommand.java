@@ -23,22 +23,16 @@ public class LeftShootClimbAutoCommand extends SequentialCommandGroup {
 
     addCommands(new NullDriveCommand(swerve).withTimeout(delay));
 
-    addCommands(new DriveFieldOrientedCommand(swerve, -2, 0, 0).withTimeout(1));
-
-    addCommands(new FaceHubCommand(swerve).withTimeout(1));
-
     addCommands(
-        ((new AutoShooterCommand(hopper, swerve, 16).withTimeout(5))
+        ((new AutoShooterCommand(hopper, swerve, 1310))
             .deadlineFor(
                 new DriveToFieldLocationAimedAtHubCommand(
-                        swerve, new Pose2d(2.2, 4.1617, new Rotation2d(0)), 0.3, 0.3)
+                        swerve, new Pose2d(2.2, 4.3617, new Rotation2d(0)), 0.3, 0.3)
                     .andThen(new FaceHubCommand(swerve, true)))));
 
-    addCommands(new FaceAngleCommand(swerve, Rotation2d.fromDegrees(180)));
-
-    addCommands(
-        (new AutoClimbCommand(climb, hopper, true)
-                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
-            .andThen(new AutoClimbCommand(climb, hopper, false)));
+    //    addCommands(
+    //        (new AutoClimbCommand(climb, hopper, true)
+    //                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
+    //            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }

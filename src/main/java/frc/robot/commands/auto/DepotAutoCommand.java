@@ -60,9 +60,9 @@ public class DepotAutoCommand extends SequentialCommandGroup {
                         swerve, new Pose2d(2.2, 4.1617, new Rotation2d(0)), 0.3, 0.3)
                     .andThen(new FaceHubCommand(swerve, true)))));
 
-    addCommands(
-        (new AutoClimbCommand(climb, hopper, true)
-                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
-            .andThen(new AutoClimbCommand(climb, hopper, false)));
+    //    addCommands(
+    //        (new AutoClimbCommand(climb, hopper, true)
+    //                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
+    //            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }
