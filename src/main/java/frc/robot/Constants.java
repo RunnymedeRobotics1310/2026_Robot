@@ -179,7 +179,7 @@ public final class Constants {
         new SwerveTranslationConfig(
             /* tolerance (m) */ 0.02,
             /* min speed (m/s) */ 1.0,
-            /* max speed (m/s) */ 4.8,
+            /* max speed (m/s) */ 2.0000_1310,
             /* max module speed (m/s) */ 5.36,
             /* max acceleration (m/s/s) */ 10.0,
             /* velocity PID p */ 1.2,

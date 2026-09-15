@@ -14,6 +14,7 @@ import frc.robot.commands.auto.SimpleCenterAutoCommand;
 import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoConfig;
 import frc.robot.commands.auto.config.AutoConfigParser;
+import frc.robot.commands.hopper.ChaoticShootCommand;
 import frc.robot.commands.hopper.LazyShooterCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -104,6 +105,8 @@ public class OperatorInput extends SubsystemBase {
     new Trigger(this::isFartherShoot).whileTrue(new LazyShooterCommand(hopper, 3400, 0.4, 100));
     new Trigger(this::isFarShoot).whileTrue(new LazyShooterCommand(hopper, 3700, 0.5, 100));
     new Trigger(this::isSuperFarShoot).whileTrue(new LazyShooterCommand(hopper, 4900, 0.3, 100));
+    new Trigger(this::evenFurtherShoot).whileTrue(new LazyShooterCommand(hopper, 6000, 1, 100));
+    new Trigger(this::chaos).whileTrue(new ChaoticShootCommand(swerve, hopper));
     // Commented climb commands
     //    new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true));
     //    new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
@@ -189,7 +192,7 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isFartherShoot() {
-    return driverController.getAButton();
+    return driverController.getAButton() && !isBoost();
   }
 
   public boolean isFarShoot() {
@@ -198,6 +201,14 @@ public class OperatorInput extends SubsystemBase {
 
   public boolean isSuperFarShoot() {
     return (driverController.getXButton() && isBoost());
+  }
+
+  public boolean evenFurtherShoot() {
+    return (driverController.getYButton() && isBoost());
+  }
+
+  public boolean chaos() {
+    return driverController.getAButton() && isBoost();
   }
 
   public boolean isStopFlywheel() {
