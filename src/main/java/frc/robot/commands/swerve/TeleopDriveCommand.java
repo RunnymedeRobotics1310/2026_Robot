@@ -76,21 +76,25 @@ public class TeleopDriveCommand extends LoggingCommand {
     // its y value, but that should convert into positive x movement on the field. The
     // Runnymede Controller inverts stick y-axis values, so "forward" on stick is positive.
     // Thus, positive y stick axis maps to positive x translation on the field.
-    final double vX = oi.getDriverControllerAxis(LEFT, Y);
+    final double vXdr = oi.getDriverControllerAxis(LEFT, Y);
     final double vXop = oi.getOperatorControllerAxis(RIGHT, Y) * OPERATOR_CONTROLLER_SPEED_FACTOR;
+    final double vXtr = oi.getTrainingControllerAxis(LEFT, Y);
 
     // Left and right movement on the left stick (the stick's x-axis) maps to the y-axis on the
     // field. Left on the stick (negative x) maps to positive y on the field, and vice versa.
     // Thus, negative x stick axis maps to positive y translation on the field.
-    final double vY = -oi.getDriverControllerAxis(LEFT, X);
+    final double vYdr = -oi.getDriverControllerAxis(LEFT, X);
     final double vYop = -oi.getOperatorControllerAxis(RIGHT, X) * OPERATOR_CONTROLLER_SPEED_FACTOR;
+    final double vYtr = -oi.getTrainingControllerAxis(LEFT, X);
 
     // Left and right on the right stick will change the direction the robot is facing - its
     // heading. Positive x values on the stick translate to clockwise motion, and vice versa.
     // The coordinate system has positive motion as CCW.
     // Therefore, negative x stick value maps to positive rotation on the field.
     final double ccwRotAngularVelPct =
-        -oi.getDriverControllerAxis(RIGHT, X) * 0.65; // TODO: put this in constants?
+        Math.abs(oi.getDriverControllerAxis(RIGHT, X)) > 0.2
+            ? -oi.getDriverControllerAxis(RIGHT, X) * 0.65
+            : -oi.getTrainingControllerAxis(RIGHT, X) * 0.65; // TODO: put this in constants?
 
     final boolean rotate180Val = oi.getRotate180Val();
 
@@ -103,7 +107,17 @@ public class TeleopDriveCommand extends LoggingCommand {
     final double boostFactor =
         isSlow ? SLOW_SPEED_FACTOR : (isFast ? MAX_SPEED_FACTOR : GENERAL_SPEED_FACTOR);
 
-    Translation2d velocity = calculateTeleopVelocity(vX + vXop, vY + vYop, boostFactor, invert);
+    final double vX;
+    final double vY;
+    if (Math.abs(vXdr) > 0.2 || Math.abs(vYdr) > 0.2) {
+      vX = vXdr + vYop;
+      vY = vYdr + vYop;
+    } else {
+      vX = vXtr;
+      vY = vYtr;
+    }
+
+    Translation2d velocity = calculateTeleopVelocity(vX, vY + vYop, boostFactor, invert);
 
     final boolean doFlip = rotate180Val && !prevRotate180Val;
     prevRotate180Val = rotate180Val;

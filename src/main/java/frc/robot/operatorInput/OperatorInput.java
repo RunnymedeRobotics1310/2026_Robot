@@ -28,6 +28,8 @@ public class OperatorInput extends SubsystemBase {
       new GameController(OperatorConstants.DRIVER_CONTROLLER_PORT);
   private final GameController operatorController =
       new GameController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+  private final GameController trainingController =
+      new GameController(OperatorConstants.TRAINING_CONTROLLER_PORT);
 
   private final SwerveSubsystem swerve;
   private final HopperSubsystem hopper;
@@ -115,12 +117,14 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isCancel() {
-    return ((driverController.getStartButton() && !driverController.getBackButton()
-        || operatorController.getStartButton()));
+    return (driverController.getStartButton() && !driverController.getBackButton())
+        || operatorController.getStartButton()
+        || (trainingController.getStartButton() && !trainingController.getBackButton());
   }
 
   public boolean isZeroGyro() {
-    return driverController.getBackButton() && driverController.getStartButton();
+    return (driverController.getBackButton() && driverController.getStartButton())
+        || (trainingController.getBackButton() && trainingController.getStartButton());
   }
 
   public boolean getRotate180Val() {
@@ -128,15 +132,16 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isFastMode() {
-    return driverController.getRightBumperButton();
+    return driverController.getRightBumperButton() || trainingController.getRightBumperButton();
   }
 
   public boolean isSlowMode() {
-    return driverController.getLeftBumperButton();
+    return driverController.getLeftBumperButton() || trainingController.getLeftBumperButton();
   }
 
   public boolean shootFromAnywhere() {
-    return driverController.getRightTriggerAxis() > 0.5;
+    return driverController.getRightTriggerAxis() > 0.5
+        || trainingController.getRightTriggerAxis() > 0.5;
   }
 
   public boolean getFaceHub() {
@@ -144,7 +149,8 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isIntakeDoingStuff() {
-    return driverController.getLeftTriggerAxis() > 0.5;
+    return driverController.getLeftTriggerAxis() > 0.5
+        || trainingController.getLeftTriggerAxis() > 0.5;
   }
 
   // ----- OPERATOR CONTROLLS -----
@@ -238,6 +244,21 @@ public class OperatorInput extends SubsystemBase {
           switch (axis) {
             case X -> operatorController.getRightX();
             case Y -> operatorController.getRightY();
+          };
+    };
+  }
+
+  public double getTrainingControllerAxis(Stick stick, Axis axis) {
+    return switch (stick) {
+      case LEFT ->
+          switch (axis) {
+            case X -> trainingController.getLeftX();
+            case Y -> trainingController.getLeftY();
+          };
+      case RIGHT ->
+          switch (axis) {
+            case X -> trainingController.getRightX();
+            case Y -> trainingController.getRightY();
           };
     };
   }
