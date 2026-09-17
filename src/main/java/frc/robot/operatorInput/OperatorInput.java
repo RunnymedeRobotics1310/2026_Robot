@@ -15,7 +15,6 @@ import frc.robot.commands.auto.config.AutoCommandFactory;
 import frc.robot.commands.auto.config.AutoConfig;
 import frc.robot.commands.auto.config.AutoConfigParser;
 import frc.robot.commands.hopper.LazyShooterCommand;
-import frc.robot.commands.swerve.DriveToTowerCommand;
 import frc.robot.commands.swerve.SetAllianceGyroCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
@@ -77,12 +76,12 @@ public class OperatorInput extends SubsystemBase {
 
     /* DRIVER CONTROLS */
 
-    // Auto align to climb
-    new Trigger(driverController::getXButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, climb, false));
+    // Auto align to climb disables for mary ward
+    //    new Trigger(driverController::getXButton)
+    //        .onTrue(new DriveToTowerCommand(swerve, vision, climb, false));
 
-    new Trigger(driverController::getBButton)
-        .onTrue(new DriveToTowerCommand(swerve, vision, climb, true));
+    //    new Trigger(driverController::getBButton)
+    //        .onTrue(new DriveToTowerCommand(swerve, vision, climb, true));
 
     // not included here:
     //   shoot - right trigger
@@ -101,8 +100,9 @@ public class OperatorInput extends SubsystemBase {
     // Shoot from set range - ends when button is released, or after 100 seconds
     new Trigger(this::isCloseShoot).whileTrue(new LazyShooterCommand(hopper, 3900, 0, 100));
 
-    new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true));
-    new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
+    //    new Trigger(this::putClimbUp).onTrue(new AutoClimbCommand(climb, hopper, true)); disabled
+    // for mary ward
+    //    new Trigger(this::putClimbDown).onTrue(new AutoClimbCommand(climb, hopper, false));
 
     // not included here:
     //   manual climb
