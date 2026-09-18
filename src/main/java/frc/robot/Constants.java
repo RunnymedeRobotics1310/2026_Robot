@@ -240,7 +240,7 @@ public final class Constants {
             11,
             ANGLE_MOTOR_CONFIG,
             12,
-            Rotation2d.fromRotations(0.724121).getDegrees(),
+            Rotation2d.fromRotations(0.630859).getDegrees(),
             ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig FRONT_RIGHT =
@@ -253,7 +253,7 @@ public final class Constants {
             16,
             ANGLE_MOTOR_CONFIG,
             17,
-            Rotation2d.fromRotations(0.115967).getDegrees(),
+            Rotation2d.fromRotations(0.113037).getDegrees(),
             ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_RIGHT =
@@ -266,7 +266,7 @@ public final class Constants {
             21,
             ANGLE_MOTOR_CONFIG,
             22,
-            Rotation2d.fromRotations(0.583496).getDegrees(),
+            Rotation2d.fromRotations(0.589355).getDegrees(),
             ANGLE_ENCODER_CONFIG);
 
     public static final ModuleConfig BACK_LEFT =
@@ -279,7 +279,7 @@ public final class Constants {
             26,
             ANGLE_MOTOR_CONFIG,
             27,
-            Rotation2d.fromRotations(0.632812).getDegrees(),
+            Rotation2d.fromRotations(0.190430).getDegrees(),
             ANGLE_ENCODER_CONFIG);
 
     public static final CoreSwerveConfig CORE_SWERVE_CONFIG =
