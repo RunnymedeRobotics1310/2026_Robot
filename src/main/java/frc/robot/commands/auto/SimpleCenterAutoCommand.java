@@ -20,13 +20,13 @@ public class SimpleCenterAutoCommand extends SequentialCommandGroup {
     addCommands(new SetAllianceGyroCommand(swerve, 0));
 
     addCommands(
-        new LazyShooterCommand(hopper, 3800, 0, 5).deadlineFor(new NullDriveCommand(swerve)));
+        new LazyShooterCommand(hopper, 3800, 0, 10).deadlineFor(new NullDriveCommand(swerve)));
 
-    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0).withTimeout(1.6));
+    //    addCommands(new DriveRobotOrientedAtHeadingCommand(swerve, -1, 0, 0).withTimeout(1.6));
 
-    addCommands(
-        (new AutoClimbCommand(climb, hopper, true)
-                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
-            .andThen(new AutoClimbCommand(climb, hopper, false)));
+    //    addCommands(  // disabled for mary ward
+    //        (new AutoClimbCommand(climb, hopper, true)
+    //                .alongWith(new DriveToTowerCommand(swerve, vision, climb, false)))
+    //            .andThen(new AutoClimbCommand(climb, hopper, false)));
   }
 }

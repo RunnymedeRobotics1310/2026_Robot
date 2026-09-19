@@ -175,7 +175,9 @@ public class OperatorInput extends SubsystemBase {
   }
 
   public boolean isCloseShoot() {
-    return operatorController.getRightTriggerAxis() > 0.5;
+    return operatorController.getRightTriggerAxis() > 0.5
+        || trainingController.getAButton()
+        || driverController.getAButton();
   }
 
   public boolean isStopFlywheel() {
